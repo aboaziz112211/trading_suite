@@ -16,6 +16,11 @@
       <a href="{{ url_for('product_page', key='tradepulse_sar') }}">TradePulse SAR</a>
     </nav>
   </header>
+  <div class="beta-banner" role="status" aria-live="polite">
+    <span class="ar" dir="rtl" lang="ar">⚠️ هذا الموقع تجريبي حالياً وتحت الاختبار</span>
+    <span class="sep" aria-hidden="true">•</span>
+    <span class="en" lang="en">⚠️ This site is currently in <b>BETA</b> — under testing</span>
+  </div>
   <main>{% block body %}{% endblock %}</main>
 </body>
 </html>

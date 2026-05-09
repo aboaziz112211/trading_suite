@@ -44,6 +44,49 @@ body {
 }
 .topbar nav a:hover { color: var(--text); }
 
+.beta-banner {
+  background: linear-gradient(90deg, #3a2a14 0%, #4a3014 50%, #3a2a14 100%);
+  border-bottom: 1px solid #6b4a1f;
+  color: #ffd98a;
+  padding: 14px 20px;
+  text-align: center;
+  font-weight: 700;
+  letter-spacing: 0.3px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 22px;
+  flex-wrap: wrap;
+  position: sticky;
+  top: 50px;
+  z-index: 9;
+}
+.beta-banner .ar {
+  font-size: 19px;
+  font-family: "Segoe UI", "Tahoma", "Arial", sans-serif;
+  direction: rtl;
+}
+.beta-banner .en {
+  font-size: 17px;
+}
+.beta-banner b {
+  color: #ffe9a8;
+  background: rgba(0,0,0,0.25);
+  padding: 1px 10px;
+  border-radius: 6px;
+  letter-spacing: 1.5px;
+}
+.beta-banner .sep {
+  color: #b08648;
+  font-size: 18px;
+}
+@media (max-width: 640px) {
+  .beta-banner { gap: 6px; padding: 10px 12px; }
+  .beta-banner .ar { font-size: 16px; }
+  .beta-banner .en { font-size: 14px; }
+  .beta-banner .sep { display: none; }
+}
+
 main { max-width: 1400px; margin: 0 auto; padding: 32px 24px; }
 
 .hero { margin-bottom: 32px; }
