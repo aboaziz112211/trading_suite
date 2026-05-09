@@ -29,6 +29,8 @@
 
   var XLSX_URL = {{ ('"/data/us_live.xlsx"' if key == 'tradepulse_us' else '"/data/all.xlsx"') | safe }};
   var XLSX_NAME = {{ ('"us_live.xlsx"' if key == 'tradepulse_us' else '"all.xlsx"') | safe }};
+  var CSV_URL = {{ ('"/data/chartedge_us.csv"' if key == 'tradepulse_us' else '"/data/chartedge_sa.csv"') | safe }};
+  var CSV_NAME = {{ ('"chartedge_us.csv"' if key == 'tradepulse_us' else '"chartedge_sa.csv"') | safe }};
   var IS_US = {{ 'true' if key == 'tradepulse_us' else 'false' }};
   var REPOLL_MS = 30000;
   var XLSX_MIME = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet';
@@ -66,7 +68,7 @@
       if(!doc) return;
       await load(doc, XLSX_URL, XLSX_NAME, XLSX_MIME, 'bbg-in');
       await new Promise(function(r){ setTimeout(r, 1500); });
-      await load(doc, '/data/chartedge.csv', 'chartedge.csv', 'text/csv', 'ce-in');
+      await load(doc, CSV_URL, CSV_NAME, 'text/csv', 'ce-in');
 
       // For US: re-poll the live snapshot every 30s
       if (IS_US) {

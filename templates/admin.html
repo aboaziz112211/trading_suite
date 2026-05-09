@@ -9,24 +9,34 @@
 <table style="margin: 0 0 18px; border-collapse: collapse; font-size: 13px;">
   <thead>
     <tr style="text-align:left; color: var(--muted);">
-      <th style="padding:6px 14px 6px 0">File type</th>
+      <th style="padding:6px 14px 6px 0">Filename</th>
       <th style="padding:6px 14px 6px 0">Saves to</th>
       <th style="padding:6px 0">What it powers</th>
     </tr>
   </thead>
   <tbody>
     <tr>
-      <td style="padding:4px 14px 4px 0"><code>.xlsx</code></td>
+      <td style="padding:4px 14px 4px 0"><code>*.xlsx</code></td>
       <td style="padding:4px 14px 4px 0"><code>data/all.xlsx</code></td>
       <td style="padding:4px 0">Bloomberg market feed → TradePulse SAR live data table</td>
     </tr>
     <tr>
-      <td style="padding:4px 14px 4px 0"><code>.csv</code></td>
-      <td style="padding:4px 14px 4px 0"><code>data/chartedge.csv</code></td>
-      <td style="padding:4px 0">ChartEdge screener output (daily SEPA scan)</td>
+      <td style="padding:4px 14px 4px 0"><code>...<b>_US</b>.csv</code></td>
+      <td style="padding:4px 14px 4px 0"><code>data/chartedge_us.csv</code></td>
+      <td style="padding:4px 0">ChartEdge US scan → TradePulse US dashboard</td>
+    </tr>
+    <tr>
+      <td style="padding:4px 14px 4px 0"><code>...<b>_SA</b>.csv</code></td>
+      <td style="padding:4px 14px 4px 0"><code>data/chartedge_sa.csv</code></td>
+      <td style="padding:4px 0">ChartEdge Saudi scan → TradePulse SAR dashboard</td>
     </tr>
   </tbody>
 </table>
+
+<p class="muted" style="margin: 0 0 14px; font-size: 13px; color: var(--muted)">
+  Market is detected from the CSV filename. ChartEdge already names exports like
+  <code>ChartEdge_Screen_2026-05-09_US.csv</code> — just upload them as-is.
+</p>
 
 {% if success %}
 <div class="notice" style="background:#143a26;border-color:#1f5a36;color:#a7e8c2">

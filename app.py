@@ -13,12 +13,35 @@ GH_PAT = os.getenv("GH_PAT")
 GH_REPO = os.getenv("GH_REPO", "aboaziz112211/trading_suite")
 GH_BRANCH = os.getenv("GH_BRANCH", "main")
 GH_XLSX_PATH = "data/all.xlsx"
-GH_CSV_PATH = "data/chartedge.csv"
+GH_CSV_US_PATH = "data/chartedge_us.csv"
+GH_CSV_SA_PATH = "data/chartedge_sa.csv"
 
-UPLOAD_TARGETS = {
-    ".xlsx": GH_XLSX_PATH,
-    ".csv": GH_CSV_PATH,
-}
+
+def _detect_csv_market(filename: str):
+    """Return 'us' or 'sa' based on filename markers, else None."""
+    n = filename.lower()
+    if any(k in n for k in ["_us.", "_us_", "-us.", "-us-", "us_stock", "us_screen", "_usa.", "_usa_"]):
+        return "us"
+    if any(k in n for k in ["_sa.", "_sa_", "-sa.", "-sa-", "_sar.", "_sar_", "tasi", "saudi", "_ksa."]):
+        return "sa"
+    return None
+
+
+def _resolve_upload_target(filename: str):
+    """Decide where the uploaded file should be committed in the GitHub repo."""
+    n = filename.lower()
+    if n.endswith(".xlsx"):
+        return GH_XLSX_PATH, None
+    if n.endswith(".csv"):
+        market = _detect_csv_market(filename)
+        if market == "us":
+            return GH_CSV_US_PATH, None
+        if market == "sa":
+            return GH_CSV_SA_PATH, None
+        return None, ("Could not detect market from filename. "
+                      "Add '_US' or '_SA' to the filename "
+                      "(e.g. ChartEdge_Screen_2026-05-09_US.csv).")
+    return None, "Upload a .xlsx or .csv file."
 
 US_PUSH_TOKEN = os.getenv("US_PUSH_TOKEN")
 # in-memory live US feed: bytes of xlsx + last update timestamp
@@ -145,7 +168,7 @@ def data_file(filename):
         from flask import Response
         return Response(_US_STATE["xlsx"], mimetype=(
             "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"))
-    if filename not in {"all.xlsx", "chartedge.csv"}:
+    if filename not in {"all.xlsx", "chartedge_us.csv", "chartedge_sa.csv"}:
         abort(404)
     return send_from_directory(DATA_DIR, filename)
 
@@ -218,15 +241,9 @@ def admin_upload():
         return render_template("admin.html", success=False,
             error="No file selected."), 400
 
-    fname = f.filename.lower()
-    target_path = None
-    for ext, path in UPLOAD_TARGETS.items():
-        if fname.endswith(ext):
-            target_path = path
-            break
+    target_path, why = _resolve_upload_target(f.filename)
     if not target_path:
-        return render_template("admin.html", success=False,
-            error="Upload a .xlsx or .csv file."), 400
+        return render_template("admin.html", success=False, error=why), 400
 
     raw = f.read()
     if len(raw) > 25 * 1024 * 1024:
