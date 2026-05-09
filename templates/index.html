@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% block title %}Trading Suite — Products{% endblock %}
+{% block body %}
+<section class="hero">
+  <h1>Trading Suite</h1>
+  <p>Live dashboards & analyzers — pick a product.</p>
+</section>
+<section class="cards">
+  {% for key, p in products.items() %}
+  <a class="card" href="{{ url_for('product_page', key=key) }}">
+    <div class="card-tag">{{ key.replace('_', ' ').upper() }}</div>
+    <h2>{{ p.title }}</h2>
+    <p>{{ p.tagline }}</p>
+    <span class="open">Open →</span>
+  </a>
+  {% endfor %}
+</section>
+{% endblock %}
