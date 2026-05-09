@@ -4,7 +4,7 @@ import math
 import os
 import base64
 from datetime import datetime
-from config import PRODUCTS, LIVE_XLSX_PATH, LIVE_XLSX_SHEET, REFRESH_SECONDS
+from config import PRODUCTS, LIVE_XLSX_PATH, LIVE_XLSX_SHEET, REFRESH_SECONDS, DATA_DIR
 
 app = Flask(__name__)
 
@@ -69,12 +69,69 @@ def product_page(key):
     )
 
 
+_AUTO_LOAD_SCRIPT = """
+<script>
+(function(){
+  function dispatchFile(inputId, file){
+    var inp = document.getElementById(inputId);
+    if(!inp) return false;
+    try {
+      var dt = new DataTransfer();
+      dt.items.add(file);
+      inp.files = dt.files;
+      inp.dispatchEvent(new Event('change', {bubbles:true}));
+      return true;
+    } catch(e){ console.warn('[auto-load] dispatch failed for '+inputId+':', e); return false; }
+  }
+  async function loadFromServer(url, name, mime, inputId){
+    try {
+      var r = await fetch(url, {cache:'no-store'});
+      if(!r.ok){ console.log('[auto-load] '+url+' -> '+r.status+' (skipping)'); return; }
+      var blob = await r.blob();
+      var f = new File([blob], name, {type: mime});
+      console.log('[auto-load] feeding '+name+' ('+blob.size+' bytes) -> #'+inputId);
+      dispatchFile(inputId, f);
+    } catch(e){ console.warn('[auto-load] failed for '+name+':', e); }
+  }
+  function start(){
+    setTimeout(async function(){
+      await loadFromServer('/data/all.xlsx', 'all.xlsx',
+        'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', 'bbg-in');
+      await new Promise(function(r){ setTimeout(r, 1800); });
+      await loadFromServer('/data/chartedge.csv', 'chartedge.csv', 'text/csv', 'ce-in');
+    }, 1200);
+  }
+  if(document.readyState === 'loading'){
+    document.addEventListener('DOMContentLoaded', start);
+  } else { start(); }
+})();
+</script>
+"""
+
+
 @app.route("/p/<key>/file")
 def product_file(key):
     if key not in PRODUCTS:
         abort(404)
     p = PRODUCTS[key]
+    if key.startswith("tradepulse"):
+        try:
+            html = (p["dir"] / p["file"]).read_text(encoding="utf-8")
+            if "</body>" in html:
+                html = html.replace("</body>", _AUTO_LOAD_SCRIPT + "</body>", 1)
+            else:
+                html += _AUTO_LOAD_SCRIPT
+            return html, 200, {"Content-Type": "text/html; charset=utf-8"}
+        except Exception:
+            pass
     return send_from_directory(p["dir"], p["file"])
+
+
+@app.route("/data/<path:filename>")
+def data_file(filename):
+    if filename not in {"all.xlsx", "chartedge.csv"}:
+        abort(404)
+    return send_from_directory(DATA_DIR, filename)
 
 
 @app.route("/p/<key>/download")
