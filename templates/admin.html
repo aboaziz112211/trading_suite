@@ -57,13 +57,70 @@
   </label>
   <label>
     <span>File (<code>.xlsx</code> or <code>.csv</code>)</span>
-    <input type="file" name="xlsx" accept=".xlsx,.csv" required>
+    <div id="dropZone" class="drop-zone" tabindex="0">
+      <div class="dz-icon">⬇</div>
+      <div class="dz-main">Drag &amp; drop a file here</div>
+      <div class="dz-sub">or click to browse</div>
+      <div id="dzFileName" class="dz-file"></div>
+      <input type="file" name="xlsx" id="fileInput" accept=".xlsx,.csv" required hidden>
+    </div>
   </label>
   <button type="submit" class="btn">Upload &amp; Publish</button>
 </form>
 
 <p class="muted" style="margin-top:18px;font-size:13px;color:var(--muted)">
-  The uploaded file replaces <code>data/all.xlsx</code> in the GitHub repo and triggers an automatic redeploy on Render.
-  After the redeploy, the live data table on the TradePulse SAR page will show the new rows on its next refresh tick.
+  The uploaded file replaces the matching file in the GitHub repo and triggers an automatic redeploy on Render.
+  After the redeploy, the dashboard pages auto-load the new file on their next refresh.
 </p>
+
+<script>
+(function(){
+  var zone = document.getElementById('dropZone');
+  var input = document.getElementById('fileInput');
+  var label = document.getElementById('dzFileName');
+  if (!zone || !input) return;
+
+  function setFile(f){
+    if (!f) return;
+    var dt = new DataTransfer();
+    dt.items.add(f);
+    input.files = dt.files;
+    label.textContent = '✔ ' + f.name + ' (' + Math.round(f.size/1024) + ' KB)';
+    label.classList.add('have');
+  }
+
+  zone.addEventListener('click', function(){ input.click(); });
+  zone.addEventListener('keydown', function(e){
+    if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); input.click(); }
+  });
+  input.addEventListener('change', function(){
+    if (input.files && input.files[0]) setFile(input.files[0]);
+  });
+
+  ['dragenter','dragover'].forEach(function(ev){
+    zone.addEventListener(ev, function(e){
+      e.preventDefault(); e.stopPropagation();
+      zone.classList.add('drag');
+    });
+  });
+  ['dragleave','dragend','drop'].forEach(function(ev){
+    zone.addEventListener(ev, function(e){
+      e.preventDefault(); e.stopPropagation();
+      zone.classList.remove('drag');
+    });
+  });
+  zone.addEventListener('drop', function(e){
+    if (e.dataTransfer && e.dataTransfer.files && e.dataTransfer.files[0]){
+      setFile(e.dataTransfer.files[0]);
+    }
+  });
+
+  // Prevent the page from accidentally navigating to a dropped file outside the zone
+  ['dragover','drop'].forEach(function(ev){
+    document.addEventListener(ev, function(e){
+      if (!zone.contains(e.target)) { e.preventDefault(); }
+    });
+  });
+})();
+</script>
 {% endblock %}

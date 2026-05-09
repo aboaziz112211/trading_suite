@@ -167,6 +167,47 @@ main { max-width: 1400px; margin: 0 auto; padding: 32px 24px; }
 .admin-form input[type="password"]:focus { outline: none; border-color: var(--accent); }
 .admin-form button { align-self: flex-start; cursor: pointer; border: none; }
 
+.drop-zone {
+  position: relative;
+  border: 2px dashed var(--border);
+  border-radius: 10px;
+  padding: 28px 16px;
+  text-align: center;
+  background: var(--panel-2);
+  cursor: pointer;
+  transition: border-color 0.15s, background 0.15s;
+  outline: none;
+}
+.drop-zone:hover,
+.drop-zone:focus { border-color: var(--accent); }
+.drop-zone.drag {
+  border-color: var(--accent);
+  background: rgba(78, 161, 255, 0.08);
+}
+.drop-zone .dz-icon {
+  font-size: 28px;
+  color: var(--accent);
+  margin-bottom: 6px;
+}
+.drop-zone .dz-main {
+  color: var(--text);
+  font-weight: 600;
+  font-size: 15px;
+}
+.drop-zone .dz-sub {
+  color: var(--muted);
+  font-size: 13px;
+  margin-top: 4px;
+}
+.drop-zone .dz-file {
+  display: none;
+  color: var(--ok);
+  margin-top: 10px;
+  font-size: 13px;
+  font-family: ui-monospace, "Cascadia Code", "Consolas", monospace;
+}
+.drop-zone .dz-file.have { display: block; }
+
 .notice {
   background: #1f2a14;
   border: 1px solid #3b4f1f;
