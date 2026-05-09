@@ -27,21 +27,51 @@ def _detect_csv_market(filename: str):
     return None
 
 
-def _resolve_upload_target(filename: str):
-    """Decide where the uploaded file should be committed in the GitHub repo."""
+def _detect_csv_market_from_content(raw: bytes) -> str:
+    """Peek at the first column of the CSV; mostly 4-digit numeric tickers -> Saudi."""
+    try:
+        text = raw[:8192].decode("utf-8", errors="ignore")
+    except Exception:
+        return None
+    lines = [ln for ln in text.splitlines() if ln.strip()]
+    if len(lines) < 2:
+        return None
+    first_cells = []
+    for ln in lines[1:11]:  # skip header, sample up to 10 rows
+        cell = ln.split(",")[0].strip().strip('"').strip("'")
+        if cell:
+            first_cells.append(cell)
+    if not first_cells:
+        return None
+    numeric = sum(1 for c in first_cells if c.isdigit() and len(c) == 4)
+    return "sa" if (numeric / len(first_cells)) >= 0.6 else "us"
+
+
+def _resolve_upload_target(filename: str, market_form: str = None, raw: bytes = None):
+    """Decide where the uploaded file should be committed in the GitHub repo.
+
+    Priority:
+      1. Explicit market dropdown ('us' or 'sa')
+      2. Filename markers ('_US', '_SA', etc.)
+      3. CSV content sniff (numeric Tadawul codes -> Saudi, else US)
+    """
     n = filename.lower()
     if n.endswith(".xlsx"):
         return GH_XLSX_PATH, None
-    if n.endswith(".csv"):
-        market = _detect_csv_market(filename)
-        if market == "us":
-            return GH_CSV_US_PATH, None
-        if market == "sa":
-            return GH_CSV_SA_PATH, None
-        return None, ("Could not detect market from filename. "
-                      "Add '_US' or '_SA' to the filename "
-                      "(e.g. ChartEdge_Screen_2026-05-09_US.csv).")
-    return None, "Upload a .xlsx or .csv file."
+    if not n.endswith(".csv"):
+        return None, "Upload a .xlsx or .csv file."
+
+    market = (market_form or "").lower().strip()
+    if market not in ("us", "sa"):
+        market = _detect_csv_market(filename) or ""
+    if market not in ("us", "sa") and raw is not None:
+        market = _detect_csv_market_from_content(raw) or ""
+    if market == "us":
+        return GH_CSV_US_PATH, None
+    if market == "sa":
+        return GH_CSV_SA_PATH, None
+    return None, ("Could not determine market for this CSV. "
+                  "Pick US or Saudi from the Market dropdown and try again.")
 
 US_PUSH_TOKEN = os.getenv("US_PUSH_TOKEN")
 # in-memory live US feed: bytes of xlsx + last update timestamp
@@ -241,14 +271,14 @@ def admin_upload():
         return render_template("admin.html", success=False,
             error="No file selected."), 400
 
-    target_path, why = _resolve_upload_target(f.filename)
-    if not target_path:
-        return render_template("admin.html", success=False, error=why), 400
-
     raw = f.read()
     if len(raw) > 25 * 1024 * 1024:
         return render_template("admin.html", success=False,
             error="File too large (>25 MB)."), 400
+    market_form = request.form.get("market", "auto")
+    target_path, why = _resolve_upload_target(f.filename, market_form, raw)
+    if not target_path:
+        return render_template("admin.html", success=False, error=why), 400
 
     api = f"https://api.github.com/repos/{GH_REPO}/contents/{target_path}"
     headers = {

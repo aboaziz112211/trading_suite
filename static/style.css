@@ -155,7 +155,8 @@ main { max-width: 1400px; margin: 0 auto; padding: 32px 24px; }
 }
 .admin-form label { display: flex; flex-direction: column; gap: 6px; font-size: 14px; color: var(--muted); }
 .admin-form input[type="password"],
-.admin-form input[type="file"] {
+.admin-form input[type="file"],
+.admin-form select {
   background: var(--panel-2);
   border: 1px solid var(--border);
   color: var(--text);
@@ -164,6 +165,7 @@ main { max-width: 1400px; margin: 0 auto; padding: 32px 24px; }
   font-size: 14px;
   font-family: inherit;
 }
+.admin-form select { cursor: pointer; }
 .admin-form input[type="password"]:focus { outline: none; border-color: var(--accent); }
 .admin-form button { align-self: flex-start; cursor: pointer; border: none; }
 

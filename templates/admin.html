@@ -56,6 +56,15 @@
     <input type="password" name="password" required autocomplete="off">
   </label>
   <label>
+    <span>Market <small style="color:var(--muted);font-weight:400">(used for CSV uploads)</small></span>
+    <select name="market" id="marketSel">
+      <option value="auto" selected>Auto-detect</option>
+      <option value="us">US (TradePulse US)</option>
+      <option value="sa">Saudi (TradePulse SAR)</option>
+    </select>
+  </label>
+
+  <label>
     <span>File (<code>.xlsx</code> or <code>.csv</code>)</span>
     <div id="dropZone" class="drop-zone" tabindex="0">
       <div class="dz-icon">⬇</div>
