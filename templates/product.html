@@ -23,7 +23,50 @@
 </div>
 {% endif %}
 
-<iframe class="product-frame" src="{{ url_for('product_file', key=key) }}" title="{{ product.title }}"></iframe>
+<iframe id="productFrame" class="product-frame" src="{{ url_for('product_file', key=key) }}" title="{{ product.title }}"></iframe>
+
+{% if auto_load_data %}
+<script>
+(function(){
+  var iframe = document.getElementById('productFrame');
+  if(!iframe) return;
+
+  function dispatch(doc, inputId, file){
+    var inp = doc.getElementById(inputId);
+    if(!inp){ console.log('[auto-load] no #' + inputId + ' in iframe'); return; }
+    try {
+      var dt = new DataTransfer();
+      dt.items.add(file);
+      inp.files = dt.files;
+      inp.dispatchEvent(new Event('change', {bubbles:true}));
+      console.log('[auto-load] fed ' + file.name + ' -> #' + inputId);
+    } catch(e){ console.warn('[auto-load] dispatch failed:', e); }
+  }
+
+  async function load(doc, url, name, mime, inputId){
+    try {
+      var r = await fetch(url, {cache:'no-store'});
+      if(!r.ok){ console.log('[auto-load] ' + url + ' -> ' + r.status); return; }
+      var blob = await r.blob();
+      dispatch(doc, inputId, new File([blob], name, {type: mime}));
+    } catch(e){ console.warn('[auto-load] error for ' + name + ':', e); }
+  }
+
+  iframe.addEventListener('load', function(){
+    setTimeout(async function(){
+      var doc;
+      try { doc = iframe.contentDocument || iframe.contentWindow.document; }
+      catch(e){ console.warn('[auto-load] cannot access iframe doc:', e); return; }
+      if(!doc) return;
+      await load(doc, '/data/all.xlsx', 'all.xlsx',
+        'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', 'bbg-in');
+      await new Promise(function(r){ setTimeout(r, 1500); });
+      await load(doc, '/data/chartedge.csv', 'chartedge.csv', 'text/csv', 'ce-in');
+    }, 1500);
+  });
+})();
+</script>
+{% endif %}
 
 {% if show_live %}
 <section class="live">
