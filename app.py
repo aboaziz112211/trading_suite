@@ -134,14 +134,6 @@ def data_file(filename):
     return send_from_directory(DATA_DIR, filename)
 
 
-@app.route("/p/<key>/download")
-def product_download(key):
-    if key not in PRODUCTS:
-        abort(404)
-    p = PRODUCTS[key]
-    return send_from_directory(p["dir"], p["file"], as_attachment=True)
-
-
 @app.route("/api/data")
 def api_data():
     return jsonify(load_live_data())

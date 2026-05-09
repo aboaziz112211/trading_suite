@@ -90,7 +90,6 @@ What happens:
 - `/` — home
 - `/p/<key>` — product page (`chartedge` / `tradepulse_us` / `tradepulse_sar`)
 - `/p/<key>/file` — raw HTML
-- `/p/<key>/download` — downloadable copy
 - `/api/data` — JSON feed from `data/all.xlsx`
 - `/admin` — upload form to refresh `data/all.xlsx` (password-gated)
 - `/admin/upload` — POST endpoint, commits new xlsx to GitHub
