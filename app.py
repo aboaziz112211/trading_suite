@@ -13,6 +13,12 @@ GH_PAT = os.getenv("GH_PAT")
 GH_REPO = os.getenv("GH_REPO", "aboaziz112211/trading_suite")
 GH_BRANCH = os.getenv("GH_BRANCH", "main")
 GH_XLSX_PATH = "data/all.xlsx"
+GH_CSV_PATH = "data/chartedge.csv"
+
+UPLOAD_TARGETS = {
+    ".xlsx": GH_XLSX_PATH,
+    ".csv": GH_CSV_PATH,
+}
 
 
 def _clean(v):
@@ -111,16 +117,23 @@ def admin_upload():
     if not f or not f.filename:
         return render_template("admin.html", success=False,
             error="No file selected."), 400
-    if not f.filename.lower().endswith(".xlsx"):
+
+    fname = f.filename.lower()
+    target_path = None
+    for ext, path in UPLOAD_TARGETS.items():
+        if fname.endswith(ext):
+            target_path = path
+            break
+    if not target_path:
         return render_template("admin.html", success=False,
-            error="Upload an .xlsx file."), 400
+            error="Upload a .xlsx or .csv file."), 400
 
     raw = f.read()
     if len(raw) > 25 * 1024 * 1024:
         return render_template("admin.html", success=False,
             error="File too large (>25 MB)."), 400
 
-    api = f"https://api.github.com/repos/{GH_REPO}/contents/{GH_XLSX_PATH}"
+    api = f"https://api.github.com/repos/{GH_REPO}/contents/{target_path}"
     headers = {
         "Authorization": f"token {GH_PAT}",
         "Accept": "application/vnd.github.v3+json",
@@ -140,7 +153,7 @@ def admin_upload():
             error=f"GitHub GET exception: {e}"), 502
 
     payload = {
-        "message": f"Admin upload: refresh {GH_XLSX_PATH} ({datetime.utcnow().isoformat(timespec='seconds')}Z)",
+        "message": f"Admin upload: refresh {target_path} ({datetime.utcnow().isoformat(timespec='seconds')}Z)",
         "content": base64.b64encode(raw).decode("ascii"),
         "branch": GH_BRANCH,
     }

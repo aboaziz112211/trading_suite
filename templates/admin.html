@@ -3,8 +3,30 @@
 {% block body %}
 <section class="hero">
   <h1>Update Live Data</h1>
-  <p>Upload a new <code>all.xlsx</code> to refresh the TradePulse SAR live feed for everyone.</p>
+  <p>Upload a new file to refresh the live feeds for everyone.</p>
 </section>
+
+<table style="margin: 0 0 18px; border-collapse: collapse; font-size: 13px;">
+  <thead>
+    <tr style="text-align:left; color: var(--muted);">
+      <th style="padding:6px 14px 6px 0">File type</th>
+      <th style="padding:6px 14px 6px 0">Saves to</th>
+      <th style="padding:6px 0">What it powers</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style="padding:4px 14px 4px 0"><code>.xlsx</code></td>
+      <td style="padding:4px 14px 4px 0"><code>data/all.xlsx</code></td>
+      <td style="padding:4px 0">Bloomberg market feed → TradePulse SAR live data table</td>
+    </tr>
+    <tr>
+      <td style="padding:4px 14px 4px 0"><code>.csv</code></td>
+      <td style="padding:4px 14px 4px 0"><code>data/chartedge.csv</code></td>
+      <td style="padding:4px 0">ChartEdge screener output (daily SEPA scan)</td>
+    </tr>
+  </tbody>
+</table>
 
 {% if success %}
 <div class="notice" style="background:#143a26;border-color:#1f5a36;color:#a7e8c2">
@@ -24,8 +46,8 @@
     <input type="password" name="password" required autocomplete="off">
   </label>
   <label>
-    <span>New <code>.xlsx</code> file</span>
-    <input type="file" name="xlsx" accept=".xlsx" required>
+    <span>File (<code>.xlsx</code> or <code>.csv</code>)</span>
+    <input type="file" name="xlsx" accept=".xlsx,.csv" required>
   </label>
   <button type="submit" class="btn">Upload &amp; Publish</button>
 </form>
