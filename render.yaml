@@ -10,3 +10,11 @@ services:
         value: 3.12.6
       - key: REFRESH_SECONDS
         value: "30"
+      - key: GH_REPO
+        value: aboaziz112211/trading_suite
+      - key: GH_BRANCH
+        value: main
+      - key: ADMIN_PASSWORD
+        sync: false
+      - key: GH_PAT
+        sync: false

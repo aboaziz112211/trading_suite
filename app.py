@@ -1,10 +1,18 @@
-from flask import Flask, render_template, jsonify, abort, send_from_directory
+from flask import Flask, render_template, jsonify, abort, send_from_directory, request
 import pandas as pd
 import math
+import os
+import base64
 from datetime import datetime
 from config import PRODUCTS, LIVE_XLSX_PATH, LIVE_XLSX_SHEET, REFRESH_SECONDS
 
 app = Flask(__name__)
+
+ADMIN_PASSWORD = os.getenv("ADMIN_PASSWORD")
+GH_PAT = os.getenv("GH_PAT")
+GH_REPO = os.getenv("GH_REPO", "aboaziz112211/trading_suite")
+GH_BRANCH = os.getenv("GH_BRANCH", "main")
+GH_XLSX_PATH = "data/all.xlsx"
 
 
 def _clean(v):
@@ -79,6 +87,76 @@ def api_data():
 @app.route("/healthz")
 def healthz():
     return {"ok": True}
+
+
+@app.route("/admin", methods=["GET"])
+def admin_page():
+    return render_template("admin.html", success=False, error=None)
+
+
+@app.route("/admin/upload", methods=["POST"])
+def admin_upload():
+    import requests as _rq
+    if not ADMIN_PASSWORD:
+        return render_template("admin.html", success=False,
+            error="Server missing ADMIN_PASSWORD env var. Add it on Render."), 500
+    if not GH_PAT:
+        return render_template("admin.html", success=False,
+            error="Server missing GH_PAT env var. Add it on Render."), 500
+    if request.form.get("password") != ADMIN_PASSWORD:
+        return render_template("admin.html", success=False,
+            error="Wrong password."), 401
+
+    f = request.files.get("xlsx")
+    if not f or not f.filename:
+        return render_template("admin.html", success=False,
+            error="No file selected."), 400
+    if not f.filename.lower().endswith(".xlsx"):
+        return render_template("admin.html", success=False,
+            error="Upload an .xlsx file."), 400
+
+    raw = f.read()
+    if len(raw) > 25 * 1024 * 1024:
+        return render_template("admin.html", success=False,
+            error="File too large (>25 MB)."), 400
+
+    api = f"https://api.github.com/repos/{GH_REPO}/contents/{GH_XLSX_PATH}"
+    headers = {
+        "Authorization": f"token {GH_PAT}",
+        "Accept": "application/vnd.github.v3+json",
+        "User-Agent": "trading-suite-admin",
+    }
+
+    sha = None
+    try:
+        r = _rq.get(api, headers=headers, params={"ref": GH_BRANCH}, timeout=30)
+        if r.status_code == 200:
+            sha = r.json().get("sha")
+        elif r.status_code != 404:
+            return render_template("admin.html", success=False,
+                error=f"GitHub GET failed ({r.status_code}): {r.text[:200]}"), 502
+    except Exception as e:
+        return render_template("admin.html", success=False,
+            error=f"GitHub GET exception: {e}"), 502
+
+    payload = {
+        "message": f"Admin upload: refresh {GH_XLSX_PATH} ({datetime.utcnow().isoformat(timespec='seconds')}Z)",
+        "content": base64.b64encode(raw).decode("ascii"),
+        "branch": GH_BRANCH,
+    }
+    if sha:
+        payload["sha"] = sha
+
+    try:
+        r = _rq.put(api, headers=headers, json=payload, timeout=60)
+    except Exception as e:
+        return render_template("admin.html", success=False,
+            error=f"GitHub PUT exception: {e}"), 502
+
+    if r.status_code in (200, 201):
+        return render_template("admin.html", success=True, error=None)
+    return render_template("admin.html", success=False,
+        error=f"GitHub PUT failed ({r.status_code}): {r.text[:300]}"), 502
 
 
 if __name__ == "__main__":

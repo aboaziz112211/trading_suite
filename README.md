@@ -70,6 +70,21 @@ If you want TradePulse US live on the public site, that needs a separate change 
 
 ---
 
+## Updating live data via the website (admin upload)
+
+Visit `/admin` (e.g. `https://trading-suite-l9e4.onrender.com/admin`), enter your admin password, drop a new `.xlsx`, click **Upload & Publish**.
+
+What happens:
+1. The site replaces `data/all.xlsx` in the GitHub repo via the GitHub API.
+2. GitHub commit triggers Render auto-deploy.
+3. New rows are live for all visitors in ~3 minutes.
+
+**Required env vars on Render** (Settings → Environment):
+- `ADMIN_PASSWORD` — anything you want; protects `/admin/upload`
+- `GH_PAT` — GitHub Personal Access Token with `repo` scope (https://github.com/settings/tokens)
+- `GH_REPO` — `aboaziz112211/trading_suite` (already set in render.yaml)
+- `GH_BRANCH` — `main` (already set in render.yaml)
+
 ## Routes
 
 - `/` — home
@@ -77,4 +92,6 @@ If you want TradePulse US live on the public site, that needs a separate change 
 - `/p/<key>/file` — raw HTML
 - `/p/<key>/download` — downloadable copy
 - `/api/data` — JSON feed from `data/all.xlsx`
+- `/admin` — upload form to refresh `data/all.xlsx` (password-gated)
+- `/admin/upload` — POST endpoint, commits new xlsx to GitHub
 - `/healthz` — health check

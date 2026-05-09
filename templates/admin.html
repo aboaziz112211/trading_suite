@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+{% block title %}Admin — Update Live Data{% endblock %}
+{% block body %}
+<section class="hero">
+  <h1>Update Live Data</h1>
+  <p>Upload a new <code>all.xlsx</code> to refresh the TradePulse SAR live feed for everyone.</p>
+</section>
+
+{% if success %}
+<div class="notice" style="background:#143a26;border-color:#1f5a36;color:#a7e8c2">
+  <strong>Uploaded.</strong> GitHub commit created — Render is redeploying. New data will be live for visitors in <b>~3 minutes</b>.
+</div>
+{% endif %}
+
+{% if error %}
+<div class="notice" style="background:#3a1414;border-color:#5a1f1f;color:#ffb3b3">
+  <strong>Error.</strong> {{ error }}
+</div>
+{% endif %}
+
+<form class="admin-form" method="post" action="{{ url_for('admin_upload') }}" enctype="multipart/form-data">
+  <label>
+    <span>Admin password</span>
+    <input type="password" name="password" required autocomplete="off">
+  </label>
+  <label>
+    <span>New <code>.xlsx</code> file</span>
+    <input type="file" name="xlsx" accept=".xlsx" required>
+  </label>
+  <button type="submit" class="btn">Upload &amp; Publish</button>
+</form>
+
+<p class="muted" style="margin-top:18px;font-size:13px;color:var(--muted)">
+  The uploaded file replaces <code>data/all.xlsx</code> in the GitHub repo and triggers an automatic redeploy on Render.
+  After the redeploy, the live data table on the TradePulse SAR page will show the new rows on its next refresh tick.
+</p>
+{% endblock %}
