@@ -13,13 +13,9 @@
 
 {% if needs_ibkr %}
 <div class="notice">
-  <strong>Live data via Interactive Brokers.</strong>
-  This dashboard streams from <code>ws://127.0.0.1:8787</code>, exposed by <code>us_feed.py</code> in the <code>07_TradePulse</code> folder. Before opening, make sure:
-  <ol>
-    <li>TWS (or IB Gateway) is running and API access is enabled on port <code>7496</code>.</li>
-    <li><code>python us_feed.py --live</code> is running locally.</li>
-  </ol>
-  <span class="muted">Because the WebSocket is on <code>127.0.0.1</code>, live data only flows when the page is opened on the same machine running TWS + <code>us_feed.py</code>.</span>
+  <strong>Live US feed (via Interactive Brokers).</strong>
+  Data is pushed from <code>us_feed.py</code> on the operator's machine to this site every ~30 seconds during market hours.
+  <div id="us-live-status" style="margin-top:10px">checking…</div>
 </div>
 {% endif %}
 
@@ -30,6 +26,12 @@
 (function(){
   var iframe = document.getElementById('productFrame');
   if(!iframe) return;
+
+  var XLSX_URL = {{ ('"/data/us_live.xlsx"' if key == 'tradepulse_us' else '"/data/all.xlsx"') | safe }};
+  var XLSX_NAME = {{ ('"us_live.xlsx"' if key == 'tradepulse_us' else '"all.xlsx"') | safe }};
+  var IS_US = {{ 'true' if key == 'tradepulse_us' else 'false' }};
+  var REPOLL_MS = 30000;
+  var XLSX_MIME = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet';
 
   function dispatch(doc, inputId, file){
     var inp = doc.getElementById(inputId);
@@ -46,24 +48,65 @@
   async function load(doc, url, name, mime, inputId){
     try {
       var r = await fetch(url, {cache:'no-store'});
-      if(!r.ok){ console.log('[auto-load] ' + url + ' -> ' + r.status); return; }
+      if(!r.ok){ console.log('[auto-load] ' + url + ' -> ' + r.status); return false; }
       var blob = await r.blob();
       dispatch(doc, inputId, new File([blob], name, {type: mime}));
-    } catch(e){ console.warn('[auto-load] error for ' + name + ':', e); }
+      return true;
+    } catch(e){ console.warn('[auto-load] error for ' + name + ':', e); return false; }
+  }
+
+  function getDoc(){
+    try { return iframe.contentDocument || iframe.contentWindow.document; }
+    catch(e){ return null; }
   }
 
   iframe.addEventListener('load', function(){
     setTimeout(async function(){
-      var doc;
-      try { doc = iframe.contentDocument || iframe.contentWindow.document; }
-      catch(e){ console.warn('[auto-load] cannot access iframe doc:', e); return; }
+      var doc = getDoc();
       if(!doc) return;
-      await load(doc, '/data/all.xlsx', 'all.xlsx',
-        'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', 'bbg-in');
+      await load(doc, XLSX_URL, XLSX_NAME, XLSX_MIME, 'bbg-in');
       await new Promise(function(r){ setTimeout(r, 1500); });
       await load(doc, '/data/chartedge.csv', 'chartedge.csv', 'text/csv', 'ce-in');
+
+      // For US: re-poll the live snapshot every 30s
+      if (IS_US) {
+        setInterval(async function(){
+          var d = getDoc();
+          if (d) await load(d, XLSX_URL, XLSX_NAME, XLSX_MIME, 'bbg-in');
+        }, REPOLL_MS);
+      }
     }, 1500);
   });
+})();
+</script>
+{% endif %}
+
+{% if needs_ibkr %}
+<script>
+// US live status badge — shows whether your local feed is currently pushing data
+(function(){
+  var box = document.getElementById('us-live-status');
+  if(!box) return;
+  async function tick(){
+    try {
+      var r = await fetch('/api/us/status', {cache:'no-store'});
+      var d = await r.json();
+      if (d.have_data && d.updated) {
+        var ageMs = Date.now() - new Date(d.updated + 'Z').getTime();
+        var ageMin = Math.floor(ageMs / 60000);
+        if (ageMs < 90000) {
+          box.innerHTML = '<span class="status ok">LIVE</span> ' + d.rows + ' rows · updated ' + d.updated;
+        } else {
+          box.innerHTML = '<span class="status idle">stale</span> last update ' + ageMin + ' min ago (' + d.rows + ' rows)';
+        }
+      } else {
+        box.innerHTML = '<span class="status idle">offline</span> no live feed pushed yet — will go live 4:30–11:00 PM';
+      }
+    } catch(e){
+      box.innerHTML = '<span class="status err">error</span> ' + e;
+    }
+  }
+  tick(); setInterval(tick, 15000);
 })();
 </script>
 {% endif %}

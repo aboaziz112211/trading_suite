@@ -18,3 +18,5 @@ services:
         sync: false
       - key: GH_PAT
         sync: false
+      - key: US_PUSH_TOKEN
+        sync: false

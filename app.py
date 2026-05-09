@@ -20,6 +20,64 @@ UPLOAD_TARGETS = {
     ".csv": GH_CSV_PATH,
 }
 
+US_PUSH_TOKEN = os.getenv("US_PUSH_TOKEN")
+# in-memory live US feed: bytes of xlsx + last update timestamp
+_US_STATE = {"xlsx": None, "updated": None, "rows": 0}
+
+# us_feed.Row → Bloomberg-style column mapping
+_US_COLUMNS = [
+    "Ticker", "Last Price", "Last Price.1", "%1D", "%1M", "%YTD",
+    "Prev Cls", "52W High", "52W Low", "Volume", "Open", "Low", "High", "VWAP",
+    "Avg Vol 30D", "Bid", "Ask", "MA 200D Pct Chg",
+    "30D Hi", "30D Low", "MA200_22d_ago", "Mov Avg 50", "MA 200D",
+    "Sector", "Industry",
+]
+
+
+def _us_rows_to_xlsx(rows):
+    """Build a Bloomberg-style xlsx (bytes) from a list of us_feed.Row dicts."""
+    import io
+    out = []
+    for r in rows or []:
+        price = r.get("price")
+        ma200d = None
+        if price is not None and r.get("ma200ChgPct") is not None:
+            try:
+                ma200d = price / (1 + (r["ma200ChgPct"] / 100.0))
+            except Exception:
+                ma200d = None
+        out.append({
+            "Ticker": r.get("ticker"),
+            "Last Price": price,
+            "Last Price.1": price,
+            "%1D": r.get("chg"),
+            "%1M": r.get("chg1m"),
+            "%YTD": r.get("chgYtd"),
+            "Prev Cls": r.get("prevCls"),
+            "52W High": r.get("high52"),
+            "52W Low": r.get("low52"),
+            "Volume": r.get("vol"),
+            "Open": r.get("dayOpen"),
+            "Low": r.get("dayLow"),
+            "High": r.get("dayHigh"),
+            "VWAP": r.get("vwap"),
+            "Avg Vol 30D": r.get("avgVol"),
+            "Bid": r.get("bid"),
+            "Ask": r.get("ask"),
+            "MA 200D Pct Chg": r.get("ma200ChgPct"),
+            "30D Hi": r.get("hi30d"),
+            "30D Low": r.get("lo30d"),
+            "MA200_22d_ago": r.get("ma200_22d"),
+            "Mov Avg 50": r.get("ma50"),
+            "MA 200D": ma200d,
+            "Sector": r.get("sector"),
+            "Industry": r.get("industry"),
+        })
+    df = pd.DataFrame(out, columns=_US_COLUMNS)
+    buf = io.BytesIO()
+    df.to_excel(buf, index=False, sheet_name="Sheet 1")
+    return buf.getvalue()
+
 
 def _clean(v):
     if isinstance(v, float) and (math.isnan(v) or math.isinf(v)):
@@ -81,9 +139,50 @@ def product_file(key):
 
 @app.route("/data/<path:filename>")
 def data_file(filename):
+    if filename == "us_live.xlsx":
+        if not _US_STATE.get("xlsx"):
+            abort(404)
+        from flask import Response
+        return Response(_US_STATE["xlsx"], mimetype=(
+            "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"))
     if filename not in {"all.xlsx", "chartedge.csv"}:
         abort(404)
     return send_from_directory(DATA_DIR, filename)
+
+
+@app.route("/api/us/push", methods=["POST"])
+def api_us_push():
+    """us_feed.py POSTs JSON snapshot here (auth via header)."""
+    if not US_PUSH_TOKEN:
+        return {"error": "server missing US_PUSH_TOKEN"}, 500
+    if request.headers.get("X-Push-Token") != US_PUSH_TOKEN:
+        return {"error": "bad token"}, 401
+    try:
+        body = request.get_json(force=True, silent=False) or {}
+    except Exception as e:
+        return {"error": f"bad json: {e}"}, 400
+    rows = body.get("rows") or []
+    if not isinstance(rows, list):
+        return {"error": "rows must be a list"}, 400
+    try:
+        xlsx_bytes = _us_rows_to_xlsx(rows)
+    except Exception as e:
+        return {"error": f"xlsx build failed: {e}"}, 500
+    _US_STATE["xlsx"] = xlsx_bytes
+    _US_STATE["updated"] = datetime.now().isoformat(timespec="seconds")
+    _US_STATE["rows"] = len(rows)
+    return {"ok": True, "rows": len(rows), "xlsx_bytes": len(xlsx_bytes),
+            "updated": _US_STATE["updated"]}
+
+
+@app.route("/api/us/status")
+def api_us_status():
+    return {
+        "have_data": bool(_US_STATE.get("xlsx")),
+        "rows": _US_STATE.get("rows", 0),
+        "updated": _US_STATE.get("updated"),
+        "bytes": len(_US_STATE["xlsx"]) if _US_STATE.get("xlsx") else 0,
+    }
 
 
 @app.route("/api/data")
