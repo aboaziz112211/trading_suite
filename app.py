@@ -305,7 +305,7 @@ def admin_upload():
 
     sha = None
     try:
-        r = _rq.get(api, headers=headers, params={"ref": GH_BRANCH}, timeout=30)
+        r = _rq.get(api, headers=headers, params={"ref": GH_BRANCH}, timeout=20)
         if r.status_code == 200:
             sha = r.json().get("sha")
         elif r.status_code != 404:
@@ -324,7 +324,8 @@ def admin_upload():
         payload["sha"] = sha
 
     try:
-        r = _rq.put(api, headers=headers, json=payload, timeout=60)
+        # Slightly under gunicorn's 120s worker timeout so we always return cleanly
+        r = _rq.put(api, headers=headers, json=payload, timeout=90)
     except Exception as e:
         return render_template("admin.html", success=False,
             error=f"GitHub PUT exception: {e}"), 502
