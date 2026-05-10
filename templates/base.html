@@ -87,6 +87,11 @@
       <a href="{{ url_for('product_page', key='tradepulse_sar') }}">TradePulse SAR</a>
       <a href="{{ url_for('market_report') }}" class="report-link">📊 Market Report</a>
       <a href="{{ url_for('contact') }}" class="contact-link">Contact</a>
+      {% if is_admin %}
+      <a href="{{ admin_url('admin_page') }}" class="admin-pill" title="Upload data">📤 Upload</a>
+      <a href="{{ admin_url('agent') }}" class="admin-pill admin-pill-agent" title="Generate X content">🧠 Agent</a>
+      <a href="{{ admin_url('admin_stats') }}" class="admin-pill" title="Visit stats">📊 Stats</a>
+      {% endif %}
       <a href="https://x.com/chartedgeai" target="_blank" rel="noopener" class="x-link" title="Follow on X · @chartedgeai">
         <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor" aria-hidden="true">
           <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>

@@ -6,6 +6,14 @@
   <p>Upload a new file to refresh the live feeds for everyone.</p>
 </section>
 
+<nav class="admin-tools">
+  <a href="{{ admin_url('admin_page') }}" class="admin-tool active">📤 Upload<small>data files</small></a>
+  <a href="{{ admin_url('agent') }}" class="admin-tool">🧠 X Agent<small>tweet drafts</small></a>
+  <a href="{{ url_for('market_report') }}" class="admin-tool">📊 Market Report<small>public</small></a>
+  <a href="{{ admin_url('admin_stats') }}" class="admin-tool">📈 Stats<small>visit counter</small></a>
+  <a href="{{ admin_url('admin_diag') }}" class="admin-tool">🔧 Diagnostic<small>env + GitHub</small></a>
+</nav>
+
 <table style="margin: 0 0 18px; border-collapse: collapse; font-size: 13px;">
   <thead>
     <tr style="text-align:left; color: var(--muted);">

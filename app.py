@@ -10,6 +10,24 @@ from config import PRODUCTS, LIVE_XLSX_PATH, LIVE_XLSX_SHEET, REFRESH_SECONDS, D
 app = Flask(__name__)
 
 
+@app.context_processor
+def _inject_admin_state():
+    """Expose `is_admin` and a helper `admin_url(endpoint)` to all templates.
+    A request is treated as admin when ?p=ADMIN_PASSWORD is present.
+    """
+    from flask import url_for as _u
+    pw = request.args.get("p") if request else None
+    is_admin = bool(ADMIN_PASSWORD) and pw == ADMIN_PASSWORD
+
+    def admin_url(endpoint):
+        try:
+            return _u(endpoint) + (f"?p={pw}" if is_admin else "")
+        except Exception:
+            return "#"
+
+    return {"is_admin": is_admin, "admin_p": pw if is_admin else "", "admin_url": admin_url}
+
+
 def _secret(name: str, default: str = None) -> str:
     """Read a secret from env vars first, then Render Secret Files (/etc/secrets/<name>)."""
     val = os.getenv(name)

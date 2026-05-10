@@ -357,6 +357,64 @@ body {
 }
 .tweet-btn:hover { background: #1a8cd8; }
 
+/* ── Admin nav pills (visible only when ?p= matches ADMIN_PASSWORD) ── */
+.admin-pill {
+  background: rgba(212, 168, 41, 0.10);
+  border: 1px solid rgba(212, 168, 41, 0.35);
+  color: #ffd98a !important;
+  padding: 5px 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 500;
+}
+.admin-pill:hover {
+  background: rgba(212, 168, 41, 0.22);
+  border-color: rgba(212, 168, 41, 0.7);
+}
+.admin-pill-agent {
+  background: rgba(78, 161, 255, 0.12);
+  border-color: rgba(78, 161, 255, 0.4);
+  color: #9ec9ff !important;
+}
+.admin-pill-agent:hover { background: rgba(78, 161, 255, 0.22); }
+
+/* ── Admin tools grid on /admin page ── */
+.admin-tools {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 10px;
+  margin-bottom: 22px;
+}
+.admin-tool {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  color: var(--text);
+  text-decoration: none;
+  padding: 14px 16px;
+  border-radius: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-weight: 600;
+  font-size: 14px;
+  transition: border-color 0.15s, transform 0.15s, background 0.15s;
+}
+.admin-tool small {
+  font-size: 11px;
+  font-weight: 400;
+  color: var(--muted);
+  letter-spacing: 0.3px;
+}
+.admin-tool:hover {
+  border-color: var(--accent);
+  transform: translateY(-1px);
+  background: rgba(78, 161, 255, 0.06);
+}
+.admin-tool.active {
+  border-color: var(--accent);
+  background: rgba(78, 161, 255, 0.10);
+}
+
 .footer-socials {
   display: flex;
   gap: 10px;
