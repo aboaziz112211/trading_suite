@@ -193,7 +193,6 @@ def load_live_data():
         "rows": rows,
         "row_count": len(rows),
         "updated_at": datetime.now().isoformat(timespec="seconds"),
-        "source": LIVE_XLSX_PATH.name,
     }
 
 
@@ -389,10 +388,11 @@ def admin_stats():
 
 @app.route("/admin/diag")
 def admin_diag():
-    """Public diagnostic — no auth required. Shows whether env vars are set
-    and whether the server can reach GitHub with the configured token.
-    Use this when /admin/upload fails to figure out which leg is broken.
+    """Diagnostic — gated by ADMIN_PASSWORD as ?p= query param.
+    Shows whether env vars are set and whether the server can reach GitHub.
     """
+    if not ADMIN_PASSWORD or request.args.get("p") != ADMIN_PASSWORD:
+        return ("Append ?p=<ADMIN_PASSWORD> to the URL.", 401, {"Content-Type": "text/plain"})
     import requests as _rq
     out = {
         "env": {
@@ -453,6 +453,12 @@ def admin_diag():
 
 @app.route("/admin", methods=["GET"])
 def admin_page():
+    # Gate the admin page behind ADMIN_PASSWORD so curious visitors can't
+    # see the upload form or its routing table.
+    if not ADMIN_PASSWORD:
+        return ("Server missing ADMIN_PASSWORD env var.", 500, {"Content-Type": "text/plain"})
+    if request.args.get("p") != ADMIN_PASSWORD:
+        return render_template("admin_gate.html"), 401
     return render_template("admin.html", success=False, error=None)
 
 

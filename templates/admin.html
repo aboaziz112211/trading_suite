@@ -17,26 +17,22 @@
   <tbody>
     <tr>
       <td style="padding:4px 14px 4px 0"><code>*.xlsx</code></td>
-      <td style="padding:4px 14px 4px 0"><code>data/all.xlsx</code></td>
-      <td style="padding:4px 0">Market price feed → SAR dashboard</td>
+      <td style="padding:4px 14px 4px 0">Live prices feed</td>
+      <td style="padding:4px 0">→ SAR dashboard</td>
     </tr>
     <tr>
       <td style="padding:4px 14px 4px 0"><code>*.csv</code></td>
-      <td style="padding:4px 14px 4px 0"><code>data/chartedge_{us,sa}.csv</code></td>
-      <td style="padding:4px 0">ChartEdge scan → TradePulse dashboard (auto-detected by content)</td>
+      <td style="padding:4px 14px 4px 0">Daily scan</td>
+      <td style="padding:4px 0">→ TradePulse dashboard (US/SA auto-detected)</td>
     </tr>
     <tr>
       <td style="padding:4px 14px 4px 0"><code>*.pdf</code></td>
-      <td style="padding:4px 14px 4px 0"><code>data/guide_&lt;product&gt;.pdf</code></td>
-      <td style="padding:4px 0">User guide → 📖 button on product page (pick product below)</td>
+      <td style="padding:4px 14px 4px 0">User guide</td>
+      <td style="padding:4px 0">→ 📖 button on product page (pick product below)</td>
     </tr>
   </tbody>
 </table>
 
-<p class="muted" style="margin: 0 0 14px; font-size: 13px; color: var(--muted)">
-  Market is detected from the CSV filename. ChartEdge already names exports like
-  <code>ChartEdge_Screen_2026-05-09_US.csv</code> — just upload them as-is.
-</p>
 
 {% if success %}
 <div class="notice" style="background:#143a26;border-color:#1f5a36;color:#a7e8c2">
