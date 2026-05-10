@@ -264,6 +264,70 @@ def healthz():
     return {"ok": True}
 
 
+@app.route("/admin/diag")
+def admin_diag():
+    """Public diagnostic — no auth required. Shows whether env vars are set
+    and whether the server can reach GitHub with the configured token.
+    Use this when /admin/upload fails to figure out which leg is broken.
+    """
+    import requests as _rq
+    out = {
+        "env": {
+            "ADMIN_PASSWORD_set": bool(ADMIN_PASSWORD),
+            "GH_PAT_set": bool(GH_PAT),
+            "GH_PAT_starts_with": (GH_PAT[:4] + "..." if GH_PAT else None),
+            "GH_PAT_length": (len(GH_PAT) if GH_PAT else 0),
+            "GH_REPO": GH_REPO,
+            "GH_BRANCH": GH_BRANCH,
+            "US_PUSH_TOKEN_set": bool(US_PUSH_TOKEN),
+        },
+        "github_repo_check": None,
+        "github_branch_check": None,
+        "github_xlsx_check": None,
+    }
+    if not GH_PAT:
+        return out
+    h = {"Authorization": f"token {GH_PAT}", "User-Agent": "trading-suite-diag"}
+
+    # Repo accessible?
+    try:
+        r = _rq.get(f"https://api.github.com/repos/{GH_REPO}", headers=h, timeout=15)
+        out["github_repo_check"] = {
+            "status": r.status_code,
+            "permissions": (r.json().get("permissions") if r.status_code == 200 else None),
+            "private": (r.json().get("private") if r.status_code == 200 else None),
+            "error": (r.text[:200] if r.status_code != 200 else None),
+        }
+    except Exception as e:
+        out["github_repo_check"] = {"exception": str(e)}
+
+    # Branch accessible?
+    try:
+        r = _rq.get(f"https://api.github.com/repos/{GH_REPO}/branches/{GH_BRANCH}",
+                    headers=h, timeout=15)
+        out["github_branch_check"] = {
+            "status": r.status_code,
+            "error": (r.text[:200] if r.status_code != 200 else None),
+        }
+    except Exception as e:
+        out["github_branch_check"] = {"exception": str(e)}
+
+    # Can I read the existing xlsx (proves write-target SHA is fetchable)?
+    try:
+        r = _rq.get(f"https://api.github.com/repos/{GH_REPO}/contents/data/all.xlsx",
+                    headers=h, params={"ref": GH_BRANCH}, timeout=15)
+        out["github_xlsx_check"] = {
+            "status": r.status_code,
+            "size": (r.json().get("size") if r.status_code == 200 else None),
+            "sha": ((r.json().get("sha") or "")[:10] if r.status_code == 200 else None),
+            "error": (r.text[:200] if r.status_code != 200 else None),
+        }
+    except Exception as e:
+        out["github_xlsx_check"] = {"exception": str(e)}
+
+    return out
+
+
 @app.route("/admin", methods=["GET"])
 def admin_page():
     return render_template("admin.html", success=False, error=None)
