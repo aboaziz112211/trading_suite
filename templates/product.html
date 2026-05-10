@@ -67,13 +67,12 @@
       await new Promise(function(r){ setTimeout(r, 1500); });
       await load(doc, CSV_URL, CSV_NAME, 'text/csv', 'ce-in');
 
-      // Re-poll for fresh data so admin uploads show up within 30s without refresh.
-      // Polls both the xlsx (Bloomberg / IBKR snapshot) and CSV (ChartEdge scan).
+      // Re-poll only the price feed (xlsx). The ChartEdge CSV was loaded once on
+      // page open above — it's a daily scan and doesn't change throughout the day.
       setInterval(async function(){
         var d = getDoc();
         if (!d) return;
         await load(d, XLSX_URL, XLSX_NAME, XLSX_MIME, 'bbg-in');
-        await load(d, CSV_URL, CSV_NAME, 'text/csv', 'ce-in');
       }, REPOLL_MS);
     }, 1500);
   });

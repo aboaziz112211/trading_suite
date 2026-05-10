@@ -90,8 +90,11 @@ def _resolve_upload_target(filename: str, market_form: str = None, raw: bytes = 
                   "Pick US or Saudi from the Market dropdown and try again.")
 
 US_PUSH_TOKEN = _secret("US_PUSH_TOKEN")
+SA_PUSH_TOKEN = _secret("SA_PUSH_TOKEN")
 # in-memory live US feed: bytes of xlsx + last update timestamp
 _US_STATE = {"xlsx": None, "updated": None, "rows": 0}
+# in-memory live SA feed: raw xlsx bytes pushed by sar_feed.py from the user's PC
+_SA_STATE = {"xlsx": None, "updated": None, "size": 0}
 
 # us_feed.Row → Bloomberg-style column mapping
 _US_COLUMNS = [
@@ -157,9 +160,14 @@ def _clean(v):
 
 
 def load_live_data():
-    if not LIVE_XLSX_PATH.exists():
+    # Prefer the live in-memory feed pushed by sar_feed.py; fall back to disk.
+    if _SA_STATE.get("xlsx"):
+        import io
+        df = pd.read_excel(io.BytesIO(_SA_STATE["xlsx"]), sheet_name=LIVE_XLSX_SHEET)
+    elif LIVE_XLSX_PATH.exists():
+        df = pd.read_excel(LIVE_XLSX_PATH, sheet_name=LIVE_XLSX_SHEET)
+    else:
         return {"error": f"xlsx not found: {LIVE_XLSX_PATH}", "rows": [], "columns": []}
-    df = pd.read_excel(LIVE_XLSX_PATH, sheet_name=LIVE_XLSX_SHEET)
     df.columns = [str(c) for c in df.columns]
     df = df.dropna(axis=1, how="all")
     bad = df.columns.str.startswith("Unnamed") | df.columns.str.lower().isin(["nan", "nat"])
@@ -209,12 +217,18 @@ def product_file(key):
 @app.route("/data/<path:filename>")
 def data_file(filename):
     from flask import Response
+    XLSX_MIME = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
     if filename == "us_live.xlsx":
         if not _US_STATE.get("xlsx"):
             abort(404)
-        return Response(_US_STATE["xlsx"], mimetype=(
-            "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"))
-    if filename not in {"all.xlsx", "chartedge_us.csv", "chartedge_sa.csv"}:
+        return Response(_US_STATE["xlsx"], mimetype=XLSX_MIME)
+    if filename == "all.xlsx":
+        # 1. Live in-memory push from sar_feed.py (preferred — fresh every 30s during market hours)
+        if _SA_STATE.get("xlsx"):
+            return Response(_SA_STATE["xlsx"], mimetype=XLSX_MIME)
+        # 2. Fallback to last manually-uploaded all.xlsx on disk
+        return send_from_directory(DATA_DIR, "all.xlsx")
+    if filename not in {"chartedge_us.csv", "chartedge_sa.csv"}:
         abort(404)
     return send_from_directory(DATA_DIR, filename)
 
@@ -251,6 +265,38 @@ def api_us_status():
         "rows": _US_STATE.get("rows", 0),
         "updated": _US_STATE.get("updated"),
         "bytes": len(_US_STATE["xlsx"]) if _US_STATE.get("xlsx") else 0,
+    }
+
+
+@app.route("/api/sa/push", methods=["POST"])
+def api_sa_push():
+    """sar_feed.py POSTs the locked Bloomberg xlsx (raw bytes) here.
+    Auth via X-Push-Token header. Stored in memory only — falls back to
+    last GitHub-committed all.xlsx if memory empty (e.g. after restart)."""
+    if not SA_PUSH_TOKEN:
+        return {"error": "server missing SA_PUSH_TOKEN"}, 500
+    if request.headers.get("X-Push-Token") != SA_PUSH_TOKEN:
+        return {"error": "bad token"}, 401
+    raw = request.get_data()
+    if not raw:
+        return {"error": "empty body"}, 400
+    if len(raw) > 25 * 1024 * 1024:
+        return {"error": "too large (>25 MB)"}, 400
+    # Sanity check: xlsx files start with 'PK' (zip header)
+    if raw[:2] != b"PK":
+        return {"error": "not an xlsx (missing PK header)"}, 400
+    _SA_STATE["xlsx"] = raw
+    _SA_STATE["size"] = len(raw)
+    _SA_STATE["updated"] = datetime.now().isoformat(timespec="seconds")
+    return {"ok": True, "bytes": len(raw), "updated": _SA_STATE["updated"]}
+
+
+@app.route("/api/sa/status")
+def api_sa_status():
+    return {
+        "have_data": bool(_SA_STATE.get("xlsx")),
+        "bytes": _SA_STATE.get("size", 0),
+        "updated": _SA_STATE.get("updated"),
     }
 
 

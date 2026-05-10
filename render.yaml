@@ -20,3 +20,5 @@ services:
         sync: false
       - key: US_PUSH_TOKEN
         sync: false
+      - key: SA_PUSH_TOKEN
+        sync: false
