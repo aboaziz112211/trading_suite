@@ -356,6 +356,30 @@ main { max-width: 1400px; margin: 0 auto; padding: 32px 24px; }
   margin-bottom: 16px;
   flex-wrap: wrap;
 }
+.product-head-left {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+}
+.product-logo {
+  width: 56px;
+  height: 56px;
+  flex-shrink: 0;
+}
+.product-logo-wide {
+  width: auto;
+  height: 44px;
+}
+.card-logo {
+  width: 36px;
+  height: 36px;
+  margin-bottom: 12px;
+  display: block;
+}
+.card-logo-wide {
+  width: auto;
+  height: 28px;
+}
 .product-head h1 { margin: 0 0 4px; font-size: 24px; }
 .product-head p { margin: 0; color: var(--muted); }
 .actions { display: flex; gap: 8px; }

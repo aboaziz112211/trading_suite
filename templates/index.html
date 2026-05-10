@@ -9,6 +9,11 @@
 <section class="cards">
   {% for key, p in products.items() %}
   <a class="card" href="{{ url_for('product_page', key=key) }}">
+    {% if key.startswith('tradepulse') %}
+      <img src="{{ url_for('static', filename='tradepulse_logo.svg') }}" alt="" class="card-logo card-logo-wide" onerror="this.style.display='none'">
+    {% elif key == 'chartedge' %}
+      <img src="{{ url_for('static', filename='chartedge_logo.svg') }}" alt="" class="card-logo" onerror="this.style.display='none'">
+    {% endif %}
     <div class="card-tag">{{ key.replace('_', ' ').upper() }}</div>
     <h2>{{ p.title }}</h2>
     <p>{{ p.tagline }}</p>

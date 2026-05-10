@@ -2,9 +2,16 @@
 {% block title %}{{ product.title }}{% endblock %}
 {% block body %}
 <section class="product-head">
-  <div>
-    <h1>{{ product.title }}</h1>
-    <p>{{ product.tagline }}</p>
+  <div class="product-head-left">
+    {% if key.startswith('tradepulse') %}
+      <img src="{{ url_for('static', filename='tradepulse_logo.svg') }}" alt="TradePulse" class="product-logo product-logo-wide" onerror="this.style.display='none'">
+    {% elif key == 'chartedge' %}
+      <img src="{{ url_for('static', filename='chartedge_logo.svg') }}" alt="ChartEdge" class="product-logo" onerror="this.style.display='none'">
+    {% endif %}
+    <div>
+      <h1>{{ product.title }}</h1>
+      <p>{{ product.tagline }}</p>
+    </div>
   </div>
 </section>
 
