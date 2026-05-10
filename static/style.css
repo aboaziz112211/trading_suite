@@ -267,6 +267,75 @@ main { max-width: 1400px; margin: 0 auto; padding: 32px 24px; }
   .disclaimer .disc-ar { border-bottom: 1px solid #4a3a18; padding-bottom: 8px; }
 }
 
+.disclaimer-full {
+  margin: -8px 0 16px;
+  background: #1a1610;
+  border: 1px solid #3a2f18;
+  border-radius: 8px;
+  padding: 0;
+  font-size: 12.5px;
+}
+.disclaimer-full > summary {
+  cursor: pointer;
+  padding: 10px 16px;
+  color: #c8b078;
+  font-weight: 600;
+  user-select: none;
+  list-style: none;
+}
+.disclaimer-full > summary::-webkit-details-marker { display: none; }
+.disclaimer-full > summary::before {
+  content: "▸ ";
+  display: inline-block;
+  margin-right: 6px;
+  transition: transform 0.15s;
+}
+.disclaimer-full[open] > summary::before {
+  transform: rotate(90deg);
+}
+.disclaimer-full > summary:hover { color: #ffd98a; }
+.disclaimer-full .full-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  padding: 6px 16px 16px;
+  border-top: 1px solid #3a2f18;
+  color: #c0b48a;
+  line-height: 1.65;
+}
+.disclaimer-full h3 {
+  margin: 0 0 8px;
+  font-size: 13px;
+  color: #ffd98a;
+  letter-spacing: 0.4px;
+}
+.disclaimer-full p {
+  margin: 0 0 9px;
+  font-size: 12px;
+}
+.disclaimer-full .full-en {
+  border-right: 1px solid #2f2614;
+  padding-right: 14px;
+}
+.disclaimer-full .full-ar {
+  font-family: "Segoe UI", "Tahoma", "Arial", sans-serif;
+  text-align: right;
+  padding-left: 14px;
+  font-size: 12.5px;
+}
+.disclaimer-full .full-ar p { font-size: 13px; }
+@media (max-width: 720px) {
+  .disclaimer-full .full-grid {
+    grid-template-columns: 1fr;
+  }
+  .disclaimer-full .full-en {
+    border-right: none;
+    border-bottom: 1px solid #2f2614;
+    padding: 0 0 12px;
+  }
+  .disclaimer-full .full-ar { padding: 0; }
+}
+
 .product-frame {
   width: 100%;
   height: 80vh;
