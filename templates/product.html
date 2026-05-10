@@ -124,9 +124,11 @@
       var doc = getDoc();
       if(!doc) return;
       hideUploadUI(doc);
-      await load(doc, XLSX_URL, XLSX_NAME, XLSX_MIME, 'bbg-in');
-      await new Promise(function(r){ setTimeout(r, 1500); });
+      // ORDER MATTERS — feed ChartEdge CSV first (step 1 in the dashboard's
+      // workflow), then xlsx (step 3). Reversing this leaves the scan empty.
       await load(doc, CSV_URL, CSV_NAME, 'text/csv', 'ce-in');
+      await new Promise(function(r){ setTimeout(r, 1500); });
+      await load(doc, XLSX_URL, XLSX_NAME, XLSX_MIME, 'bbg-in');
 
       // Re-poll only the price feed (xlsx). The ChartEdge CSV was loaded once on
       // page open above — it's a daily scan and doesn't change throughout the day.
