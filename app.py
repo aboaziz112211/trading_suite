@@ -4,14 +4,30 @@ import math
 import os
 import base64
 from datetime import datetime
+from pathlib import Path
 from config import PRODUCTS, LIVE_XLSX_PATH, LIVE_XLSX_SHEET, REFRESH_SECONDS, DATA_DIR
 
 app = Flask(__name__)
 
-ADMIN_PASSWORD = os.getenv("ADMIN_PASSWORD")
-GH_PAT = os.getenv("GH_PAT")
-GH_REPO = os.getenv("GH_REPO", "aboaziz112211/trading_suite")
-GH_BRANCH = os.getenv("GH_BRANCH", "main")
+
+def _secret(name: str, default: str = None) -> str:
+    """Read a secret from env vars first, then Render Secret Files (/etc/secrets/<name>)."""
+    val = os.getenv(name)
+    if val:
+        return val
+    p = Path("/etc/secrets") / name
+    if p.exists():
+        try:
+            return p.read_text(encoding="utf-8").strip()
+        except Exception:
+            return default
+    return default
+
+
+ADMIN_PASSWORD = _secret("ADMIN_PASSWORD")
+GH_PAT = _secret("GH_PAT")
+GH_REPO = _secret("GH_REPO", "aboaziz112211/trading_suite")
+GH_BRANCH = _secret("GH_BRANCH", "main")
 GH_XLSX_PATH = "data/all.xlsx"
 GH_CSV_US_PATH = "data/chartedge_us.csv"
 GH_CSV_SA_PATH = "data/chartedge_sa.csv"
@@ -73,7 +89,7 @@ def _resolve_upload_target(filename: str, market_form: str = None, raw: bytes = 
     return None, ("Could not determine market for this CSV. "
                   "Pick US or Saudi from the Market dropdown and try again.")
 
-US_PUSH_TOKEN = os.getenv("US_PUSH_TOKEN")
+US_PUSH_TOKEN = _secret("US_PUSH_TOKEN")
 # in-memory live US feed: bytes of xlsx + last update timestamp
 _US_STATE = {"xlsx": None, "updated": None, "rows": 0}
 
