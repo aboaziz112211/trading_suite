@@ -105,10 +105,25 @@
     catch(e){ return null; }
   }
 
+  function hideUploadUI(doc){
+    // Hide the "Drop your file here" UI inside the dashboard since visitors
+    // don't upload — data flows automatically from the operator's PC.
+    if(!doc || !doc.head) return;
+    if(doc.getElementById('hide-upload-ui')) return;  // already injected
+    var style = doc.createElement('style');
+    style.id = 'hide-upload-ui';
+    style.textContent =
+      '.wf, .cards { display: none !important; }\n' +
+      '/* also kill any standalone Market Feed / ChartEdge cards if present */\n' +
+      '#card-ce, #card-bbg, #ce-drop, #bbg-drop { display: none !important; }';
+    doc.head.appendChild(style);
+  }
+
   iframe.addEventListener('load', function(){
     setTimeout(async function(){
       var doc = getDoc();
       if(!doc) return;
+      hideUploadUI(doc);
       await load(doc, XLSX_URL, XLSX_NAME, XLSX_MIME, 'bbg-in');
       await new Promise(function(r){ setTimeout(r, 1500); });
       await load(doc, CSV_URL, CSV_NAME, 'text/csv', 'ce-in');
