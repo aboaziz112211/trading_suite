@@ -8,14 +8,6 @@
   </div>
 </section>
 
-{% if needs_ibkr %}
-<div class="notice">
-  <strong>Live US feed (via Interactive Brokers).</strong>
-  Data is pushed from <code>us_feed.py</code> on the operator's machine to this site every ~30 seconds during market hours.
-  <div id="us-live-status" style="margin-top:10px">checking…</div>
-</div>
-{% endif %}
-
 <div class="disclaimer">
   <div class="disc-ar" dir="rtl" lang="ar">
     <strong>إخلاء مسؤولية:</strong>
@@ -135,7 +127,15 @@
       node.nodeValue = node.nodeValue
         .replace(/Bloomberg XLSX/gi, 'Live Feed')
         .replace(/Bloomberg RT/gi, 'Live RT')
-        .replace(/Bloomberg/gi, 'Live');
+        .replace(/Bloomberg/gi, 'Live')
+        .replace(/IBKR Live \(us_feed\.py\)/gi, 'Live Feed')
+        .replace(/Connect to IBKR Bridge/gi, 'Connect')
+        .replace(/IBKR bridge \(us_feed\.py\)/gi, 'live bridge')
+        .replace(/IBKR Live Feed/gi, 'Live Feed')
+        .replace(/IBKR Live/gi, 'Live')
+        .replace(/IBKR/gi, 'Live')
+        .replace(/Connect Live/gi, '—')   // SPY/QQQ/IWM tile placeholders
+        .replace(/Interactive Brokers/gi, 'data provider');
     });
   }
 
@@ -172,34 +172,5 @@
 </script>
 {% endif %}
 
-{% if needs_ibkr %}
-<script>
-// US live status badge — shows whether your local feed is currently pushing data
-(function(){
-  var box = document.getElementById('us-live-status');
-  if(!box) return;
-  async function tick(){
-    try {
-      var r = await fetch('/api/us/status', {cache:'no-store'});
-      var d = await r.json();
-      if (d.have_data && d.updated) {
-        var ageMs = Date.now() - new Date(d.updated + 'Z').getTime();
-        var ageMin = Math.floor(ageMs / 60000);
-        if (ageMs < 90000) {
-          box.innerHTML = '<span class="status ok">LIVE</span> ' + d.rows + ' rows · updated ' + d.updated;
-        } else {
-          box.innerHTML = '<span class="status idle">stale</span> last update ' + ageMin + ' min ago (' + d.rows + ' rows)';
-        }
-      } else {
-        box.innerHTML = '<span class="status idle">offline</span> no live feed pushed yet — will go live 4:30–11:00 PM';
-      }
-    } catch(e){
-      box.innerHTML = '<span class="status err">error</span> ' + e;
-    }
-  }
-  tick(); setInterval(tick, 15000);
-})();
-</script>
-{% endif %}
 
 {% endblock %}
