@@ -675,23 +675,31 @@ def healthz():
 
 # ── Visit counter (in-memory; resets on dyno restart) ──────────────────
 import threading as _threading
+from collections import defaultdict as _defaultdict
+from datetime import timedelta as _timedelta
+
 _visit_lock = _threading.Lock()
-_visit_counts = {}        # path -> count
+_visit_counts = {}                                      # path -> all-time count
+_visit_daily = _defaultdict(lambda: _defaultdict(int))  # 'YYYY-MM-DD' -> path -> count
 _visit_first_seen = datetime.now()
+
+# Pages we actually want to count (excludes APIs, static, /admin, etc.)
+_COUNTABLE_ENDPOINTS = {"index", "product_page", "market_report", "contact"}
 
 
 @app.before_request
 def _count_visit():
     if not request.endpoint:
         return
-    # Only count human-facing pages, not API spam or static files
-    countable = {"index", "product_page"}
-    if request.endpoint not in countable:
+    if request.endpoint not in _COUNTABLE_ENDPOINTS:
         return
+    today = datetime.now().strftime("%Y-%m-%d")
     key = request.path
     with _visit_lock:
         _visit_counts[key] = _visit_counts.get(key, 0) + 1
         _visit_counts["_total"] = _visit_counts.get("_total", 0) + 1
+        _visit_daily[today][key] += 1
+        _visit_daily[today]["_total"] += 1
 
 
 @app.route("/admin/stats")
@@ -699,23 +707,52 @@ def admin_stats():
     # Auth via admin password as ?p= query param so you can bookmark
     if not ADMIN_PASSWORD or request.args.get("p") != ADMIN_PASSWORD:
         return ("Append ?p=<ADMIN_PASSWORD> to the URL.", 401, {"Content-Type": "text/plain"})
+
+    label_map = [
+        ("/", "Home"),
+        ("/p/chartedge", "ChartEdge"),
+        ("/p/tradepulse_us", "TradePulse US"),
+        ("/p/tradepulse_sar", "TradePulse SAR"),
+        ("/report", "Market Report"),
+        ("/contact", "Contact"),
+    ]
+
     with _visit_lock:
-        data = dict(_visit_counts)
-    rows = []
-    label_map = {
-        "/": "Home",
-        "/p/chartedge": "ChartEdge",
-        "/p/tradepulse_us": "TradePulse US",
-        "/p/tradepulse_sar": "TradePulse SAR",
-    }
-    for path, label in label_map.items():
-        rows.append({"label": label, "path": path, "count": data.get(path, 0)})
+        all_time = dict(_visit_counts)
+        # Build last 14 days
+        today = datetime.now().date()
+        daily_table = []
+        for i in range(14):
+            d = today - _timedelta(days=i)
+            ds = d.strftime("%Y-%m-%d")
+            day_buckets = dict(_visit_daily.get(ds, {}))
+            row = {
+                "date": ds,
+                "weekday": d.strftime("%a"),
+                "total": day_buckets.get("_total", 0),
+                "by_page": [day_buckets.get(p, 0) for p, _ in label_map],
+            }
+            daily_table.append(row)
+
+    rows = [{"label": lbl, "path": p, "count": all_time.get(p, 0)} for p, lbl in label_map]
+
+    today_total = daily_table[0]["total"] if daily_table else 0
+    yesterday_total = daily_table[1]["total"] if len(daily_table) > 1 else 0
+    delta_pct = None
+    if yesterday_total:
+        delta_pct = ((today_total - yesterday_total) / yesterday_total) * 100
+
     return render_template(
         "admin_stats.html",
         rows=rows,
-        total=data.get("_total", 0),
+        total=all_time.get("_total", 0),
+        today_total=today_total,
+        yesterday_total=yesterday_total,
+        delta_pct=delta_pct,
         first_seen=_visit_first_seen.isoformat(timespec="seconds"),
         now=datetime.now().isoformat(timespec="seconds"),
+        daily_table=daily_table,
+        labels=[lbl for _, lbl in label_map],
     )
 
 

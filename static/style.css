@@ -903,6 +903,21 @@ main { max-width: 1400px; margin: 0 auto; padding: 32px 24px; }
   flex-direction: column;
   gap: 4px;
 }
+.stat-big-alt { border-left-color: var(--muted); }
+.stat-big-alt .stat-num { color: var(--text); }
+.stat-meta-inline {
+  margin-top: 6px;
+  color: var(--muted);
+  font-size: 11px;
+  letter-spacing: 0.4px;
+}
+.stat-delta {
+  margin-top: 8px;
+  font-size: 13px;
+  font-weight: 600;
+}
+.stat-delta.up { color: var(--ok); }
+.stat-delta.down { color: var(--err); }
 
 .notice {
   background: #1f2a14;
