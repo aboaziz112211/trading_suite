@@ -13,6 +13,11 @@
       <p>{{ product.tagline }}</p>
     </div>
   </div>
+  {% if has_guide %}
+  <a href="{{ guide_url }}" target="_blank" rel="noopener" class="btn guide-btn" title="Open user guide PDF">
+    📖 <span>Read Guide</span>
+  </a>
+  {% endif %}
 </section>
 
 <div class="disclaimer">

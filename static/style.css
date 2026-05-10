@@ -464,6 +464,20 @@ main { max-width: 1400px; margin: 0 auto; padding: 32px 24px; }
   align-items: center;
   gap: 18px;
 }
+.guide-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(78, 161, 255, 0.12);
+  border: 1px solid rgba(78, 161, 255, 0.4);
+  color: var(--text);
+  padding: 9px 16px;
+  font-size: 13px;
+  font-weight: 600;
+  border-radius: 8px;
+  text-decoration: none;
+}
+.guide-btn:hover { background: rgba(78, 161, 255, 0.22); border-color: var(--accent); }
 .product-logo {
   width: 56px;
   height: 56px;

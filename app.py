@@ -219,6 +219,9 @@ def product_page(key):
     show_live = (key == "tradepulse_sar")
     needs_ibkr = (key == "tradepulse_us")
     auto_load_data = key.startswith("tradepulse")
+    # Show "Read Guide" button only if the PDF actually exists
+    guide_filename = f"guide_{key}.pdf"
+    has_guide = (DATA_DIR / guide_filename).exists()
     return render_template(
         "product.html",
         key=key,
@@ -226,6 +229,8 @@ def product_page(key):
         show_live=show_live,
         needs_ibkr=needs_ibkr,
         auto_load_data=auto_load_data,
+        has_guide=has_guide,
+        guide_url=(f"/data/{guide_filename}" if has_guide else None),
         refresh_seconds=REFRESH_SECONDS,
     )
 
@@ -252,7 +257,9 @@ def data_file(filename):
             return Response(_SA_STATE["xlsx"], mimetype=XLSX_MIME)
         # 2. Fallback to last manually-uploaded all.xlsx on disk
         return send_from_directory(DATA_DIR, "all.xlsx")
-    if filename not in {"chartedge_us.csv", "chartedge_sa.csv"}:
+    allowed = {"chartedge_us.csv", "chartedge_sa.csv",
+               "guide_chartedge.pdf", "guide_tradepulse_us.pdf", "guide_tradepulse_sar.pdf"}
+    if filename not in allowed:
         abort(404)
     return send_from_directory(DATA_DIR, filename)
 
@@ -472,7 +479,8 @@ def admin_upload():
         return render_template("admin.html", success=False,
             error="File too large (>25 MB)."), 400
     market_form = request.form.get("market", "auto")
-    target_path, why = _resolve_upload_target(f.filename, market_form, raw)
+    pdf_target = request.form.get("pdf_target", "")
+    target_path, why = _resolve_upload_target(f.filename, market_form, raw, pdf_target)
     if not target_path:
         return render_template("admin.html", success=False, error=why), 400
 
