@@ -76,12 +76,21 @@
   </script>
   {% endif %}
   <header class="topbar">
-    <a href="{{ url_for('index') }}" class="brand">Trading Suite</a>
+    <a href="{{ url_for('index') }}" class="brand">
+      <img src="{{ url_for('static', filename='chartedge_logo.png') }}" alt="ChartEdge" class="brand-logo" onerror="this.style.display='none'">
+      <span>Trading Suite</span>
+    </a>
     <nav>
       <a href="{{ url_for('index') }}">Home</a>
       <a href="{{ url_for('product_page', key='chartedge') }}">ChartEdge</a>
       <a href="{{ url_for('product_page', key='tradepulse_us') }}">TradePulse US</a>
       <a href="{{ url_for('product_page', key='tradepulse_sar') }}">TradePulse SAR</a>
+      <a href="https://x.com/chartedgeai" target="_blank" rel="noopener" class="x-link" title="Follow on X · @chartedgeai">
+        <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor" aria-hidden="true">
+          <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
+        </svg>
+        <span>@chartedgeai</span>
+      </a>
     </nav>
   </header>
   <div class="beta-banner" role="status" aria-live="polite">
@@ -90,5 +99,25 @@
     <span class="en" lang="en">⚠️ This site is currently in <b>BETA</b> — under testing</span>
   </div>
   <main>{% block body %}{% endblock %}</main>
+  <footer class="site-footer">
+    <div class="footer-inner">
+      <div class="footer-left">
+        <img src="{{ url_for('static', filename='chartedge_logo.png') }}" alt="ChartEdge" class="footer-logo" onerror="this.style.display='none'">
+        <div class="footer-text">
+          <div class="footer-brand">ChartEdge Analytics</div>
+          <div class="footer-tag">AI Powered</div>
+        </div>
+      </div>
+      <div class="footer-right">
+        <a href="https://x.com/chartedgeai" target="_blank" rel="noopener" class="footer-social">
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor" aria-hidden="true">
+            <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
+          </svg>
+          <span>Follow on X · <b>@chartedgeai</b></span>
+        </a>
+        <div class="footer-copy">© 2026 ChartEdge Analytics. All rights reserved.</div>
+      </div>
+    </div>
+  </footer>
 </body>
 </html>
