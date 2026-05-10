@@ -124,18 +124,40 @@
       if (n.nodeValue && /Bloomberg/i.test(n.nodeValue)) nodes.push(n);
     }
     nodes.forEach(function(node){
-      node.nodeValue = node.nodeValue
-        .replace(/Bloomberg XLSX/gi, 'Live Feed')
-        .replace(/Bloomberg RT/gi, 'Live RT')
-        .replace(/Bloomberg/gi, 'Live')
-        .replace(/IBKR Live \(us_feed\.py\)/gi, 'Live Feed')
-        .replace(/Connect to IBKR Bridge/gi, 'Connect')
-        .replace(/IBKR bridge \(us_feed\.py\)/gi, 'live bridge')
-        .replace(/IBKR Live Feed/gi, 'Live Feed')
-        .replace(/IBKR Live/gi, 'Live')
-        .replace(/IBKR/gi, 'Live')
-        .replace(/Connect Live/gi, '—')   // SPY/QQQ/IWM tile placeholders
-        .replace(/Interactive Brokers/gi, 'data provider');
+      var v = node.nodeValue;
+      // 1. Surgical removals first — strip the source-attribution chunks cleanly
+      v = v.replace(/\s*[·•+]\s*ChartEdge\s*\+\s*Bloomberg XLSX/gi, '');
+      v = v.replace(/\s*[·•+]\s*ChartEdge\s*\+\s*IBKR Live/gi, '');
+      v = v.replace(/ChartEdge\s*\+\s*Bloomberg XLSX/gi, 'ChartEdge');
+      v = v.replace(/ChartEdge\s*\+\s*IBKR Live/gi, 'ChartEdge');
+      v = v.replace(/\s*[·•|]\s*Bloomberg RT\b/gi, '');
+      v = v.replace(/\s*[·•|]\s*IBKR Live\b/gi, '');
+      v = v.replace(/Data:\s*Bloomberg XLSX/gi, 'Data: Live');
+      v = v.replace(/Data:\s*IBKR Live\s*\(us_feed\.py\)/gi, 'Data: Live');
+      v = v.replace(/Data:\s*IBKR Live/gi, 'Data: Live');
+
+      // 2. Remove the upload-flow steps that reference the brands (in case .wf hide misses)
+      v = v.replace(/Start IBKR bridge\s*\(us_feed\.py\)\s*[—-]?\s*TWS must be running/gi, '');
+      v = v.replace(/Connect to IBKR Bridge/gi, '');
+      v = v.replace(/IBKR bridge\s*\(us_feed\.py\)/gi, '');
+
+      // 3. Catch-all for any straggler mentions
+      v = v.replace(/Bloomberg XLSX/gi, '');
+      v = v.replace(/Bloomberg RT/gi, '');
+      v = v.replace(/IBKR Live Feed/gi, '');
+      v = v.replace(/IBKR Live/gi, '');
+      v = v.replace(/Bloomberg/gi, '');
+      v = v.replace(/IBKR/gi, '');
+      v = v.replace(/Interactive Brokers/gi, '');
+      v = v.replace(/Connect IBKR/gi, '—');
+
+      // 4. Tidy up trailing/double separators
+      v = v.replace(/\s+[·•|]\s*$/g, '');
+      v = v.replace(/[·•|]\s*[·•|]/g, '·');
+      v = v.replace(/\s{2,}/g, ' ');
+      v = v.replace(/\s*\+\s*$/g, '');
+
+      node.nodeValue = v;
     });
   }
 
