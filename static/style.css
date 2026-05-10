@@ -478,6 +478,45 @@ main { max-width: 1400px; margin: 0 auto; padding: 32px 24px; }
   text-decoration: none;
 }
 .guide-btn:hover { background: rgba(78, 161, 255, 0.22); border-color: var(--accent); }
+
+.credits {
+  margin-top: 18px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 14px 18px;
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-left: 4px solid var(--accent);
+  border-radius: 10px;
+  flex-wrap: wrap;
+}
+.credits-logo {
+  width: 40px;
+  height: 40px;
+  flex-shrink: 0;
+}
+.credits-text { flex: 1; min-width: 240px; }
+.credits-line {
+  color: var(--text);
+  font-size: 13.5px;
+  margin-bottom: 4px;
+}
+.credits-line b { color: var(--accent); }
+.credits-links {
+  display: flex;
+  gap: 4px;
+  flex-wrap: wrap;
+  align-items: center;
+  font-size: 12.5px;
+}
+.credits-links a {
+  color: var(--muted);
+  text-decoration: none;
+  padding: 2px 0;
+}
+.credits-links a:hover { color: var(--accent); }
+.credits-sep { color: var(--border); }
 .product-logo {
   width: 56px;
   height: 56px;
