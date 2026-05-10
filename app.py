@@ -252,9 +252,8 @@ def contact():
     )
 
 
-@app.route("/report")
-def market_report():
-    """Closing brief for the Saudi market — TASI close from Yahoo + scan from chartedge_sa.csv."""
+def _compute_brief_data():
+    """Build a unified data bundle for both /report and /agent."""
     yahoo = fetch_tasi_yahoo()
 
     # Build scan summary from chartedge_sa.csv (in-memory if pushed, else disk)
@@ -328,24 +327,203 @@ def market_report():
     for s in vol_leaders:
         s["_vol_ratio"] = vol_ratio(s)
 
-    return render_template(
-        "report.html",
-        yahoo=yahoo,
-        stage2_count=len(stage2),
-        potential_count=len(potential),
-        score10_count=len(score10),
-        scan_total=len(rows),
-        top_picks=top_picks,
-        top_gainers=top_g,
-        top_losers=top_l,
-        vol_leaders=vol_leaders,
-        breadth={
+    return {
+        "yahoo": yahoo,
+        "stage2_count": len(stage2),
+        "potential_count": len(potential),
+        "score10_count": len(score10),
+        "scan_total": len(rows),
+        "top_picks": top_picks,
+        "top_gainers": top_g,
+        "top_losers": top_l,
+        "vol_leaders": vol_leaders,
+        "breadth": {
             "above_ma200": above_ma200, "total_ma200": total_ma200,
             "new_highs": new_highs, "new_lows": new_lows,
             "advancers": adv, "decliners": dec, "ad_ratio": ad_ratio,
         },
-        generated_at=datetime.now().isoformat(timespec="seconds"),
-    )
+        "generated_at": datetime.now().isoformat(timespec="seconds"),
+    }
+
+
+@app.route("/report")
+def market_report():
+    """Closing brief for the Saudi market."""
+    return render_template("report.html", **_compute_brief_data())
+
+
+def _build_tweet_drafts(brief):
+    """Generate tweet templates from the brief data. Returns list of draft cards."""
+    yahoo = brief.get("yahoo")
+    today = yahoo.get("today") if yahoo else None
+    prev = yahoo.get("prev") if yahoo else None
+    breadth = brief.get("breadth") or {}
+    site = "chartedge"  # short tag
+    drafts = []
+
+    # ── 1. Market close (single tweet) ──────────────────────
+    if today and prev:
+        chg_pts = today["close"] - prev["close"]
+        chg_pct = (chg_pts / prev["close"]) * 100 if prev["close"] else 0
+        arrow = "▲" if chg_pts >= 0 else "▼"
+        sign = "+" if chg_pts >= 0 else ""
+        en = (
+            f"📊 #TASI close: {today['close']:,.2f} {arrow} {sign}{chg_pts:.2f} ({sign}{chg_pct:.2f}%)\n"
+            f"🌡️ Breadth: {breadth.get('advancers',0)} ▲ / {breadth.get('decliners',0)} ▼\n"
+            f"📊 Volume: {today['volume']/1e6:,.1f}M\n"
+            f"🎯 {brief['stage2_count']} stocks confirmed Stage 2 today\n\n"
+            f"Full report → trading-suite-l9e4.onrender.com/report"
+        )
+        ar = (
+            f"📊 إغلاق #تاسي: {today['close']:,.2f} {arrow} {sign}{chg_pts:.2f} ({sign}{chg_pct:.2f}%)\n"
+            f"🌡️ المتقدمون: {breadth.get('advancers',0)} · المتراجعون: {breadth.get('decliners',0)}\n"
+            f"📊 السيولة: {today['volume']/1e6:,.1f} مليون\n"
+            f"🎯 {brief['stage2_count']} سهم في المرحلة الثانية اليوم\n\n"
+            f"التقرير → trading-suite-l9e4.onrender.com/report"
+        )
+        drafts.append({"id": "close", "title": "📊 Market Close",
+                       "desc": "Single-tweet snapshot of today's index close + breadth + scan summary.",
+                       "tweets": [{"en": en, "ar": ar}]})
+
+    # ── 2. Top gainer spotlight ───────────────────────────
+    gainers = brief.get("top_gainers") or []
+    if gainers:
+        g = gainers[0]
+        vol_ratio = g.get("_vol_ratio") or (
+            (g.get("Volume") / g.get("Avg Vol 30D")) if g.get("Avg Vol 30D") else None)
+        vol_str_en = f" on {vol_ratio*100:.0f}% of 30D avg volume" if vol_ratio and vol_ratio > 1.5 else ""
+        vol_str_ar = f" بحجم {vol_ratio*100:.0f}% من المتوسط" if vol_ratio and vol_ratio > 1.5 else ""
+        en = (
+            f"🚀 Today's top gainer on #TASI:\n\n"
+            f"#{g['Ticker']}  +{g['%1D']:.2f}%{vol_str_en}\n"
+            f"🏷️ Last: {g['Last Price']:,.2f}\n\n"
+            f"More setups → trading-suite-l9e4.onrender.com/report"
+        )
+        ar = (
+            f"🚀 أعلى ارتفاع اليوم في #تاسي:\n\n"
+            f"#{g['Ticker']}  +{g['%1D']:.2f}%{vol_str_ar}\n"
+            f"🏷️ السعر: {g['Last Price']:,.2f}\n\n"
+            f"المزيد → trading-suite-l9e4.onrender.com/report"
+        )
+        drafts.append({"id": "gainer", "title": "🚀 Top Gainer Spotlight",
+                       "desc": "Highlight the single biggest gainer with stats.",
+                       "tweets": [{"en": en, "ar": ar}]})
+
+    # ── 3. Volume alert ──────────────────────────────────
+    vol = brief.get("vol_leaders") or []
+    if len(vol) >= 3:
+        v = vol[:3]
+        en_lines = [f"⚡ Unusual volume on #TASI today:\n"]
+        ar_lines = [f"⚡ سيولة غير اعتيادية في #تاسي اليوم:\n"]
+        medals = ["🥇", "🥈", "🥉"]
+        for i, s in enumerate(v):
+            ratio = s.get("_vol_ratio", 0) * 100
+            en_lines.append(f"{medals[i]} #{s['Ticker']}  {ratio:.0f}% of 30D avg")
+            ar_lines.append(f"{medals[i]} #{s['Ticker']}  {ratio:.0f}% من المتوسط")
+        en_lines.append("\nWhen stocks trade 3x+ avg volume, it's worth a look.")
+        ar_lines.append("\nالحجم 3x+ من المتوسط يستحق المتابعة.")
+        en_lines.append("→ trading-suite-l9e4.onrender.com/report")
+        ar_lines.append("→ trading-suite-l9e4.onrender.com/report")
+        drafts.append({"id": "volume", "title": "⚡ Volume Alert",
+                       "desc": "Top 3 unusual-volume names today.",
+                       "tweets": [{"en": "\n".join(en_lines), "ar": "\n".join(ar_lines)}]})
+
+    # ── 4. Top SEPA picks ────────────────────────────────
+    picks = brief.get("top_picks") or []
+    s10 = [p for p in picks if (p.get("Score") or "") == "10"][:4]
+    if s10:
+        en_lines = [f"🏆 Today's Score 10/10 setups on #TASI:\n"]
+        ar_lines = [f"🏆 أعلى التقييمات اليوم في #تاسي (10/10):\n"]
+        for p in s10:
+            rs = p.get("RS", "—")
+            twm = p.get("12m%", "—")
+            en_lines.append(f"📈 #{p['Ticker']} — RS {rs}, 12m {twm}%")
+            ar_lines.append(f"📈 #{p['Ticker']} — قوة نسبية {rs}، عام {twm}%")
+        en_lines.append("\nAll Stage 2 confirmed.\nFull scan → trading-suite-l9e4.onrender.com/report")
+        ar_lines.append("\nجميعها في المرحلة الثانية.\nالماسح الكامل → trading-suite-l9e4.onrender.com/report")
+        drafts.append({"id": "picks", "title": "🏆 Top SEPA Picks",
+                       "desc": "Stocks scoring 10/10 in today's ChartEdge scan.",
+                       "tweets": [{"en": "\n".join(en_lines), "ar": "\n".join(ar_lines)}]})
+
+    # ── 5. Market wrap thread (5 tweets) ─────────────────
+    if today and prev:
+        chg_pts = today["close"] - prev["close"]
+        chg_pct = (chg_pts / prev["close"]) * 100 if prev["close"] else 0
+        thread = []
+        # T1 — hook
+        thread.append({
+            "en": f"🧵 #TASI Closing Wrap — {today['date']}\n\n"
+                  f"Index closed at {today['close']:,.2f} ({'+' if chg_pts>=0 else ''}{chg_pct:.2f}%).\n"
+                  f"Here's what mattered today 👇",
+            "ar": f"🧵 ملخص إغلاق #تاسي — {today['date']}\n\n"
+                  f"إغلاق المؤشر عند {today['close']:,.2f} ({'+' if chg_pts>=0 else ''}{chg_pct:.2f}%).\n"
+                  f"تفاصيل الجلسة 👇",
+        })
+        # T2 — breadth
+        ratio = (breadth.get("advancers",0)/breadth.get("decliners",1)) if breadth.get("decliners") else 0
+        thread.append({
+            "en": f"2/ 🌡️ Breadth\n\n"
+                  f"Advancers: {breadth.get('advancers',0)}\n"
+                  f"Decliners: {breadth.get('decliners',0)}\n"
+                  f"A/D ratio: {ratio:.2f}\n"
+                  f"Above 200MA: {breadth.get('above_ma200',0)}/{breadth.get('total_ma200',0)} stocks",
+            "ar": f"2/ 🌡️ اتساع السوق\n\n"
+                  f"المتقدمون: {breadth.get('advancers',0)}\n"
+                  f"المتراجعون: {breadth.get('decliners',0)}\n"
+                  f"النسبة: {ratio:.2f}\n"
+                  f"فوق متوسط 200 يوم: {breadth.get('above_ma200',0)} من {breadth.get('total_ma200',0)} سهم",
+        })
+        # T3 — top movers
+        gn = (brief.get("top_gainers") or [])[:3]
+        ls = (brief.get("top_losers") or [])[:3]
+        gn_en = "\n".join(f"#{s['Ticker']}  +{s['%1D']:.2f}%" for s in gn)
+        ls_en = "\n".join(f"#{s['Ticker']}  {s['%1D']:.2f}%" for s in ls)
+        gn_ar = "\n".join(f"#{s['Ticker']}  +{s['%1D']:.2f}%" for s in gn)
+        ls_ar = "\n".join(f"#{s['Ticker']}  {s['%1D']:.2f}%" for s in ls)
+        thread.append({
+            "en": f"3/ 🚀 Top movers\n\nGainers:\n{gn_en}\n\nLosers:\n{ls_en}",
+            "ar": f"3/ 🚀 الأكثر حركة\n\nمرتفعون:\n{gn_ar}\n\nمتراجعون:\n{ls_ar}",
+        })
+        # T4 — scan summary
+        thread.append({
+            "en": f"4/ 🎯 ChartEdge scan ({brief['scan_total']} stocks)\n\n"
+                  f"✅ Stage 2 confirmed: {brief['stage2_count']}\n"
+                  f"📍 Potential Stage 2: {brief['potential_count']}\n"
+                  f"🏆 Score 10/10: {brief['score10_count']}",
+            "ar": f"4/ 🎯 الماسح ({brief['scan_total']} سهم)\n\n"
+                  f"✅ المرحلة 2 مؤكدة: {brief['stage2_count']}\n"
+                  f"📍 محتمل المرحلة 2: {brief['potential_count']}\n"
+                  f"🏆 تقييم 10/10: {brief['score10_count']}",
+        })
+        # T5 — top picks + CTA
+        s10 = [p for p in (brief.get("top_picks") or []) if (p.get("Score") or "") == "10"][:3]
+        s10_en = "\n".join(f"#{p['Ticker']} — RS {p.get('RS','—')}" for p in s10)
+        s10_ar = "\n".join(f"#{p['Ticker']} — قوة نسبية {p.get('RS','—')}" for p in s10)
+        thread.append({
+            "en": f"5/ 🏆 Highest-conviction setups today:\n\n{s10_en}\n\n"
+                  f"Full report + live dashboard → trading-suite-l9e4.onrender.com\n\n"
+                  f"Follow @chartedgeai for tomorrow's brief.",
+            "ar": f"5/ 🏆 أعلى الترشيحات اليوم:\n\n{s10_ar}\n\n"
+                  f"التقرير + اللوحة → trading-suite-l9e4.onrender.com\n\n"
+                  f"تابع @chartedgeai للتقرير اليومي.",
+        })
+        drafts.append({"id": "wrap", "title": "🧵 Market Wrap Thread",
+                       "desc": "Full 5-tweet thread covering the session — post sequentially.",
+                       "tweets": thread})
+
+    return drafts
+
+
+@app.route("/agent")
+def agent():
+    """X/Twitter content generator from today's closing data. Admin-gated."""
+    if not ADMIN_PASSWORD:
+        return ("Server missing ADMIN_PASSWORD env var.", 500, {"Content-Type": "text/plain"})
+    if request.args.get("p") != ADMIN_PASSWORD:
+        return render_template("admin_gate.html"), 401
+    brief = _compute_brief_data()
+    drafts = _build_tweet_drafts(brief)
+    return render_template("agent.html", drafts=drafts, brief=brief)
 
 
 @app.route("/p/<key>")

@@ -1,0 +1,113 @@
+{% extends "base.html" %}
+{% block title %}X Content Agent · Closing Drafts{% endblock %}
+{% block body %}
+
+<section class="hero hero-branded">
+  <img src="{{ url_for('static', filename='chartedge_logo.svg') }}" alt="ChartEdge" class="hero-logo" onerror="this.style.display='none'">
+  <div>
+    <h1>🧠 X Content Agent</h1>
+    <p>Auto-generated tweet drafts from today's closing data. Pick one, copy or click "Tweet" to post.</p>
+  </div>
+</section>
+
+<div class="agent-meta">
+  <div>Generated: <code>{{ brief.generated_at }}</code></div>
+  {% if brief.yahoo and brief.yahoo.today %}
+  <div>TASI close: <b>{{ '{:,.2f}'.format(brief.yahoo.today.close) }}</b> · {{ brief.yahoo.today.date }}</div>
+  {% endif %}
+  <div>Scan: <b>{{ brief.scan_total }}</b> stocks · <b>{{ brief.stage2_count }}</b> Stage 2 · <b>{{ brief.score10_count }}</b> at 10/10</div>
+  <div><a href="{{ url_for('agent') }}?p={{ request.args.get('p') }}" class="btn ghost" style="padding:6px 14px;font-size:13px">↻ Refresh drafts</a></div>
+</div>
+
+{% if not drafts %}
+<div class="notice" style="background:#3a1414;color:#ffb3b3;border-color:#5a1f1f">
+  Not enough data to generate drafts yet. Wait until today's xlsx + scan are pushed, then refresh.
+</div>
+{% endif %}
+
+{% for draft in drafts %}
+<section class="agent-card" data-draft-id="{{ draft.id }}">
+  <header class="agent-card-head">
+    <h2>{{ draft.title }}</h2>
+    <p>{{ draft.desc }}</p>
+    {% if draft.tweets|length > 1 %}
+    <span class="thread-badge">🧵 {{ draft.tweets|length }}-tweet thread</span>
+    {% endif %}
+  </header>
+
+  {% for tw in draft.tweets %}
+  <div class="tweet-block" data-tweet-index="{{ loop.index }}">
+    {% if draft.tweets|length > 1 %}
+    <div class="tweet-num">Tweet {{ loop.index }} / {{ draft.tweets|length }}</div>
+    {% endif %}
+
+    <div class="lang-tabs">
+      <button type="button" class="lang-btn active" data-lang="en">English</button>
+      <button type="button" class="lang-btn" data-lang="ar">العربية</button>
+    </div>
+
+    <textarea class="tweet-text" data-en="{{ tw.en }}" data-ar="{{ tw.ar }}" rows="8" readonly>{{ tw.en }}</textarea>
+
+    <div class="tweet-actions">
+      <span class="char-count">0 / 280</span>
+      <button type="button" class="btn ghost copy-btn">📋 Copy</button>
+      <a class="btn tweet-btn" target="_blank" rel="noopener" href="#">🐦 Tweet this</a>
+    </div>
+  </div>
+  {% endfor %}
+</section>
+{% endfor %}
+
+<script>
+(function(){
+  function updateBlock(block){
+    var txt = block.querySelector('.tweet-text').value;
+    var count = block.querySelector('.char-count');
+    var len = [...txt].length; // Unicode-aware
+    count.textContent = len + ' / 280';
+    count.className = 'char-count ' + (len > 280 ? 'over' : (len > 250 ? 'warn' : 'ok'));
+    var tweetBtn = block.querySelector('.tweet-btn');
+    tweetBtn.href = 'https://twitter.com/intent/tweet?text=' + encodeURIComponent(txt);
+  }
+
+  document.querySelectorAll('.tweet-block').forEach(function(block){
+    var ta = block.querySelector('.tweet-text');
+    var enText = ta.dataset.en;
+    var arText = ta.dataset.ar;
+    var btns = block.querySelectorAll('.lang-btn');
+
+    btns.forEach(function(b){
+      b.addEventListener('click', function(){
+        btns.forEach(x => x.classList.remove('active'));
+        b.classList.add('active');
+        if (b.dataset.lang === 'ar') {
+          ta.value = arText;
+          ta.dir = 'rtl';
+          ta.lang = 'ar';
+        } else {
+          ta.value = enText;
+          ta.dir = 'ltr';
+          ta.lang = 'en';
+        }
+        updateBlock(block);
+      });
+    });
+
+    block.querySelector('.copy-btn').addEventListener('click', async function(){
+      try {
+        await navigator.clipboard.writeText(ta.value);
+        this.textContent = '✓ Copied!';
+        setTimeout(() => this.textContent = '📋 Copy', 1500);
+      } catch(e) {
+        ta.select();
+        document.execCommand('copy');
+        this.textContent = '✓ Copied!';
+        setTimeout(() => this.textContent = '📋 Copy', 1500);
+      }
+    });
+
+    updateBlock(block);
+  });
+})();
+</script>
+{% endblock %}
