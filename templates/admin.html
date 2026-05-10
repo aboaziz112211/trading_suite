@@ -40,7 +40,7 @@
 
 {% if success %}
 <div class="notice" style="background:#143a26;border-color:#1f5a36;color:#a7e8c2">
-  <strong>Uploaded.</strong> GitHub commit created — Render is redeploying. New data will be live for visitors in <b>~3 minutes</b>.
+  <strong>✓ Uploaded.</strong> {{ success_msg or 'Visitors will see the new data within ~30 seconds.' }}
 </div>
 {% endif %}
 
@@ -73,6 +73,13 @@
       <div id="dzFileName" class="dz-file"></div>
       <input type="file" name="xlsx" id="fileInput" accept=".xlsx,.csv" required hidden>
     </div>
+  </label>
+
+  <label style="flex-direction:row;align-items:center;gap:10px">
+    <input type="checkbox" name="persist" id="persistChk" style="width:auto">
+    <span style="color:var(--text);font-weight:400">
+      Also save permanently to GitHub <small style="color:var(--muted)">(triggers ~3 min redeploy; otherwise data lives only in memory until next restart)</small>
+    </span>
   </label>
   <button type="submit" class="btn">Upload &amp; Publish</button>
 </form>

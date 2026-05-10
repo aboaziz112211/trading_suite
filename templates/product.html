@@ -70,13 +70,14 @@
       await new Promise(function(r){ setTimeout(r, 1500); });
       await load(doc, CSV_URL, CSV_NAME, 'text/csv', 'ce-in');
 
-      // For US: re-poll the live snapshot every 30s
-      if (IS_US) {
-        setInterval(async function(){
-          var d = getDoc();
-          if (d) await load(d, XLSX_URL, XLSX_NAME, XLSX_MIME, 'bbg-in');
-        }, REPOLL_MS);
-      }
+      // Re-poll for fresh data so admin uploads show up within 30s without refresh.
+      // Polls both the xlsx (Bloomberg / IBKR snapshot) and CSV (ChartEdge scan).
+      setInterval(async function(){
+        var d = getDoc();
+        if (!d) return;
+        await load(d, XLSX_URL, XLSX_NAME, XLSX_MIME, 'bbg-in');
+        await load(d, CSV_URL, CSV_NAME, 'text/csv', 'ce-in');
+      }, REPOLL_MS);
     }, 1500);
   });
 })();
