@@ -7,19 +7,19 @@ DATA_DIR = HERE / "data"
 
 PRODUCTS = {
     "chartedge": {
-        "title": "ChartEdge v9.2",
+        "title": "ChartEdge",
         "tagline": "SEPA / VCP scanner & analyzer",
         "dir": PRODUCTS_DIR,
         "file": "ChartEdge_v9.2.html",
     },
     "tradepulse_us": {
-        "title": "TradePulse US v1",
+        "title": "TradePulse US",
         "tagline": "US market live dashboard",
         "dir": PRODUCTS_DIR,
         "file": "TradePulse_USv1_LIVE.html",
     },
     "tradepulse_sar": {
-        "title": "TradePulse SAR v1",
+        "title": "TradePulse SAR",
         "tagline": "Saudi market live dashboard",
         "dir": PRODUCTS_DIR,
         "file": "TradePulse_SARv1_LIVE.html",
