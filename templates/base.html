@@ -7,6 +7,74 @@
   <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
+  {# Disclaimer agreement gate — shown on first visit (and every 30 days). #}
+  {# Skipped on /admin (operator already knows). #}
+  {% if request.endpoint not in ('admin_page', 'admin_upload') %}
+  <div id="disclaimerModal" class="modal-overlay" aria-modal="true" role="dialog" hidden>
+    <div class="modal-content">
+      <h2 class="modal-title">⚠️ إخلاء مسؤولية &nbsp;·&nbsp; Disclaimer</h2>
+      <div class="modal-body">
+        <div class="modal-en" lang="en">
+          <h3>IMPORTANT INFORMATION AND DISCLAIMER</h3>
+          <p>STOCKS RUNNING UP FAST AWAY FROM THE SUGGESTED BUY PRICE, PIVOT POINT OR QUOTE WHEN POSTED SHOULD BE AVOIDED. STOP LOSSES SHOWN ARE MAXIMUM SUGGESTED SELL STOPS BASED ON SWING TRADE EXPECTATIONS. RISK/REWARD SHOULD ALWAYS BE ASSESSED BASED ON YOUR OWN TRADING PLAN AND RISK TOLERANCE. IF YOU ARE SHORT-TERM TRADING OR DAY TRADING, THE MAXIMUM SUGGESTED STOP LEVELS MAY NOT BE APPROPRIATE FOR YOUR STRATEGY.</p>
+          <p>TRADEPULSE SAR, TRADEPULSE US AND CHARTEDGE ARE NOT MODEL PORTFOLIOS, REAL OR HYPOTHETICAL. STOCKS MENTIONED, SCANNER OUTPUT, RANKINGS AND COMMENTARY ARE FOR EDUCATIONAL AND INFORMATIONAL PURPOSES ONLY.</p>
+          <p>ALL TERMS, COMMENTARY, RANKINGS, AND INFORMATION DISPLAYED ON THIS PLATFORM — INCLUDING BUT NOT LIMITED TO BUY NOW, SELL NOW, SET BUY STOP, BUY ALERT, BREAKOUT ALERT, SET STOP LOSS, BUMP, REDUCE, POTENTIAL BREAKOUT, SELL SHORT, PIVOT, SCAN RESULT, RS RATING OR THE LIKE — DO NOT NECESSARILY MEAN THAT THE OPERATOR(S) OF THIS WEBSITE, THEIR PARTNERS OR AFFILIATES, ARE INDEED BUYING OR SELLING THE SAME SHARES OR DOING SO AT THE SAME TIME OR AT THE PRICE(S) DISPLAYED.</p>
+          <p>A POSTED LEVEL COULD REPRESENT ACTUAL TRADING OR PURELY HYPOTHETICAL TRADING IN WHOLE OR IN PART; NOTHING POSTED OR DISCLOSED INDICATES WHICH IS OCCURRING IN REAL TIME. STOCK TRADES POSTED AND COMMENTARY DO NOT REPRESENT A PORTFOLIO. BUY, SELL AND STOP LOSS PRICES ARE MERELY SUGGESTED LEVELS, NOT ACTUAL RECOMMENDATIONS. COMMENTARY, RESEARCH, RECOMMENDATIONS AND POSTS MAY NOT BE A REFLECTION OF ANY ACTUAL TRADING AND MAY IN FACT BE IN DIRECT CONFLICT WITH OR REFLECT OVERLAPPING MOTIVATIONS OF ANY ACTUAL TRADING THAT MAY TAKE PLACE IN THE OPERATORS' PERSONAL ACCOUNTS.</p>
+          <p>INVESTING IN STOCKS CARRIES SUBSTANTIAL RISKS, INCLUDING POSSIBLE LOSS OF PRINCIPAL. YOU SHOULD CONSULT YOUR OWN LICENSED FINANCIAL PROFESSIONAL. PAST PERFORMANCE IS NOT A GUARANTEE OF FUTURE RESULTS. THE TRADEPULSE PLATFORM AND CHARTEDGE ARE DESIGNED AS MONITORING, ALERTING, RESEARCH AND DEMONSTRATION TOOLS PURELY FOR EDUCATIONAL AND INFORMATIONAL PURPOSES.</p>
+          <p>HOLDING INTO AN EARNINGS REPORT CARRIES SUBSTANTIAL RISK. YOU SHOULD POSITION SIZE ACCORDINGLY AND ONLY HOLD STOCKS OVERNIGHT THROUGH AN EARNINGS REPORT THAT ALREADY HAVE A SUBSTANTIAL PROFIT CUSHION.</p>
+          <p>THIS DISCLAIMER DOES NOT REPRESENT OUR FULL TERMS AND CONDITIONS. THE OPERATORS, ANY AFFILIATES OR EMPLOYEES, OR ANY THIRD-PARTY DATA PROVIDER (INCLUDING BLOOMBERG, INTERACTIVE BROKERS, REFINITIV, YAHOO FINANCE, OR ANY OTHER MARKET-DATA VENDOR) SHALL NOT HAVE ANY LIABILITY FOR ANY LOSS SUSTAINED BY ANYONE WHO HAS RELIED ON THE INFORMATION CONTAINED ON THIS WEBSITE.</p>
+          <p>THE DATA AND ANALYSIS CONTAINED HEREIN ARE PROVIDED "AS IS." THE PLATFORM DISCLAIMS ANY AND ALL EXPRESS OR IMPLIED WARRANTIES, INCLUDING BUT NOT LIMITED TO ANY WARRANTIES OF MERCHANTABILITY, SUITABILITY, ACCURACY, TIMELINESS OR FITNESS FOR A PARTICULAR PURPOSE OR USE. MARKET DATA MAY BE DELAYED, INCOMPLETE, OR INACCURATE.</p>
+          <p>PAST RECOMMENDATIONS, MODEL RESULTS, AND BACKTESTS ARE NOT A GUARANTEE OF FUTURE RESULTS. THIS COMMUNICATION REFLECTS OUR OPINIONS AS OF THE DATE SHOWN AND WILL NOT NECESSARILY BE UPDATED AS VIEWS OR INFORMATION CHANGE. ALL OPINIONS EXPRESSED HEREIN ARE SUBJECT TO CHANGE WITHOUT NOTICE.</p>
+          <p>THE OPERATORS, AFFILIATED COMPANIES, OR THEIR RESPECTIVE SHAREHOLDERS, DIRECTORS, OFFICERS AND/OR EMPLOYEES, MAY HAVE LONG OR SHORT POSITIONS IN THE SECURITIES DISPLAYED HEREIN AND MAY PURCHASE OR SELL SUCH SECURITIES WITHOUT NOTICE.</p>
+          <p>FURTHER DISTRIBUTION PROHIBITED WITHOUT PRIOR WRITTEN PERMISSION. © 2026 — ALL RIGHTS RESERVED.</p>
+        </div>
+        <div class="modal-ar" dir="rtl" lang="ar">
+          <h3>معلومات هامة وإخلاء مسؤولية</h3>
+          <p>الأسهم التي ترتفع بسرعة بعيداً عن السعر المقترح للشراء أو نقطة الارتكاز أو التسعير المنشور يجب تجنبها. وقف الخسارة المعروض هو الحد الأقصى المُقترح لأوامر بيع الإيقاف بناءً على توقعات تداول السوينغ. يجب دائماً تقييم نسبة المخاطرة إلى العائد بناءً على خطة التداول الخاصة بك ومدى تحملك للمخاطر. إذا كنت تتداول على المدى القصير أو المضاربة اليومية، فقد لا تتناسب مستويات الإيقاف المقترحة مع استراتيجيتك.</p>
+          <p>TradePulse SAR و TradePulse US و ChartEdge ليست محافظ نموذجية، حقيقية أو افتراضية. الأسهم المذكورة ومخرجات الماسح والتصنيفات والتعليقات هي لأغراض تعليمية وإعلامية فقط.</p>
+          <p>جميع المصطلحات والتعليقات والتصنيفات والمعلومات المعروضة على هذه المنصة — بما في ذلك على سبيل المثال لا الحصر "اشتر الآن"، "بِع الآن"، "وضع أمر شراء بإيقاف"، "تنبيه شراء"، "تنبيه اختراق"، "وضع وقف خسارة"، "ترقية"، "تخفيض"، "اختراق محتمل"، "بيع على المكشوف"، "نقطة ارتكاز"، "نتيجة مسح"، "تقييم القوة النسبية"، أو ما شابه — لا تعني بالضرورة أن مشغلي هذا الموقع أو شركاءهم أو الشركات التابعة لهم يقومون فعلاً بشراء أو بيع الأسهم نفسها أو في الوقت نفسه أو بالأسعار المعروضة.</p>
+          <p>أي مستوى منشور قد يمثل تداولاً فعلياً أو تداولاً افتراضياً بحتاً، كلياً أو جزئياً؛ ولا يوجد ما يُنشر أو يُفصَح عنه يبيّن الفرق أو أيّهما يحدث في الوقت الفعلي. صفقات الأسهم المنشورة والتعليقات لا تمثل محفظة استثمارية. أسعار الشراء والبيع ووقف الخسارة هي مجرد مستويات مقترحة وليست توصيات فعلية. قد لا تعكس التعليقات والأبحاث والتوصيات والمنشورات أيّ تداول فعلي، بل قد تتعارض تماماً مع التداول الذي قد يحدث في الحسابات الشخصية للمشغلين.</p>
+          <p>الاستثمار في الأسهم ينطوي على مخاطر جوهرية، بما في ذلك احتمال خسارة رأس المال. يجب عليك استشارة مستشارك المالي المرخص. الأداء السابق ليس ضماناً للنتائج المستقبلية. منصة TradePulse وأداة ChartEdge مصممتان كأدوات للمراقبة والتنبيه والبحث والعرض التوضيحي لأغراض تعليمية وإعلامية بحتة.</p>
+          <p>الاحتفاظ بالأسهم خلال إعلان الأرباح ينطوي على مخاطر جوهرية. يجب تحديد حجم المركز وفقاً لذلك، وعدم الاحتفاظ بأسهم خلال إعلان الأرباح إلا إذا كانت تحقق هامش ربح كافياً مسبقاً.</p>
+          <p>هذا الإخلاء لا يمثل الشروط والأحكام الكاملة. لن يتحمل المشغلون أو أيّ من شركاتهم التابعة أو موظفيهم، أو أيّ مزود بيانات خارجي (بما في ذلك بلومبرغ، إنتراكتيف بروكرز، رفينيتيف، ياهو فاينانس، أو أيّ مزود بيانات سوق آخر) أيّ مسؤولية عن أيّ خسارة يتكبدها أيّ شخص اعتمد على المعلومات الواردة في هذا الموقع.</p>
+          <p>البيانات والتحليلات الواردة هنا مقدمة "كما هي". تُخلي المنصة مسؤوليتها من أيّ ضمانات صريحة أو ضمنية، بما في ذلك على سبيل المثال لا الحصر ضمانات قابلية التسويق، أو الملاءمة، أو الدقة، أو التوقيت، أو الملاءمة لغرض أو استخدام معين. قد تكون بيانات السوق مؤجلة أو غير مكتملة أو غير دقيقة.</p>
+          <p>التوصيات السابقة ونتائج النماذج واختبارات الأداء التاريخي ليست ضماناً للنتائج المستقبلية. يعكس هذا التواصل آراءنا في تاريخه ولن يتم تحديثه بالضرورة عند تغير وجهات النظر أو المعلومات. جميع الآراء المعبَّر عنها هنا قابلة للتغيير دون إشعار.</p>
+          <p>قد يكون لدى المشغلين أو الشركات التابعة أو مساهميهم أو مديريهم أو موظفيهم مراكز شراء أو بيع في الأوراق المالية المعروضة هنا، وقد يقومون بشرائها أو بيعها دون إشعار.</p>
+          <p>يُحظر إعادة التوزيع دون إذن خطّي مسبق. © 2026 — جميع الحقوق محفوظة.</p>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <label class="modal-check">
+          <input type="checkbox" id="disclaimerCheckbox">
+          <span>I have read, understood, and agree to the disclaimer above.<br>
+                <span dir="rtl" lang="ar">لقد قرأت إخلاء المسؤولية أعلاه وفهمته ووافقت عليه.</span></span>
+        </label>
+        <button id="disclaimerAgree" class="btn" disabled>I Agree &middot; موافق</button>
+      </div>
+    </div>
+  </div>
+  <script>
+    (function(){
+      var KEY = 'ts_disclaimer_agreed_at';
+      var TTL_MS = 30 * 24 * 3600 * 1000; // 30 days
+      var modal = document.getElementById('disclaimerModal');
+      if (!modal) return;
+      var stored = parseInt(localStorage.getItem(KEY) || '0', 10);
+      if (stored && (Date.now() - stored) < TTL_MS) return; // still valid
+      modal.hidden = false;
+      document.documentElement.style.overflow = 'hidden';
+      var cb = document.getElementById('disclaimerCheckbox');
+      var btn = document.getElementById('disclaimerAgree');
+      cb.addEventListener('change', function(){ btn.disabled = !cb.checked; });
+      btn.addEventListener('click', function(){
+        if (!cb.checked) return;
+        localStorage.setItem(KEY, String(Date.now()));
+        modal.hidden = true;
+        document.documentElement.style.overflow = '';
+      });
+    })();
+  </script>
+  {% endif %}
   <header class="topbar">
     <a href="{{ url_for('index') }}" class="brand">Trading Suite</a>
     <nav>
