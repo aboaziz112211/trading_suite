@@ -93,15 +93,6 @@ US_PUSH_TOKEN = _secret("US_PUSH_TOKEN")
 # in-memory live US feed: bytes of xlsx + last update timestamp
 _US_STATE = {"xlsx": None, "updated": None, "rows": 0}
 
-# Fast-path in-memory cache for admin-uploaded files.
-# When set, /data/<filename> serves these directly (no Render redeploy required).
-# Cleared when the dyno restarts; falls back to whatever's on disk from the last GitHub commit.
-_LIVE_FILES = {
-    "all.xlsx":         {"data": None, "updated": None},
-    "chartedge_us.csv": {"data": None, "updated": None},
-    "chartedge_sa.csv": {"data": None, "updated": None},
-}
-
 # us_feed.Row → Bloomberg-style column mapping
 _US_COLUMNS = [
     "Ticker", "Last Price", "Last Price.1", "%1D", "%1M", "%YTD",
@@ -215,31 +206,17 @@ def product_file(key):
     return send_from_directory(p["dir"], p["file"])
 
 
-_MIME = {
-    "all.xlsx":         "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-    "us_live.xlsx":     "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-    "chartedge_us.csv": "text/csv; charset=utf-8",
-    "chartedge_sa.csv": "text/csv; charset=utf-8",
-}
-
-
 @app.route("/data/<path:filename>")
 def data_file(filename):
     from flask import Response
     if filename == "us_live.xlsx":
         if not _US_STATE.get("xlsx"):
             abort(404)
-        return Response(_US_STATE["xlsx"], mimetype=_MIME["us_live.xlsx"])
-    if filename in _LIVE_FILES:
-        # 1. Fast path — in-memory upload
-        cached = _LIVE_FILES[filename].get("data")
-        if cached is not None:
-            return Response(cached, mimetype=_MIME[filename])
-        # 2. Fallback — last committed file on disk
-        if (DATA_DIR / filename).exists():
-            return send_from_directory(DATA_DIR, filename)
+        return Response(_US_STATE["xlsx"], mimetype=(
+            "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"))
+    if filename not in {"all.xlsx", "chartedge_us.csv", "chartedge_sa.csv"}:
         abort(404)
-    abort(404)
+    return send_from_directory(DATA_DIR, filename)
 
 
 @app.route("/api/us/push", methods=["POST"])
@@ -289,7 +266,7 @@ def healthz():
 
 @app.route("/admin", methods=["GET"])
 def admin_page():
-    return render_template("admin.html", success=False, error=None, success_msg=None)
+    return render_template("admin.html", success=False, error=None)
 
 
 @app.route("/admin/upload", methods=["POST"])
@@ -319,26 +296,6 @@ def admin_upload():
     if not target_path:
         return render_template("admin.html", success=False, error=why), 400
 
-    target_filename = target_path.rsplit("/", 1)[-1]
-
-    # FAST PATH — write to in-memory cache so /data/<filename> serves it instantly.
-    # Visitors see the new data on their next 30s polling tick (no Render redeploy).
-    if target_filename in _LIVE_FILES:
-        _LIVE_FILES[target_filename]["data"] = raw
-        _LIVE_FILES[target_filename]["updated"] = datetime.now().isoformat(timespec="seconds")
-
-    persist = request.form.get("persist") == "on"
-    if not persist:
-        return render_template(
-            "admin.html",
-            success=True, error=None,
-            success_msg=(f"Live in-memory now (visitors see it on next 30s tick). "
-                         f"NOT saved to GitHub — will be lost on next Render restart. "
-                         f"Re-upload with the 'Save permanently' checkbox to back it up.")
-        )
-
-    # SLOW PATH — also commit to GitHub (will trigger a ~3 min Render redeploy that
-    # wipes the in-memory cache and serves from disk afterwards).
     api = f"https://api.github.com/repos/{GH_REPO}/contents/{target_path}"
     headers = {
         "Authorization": f"token {GH_PAT}",
@@ -373,12 +330,7 @@ def admin_upload():
             error=f"GitHub PUT exception: {e}"), 502
 
     if r.status_code in (200, 201):
-        return render_template(
-            "admin.html",
-            success=True, error=None,
-            success_msg=("Live in-memory now (visitors see it on next 30s tick). "
-                         "Also saved permanently to GitHub — Render will redeploy in ~3 min.")
-        )
+        return render_template("admin.html", success=True, error=None)
     return render_template("admin.html", success=False,
         error=f"GitHub PUT failed ({r.status_code}): {r.text[:300]}"), 502
 
