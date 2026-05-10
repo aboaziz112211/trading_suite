@@ -1,0 +1,54 @@
+<svg width="500" height="500" viewBox="0 0 680 680" role="img" xmlns="http://www.w3.org/2000/svg">
+<title>ChartEdge Analytics Logo</title>
+<desc>Circular dark navy logo with gold ring, ascending candlestick chart, CHARTEDGE ANALYTICS AI POWERED branding</desc>
+<defs>
+  <clipPath id="cc"><circle cx="340" cy="325" r="193"/></clipPath>
+  <pattern id="dp" x="0" y="0" width="18" height="18" patternUnits="userSpaceOnUse">
+    <circle cx="0"  cy="0"  r="0.9" fill="#243548"/>
+    <circle cx="18" cy="0"  r="0.9" fill="#243548"/>
+    <circle cx="0"  cy="18" r="0.9" fill="#243548"/>
+    <circle cx="18" cy="18" r="0.9" fill="#243548"/>
+    <circle cx="9"  cy="9"  r="0.9" fill="#243548"/>
+  </pattern>
+</defs>
+
+<!-- Background circle -->
+<circle cx="340" cy="325" r="200" fill="#0F1923"/>
+<!-- Dot grid -->
+<rect x="130" y="115" width="420" height="420" fill="url(#dp)" clip-path="url(#cc)"/>
+<!-- Gold rings -->
+<circle cx="340" cy="325" r="200" fill="none" stroke="#C8983C" stroke-width="5.5"/>
+<circle cx="340" cy="325" r="193" fill="none" stroke="#C8983C" stroke-width="1" opacity="0.2"/>
+
+<!-- Candlestick 1 (small bull) -->
+<line x1="262" y1="305" x2="262" y2="318" stroke="#C8C0B4" stroke-width="1.5"/>
+<rect x="256" y="307" width="12" height="8"  fill="#C8C0B4" rx="1"/>
+<!-- Candlestick 2 (bull) -->
+<line x1="284" y1="297" x2="284" y2="312" stroke="#C8C0B4" stroke-width="1.5"/>
+<rect x="278" y="299" width="12" height="10" fill="#C8C0B4" rx="1"/>
+<!-- Candlestick 3 (bear) -->
+<line x1="306" y1="287" x2="306" y2="306" stroke="#D97070" stroke-width="1.5"/>
+<rect x="300" y="290" width="12" height="12" fill="#D97070" rx="1"/>
+<!-- Candlestick 4 (bull) -->
+<line x1="328" y1="275" x2="328" y2="298" stroke="#C8C0B4" stroke-width="1.5"/>
+<rect x="322" y="279" width="12" height="15" fill="#C8C0B4" rx="1"/>
+<!-- Candlestick 5 (bull, larger) -->
+<line x1="350" y1="263" x2="350" y2="291" stroke="#C8C0B4" stroke-width="1.5"/>
+<rect x="344" y="267" width="12" height="19" fill="#C8C0B4" rx="1"/>
+<!-- Candlestick 6 (bear) -->
+<line x1="372" y1="252" x2="372" y2="280" stroke="#D97070" stroke-width="1.5"/>
+<rect x="366" y="255" width="12" height="18" fill="#D97070" rx="1"/>
+<!-- Candlestick 7 (bull, tall) -->
+<line x1="395" y1="238" x2="395" y2="272" stroke="#C8C0B4" stroke-width="1.5"/>
+<rect x="389" y="242" width="13" height="23" fill="#C8C0B4" rx="1"/>
+<!-- Candlestick 8 (gold peak candle) -->
+<line x1="419" y1="221" x2="419" y2="263" stroke="#C8983C" stroke-width="1.5"/>
+<rect x="412" y="226" width="14" height="29" fill="#C8983C" rx="1"/>
+
+<!-- CHARTEDGE text -->
+<text x="340" y="392" text-anchor="middle" font-family="Arial,Helvetica,sans-serif" font-size="41" font-weight="700" letter-spacing="2" fill="#FFFFFF">CHART<tspan fill="#C8983C">EDGE</tspan></text>
+<!-- ANALYTICS -->
+<text x="340" y="418" text-anchor="middle" font-family="Arial,Helvetica,sans-serif" font-size="12.5" font-weight="400" letter-spacing="7" fill="#9A8C7C">ANALYTICS</text>
+<!-- AI POWERED -->
+<text x="340" y="443" text-anchor="middle" font-family="Arial,Helvetica,sans-serif" font-size="9.5" font-weight="400" letter-spacing="4.5" fill="#C8983C" opacity="0.85">AI POWERED</text>
+</svg>

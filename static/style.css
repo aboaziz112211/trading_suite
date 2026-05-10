@@ -305,6 +305,19 @@ body {
 main { max-width: 1400px; margin: 0 auto; padding: 32px 24px; }
 
 .hero { margin-bottom: 32px; }
+.hero-branded {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  flex-wrap: wrap;
+}
+.hero-logo {
+  width: 90px;
+  height: 90px;
+}
+@media (max-width: 640px) {
+  .hero-logo { width: 64px; height: 64px; }
+}
 .hero h1 { margin: 0 0 8px; font-size: 32px; }
 .hero p { margin: 0; color: var(--muted); }
 

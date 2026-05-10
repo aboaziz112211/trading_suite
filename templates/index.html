@@ -1,7 +1,8 @@
 {% extends "base.html" %}
 {% block title %}Trading Suite — Products{% endblock %}
 {% block body %}
-<section class="hero">
+<section class="hero hero-branded">
+  <img src="{{ url_for('static', filename='chartedge_logo.svg') }}" alt="ChartEdge Analytics" class="hero-logo" onerror="this.style.display='none'">
   <h1>Trading Suite</h1>
   <p>Live dashboards & analyzers — pick a product.</p>
 </section>
