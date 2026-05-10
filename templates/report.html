@@ -1,0 +1,169 @@
+{% extends "base.html" %}
+{% block title %}Market Report · TASI Closing Brief{% endblock %}
+{% block body %}
+
+<section class="hero hero-branded">
+  <img src="{{ url_for('static', filename='chartedge_logo.svg') }}" alt="ChartEdge" class="hero-logo" onerror="this.style.display='none'">
+  <div>
+    <h1>📊 TASI Closing Brief</h1>
+    <p>Daily market report · Saudi Tadawul · auto-generated from latest data</p>
+  </div>
+</section>
+
+{% set today = yahoo.today if yahoo else None %}
+{% set prev = yahoo.prev if yahoo else None %}
+
+{% if today %}
+{% set chg_pts = today.close - prev.close if prev else 0 %}
+{% set chg_pct = (chg_pts / prev.close * 100) if prev and prev.close else 0 %}
+<section class="report-hero">
+  <div class="rh-left">
+    <div class="rh-label">TASI · {{ today.date }}</div>
+    <div class="rh-price">{{ '{:,.2f}'.format(today.close) }}</div>
+    <div class="rh-chg {{ 'up' if chg_pts >= 0 else 'down' }}">
+      {{ '▲' if chg_pts >= 0 else '▼' }} {{ '{:+,.2f}'.format(chg_pts) }} pts
+      &nbsp;({{ '{:+.2f}'.format(chg_pct) }}%)
+    </div>
+  </div>
+  <div class="rh-right">
+    <div class="rh-stat"><div class="lbl">OPEN</div><div class="val">{{ '{:,.2f}'.format(today.open) }}</div></div>
+    <div class="rh-stat"><div class="lbl">HIGH</div><div class="val">{{ '{:,.2f}'.format(today.high) }}</div></div>
+    <div class="rh-stat"><div class="lbl">LOW</div><div class="val">{{ '{:,.2f}'.format(today.low) }}</div></div>
+    <div class="rh-stat"><div class="lbl">VOL</div><div class="val">{{ '{:,.1f}M'.format(today.volume / 1e6) }}</div></div>
+  </div>
+</section>
+{% else %}
+<div class="notice" style="background:#3a1414;color:#ffb3b3;border-color:#5a1f1f;">
+  Could not fetch the official close right now. Showing scan data only.
+</div>
+{% endif %}
+
+<!-- Breadth -->
+<section class="report-section">
+  <h2>🌡️ Market Health</h2>
+  <div class="metric-grid">
+    {% if breadth.total_ma200 %}
+    <div class="metric"><div class="m-val">{{ ((100 * breadth.above_ma200) / breadth.total_ma200) | round(0) | int }}%</div><div class="m-lbl">Above 200MA</div><div class="m-sub">{{ breadth.above_ma200 }} / {{ breadth.total_ma200 }}</div></div>
+    {% endif %}
+    <div class="metric"><div class="m-val">{{ breadth.new_highs }}</div><div class="m-lbl">New 52W Highs</div></div>
+    <div class="metric"><div class="m-val">{{ breadth.new_lows }}</div><div class="m-lbl">New 52W Lows</div></div>
+    <div class="metric"><div class="m-val up">{{ breadth.advancers }}</div><div class="m-lbl">Advancers</div></div>
+    <div class="metric"><div class="m-val down">{{ breadth.decliners }}</div><div class="m-lbl">Decliners</div></div>
+    {% if breadth.ad_ratio %}
+    <div class="metric"><div class="m-val">{{ '{:.2f}'.format(breadth.ad_ratio) }}</div><div class="m-lbl">A/D Ratio</div></div>
+    {% endif %}
+  </div>
+</section>
+
+<!-- Top Movers -->
+<section class="report-section report-cols">
+  <div>
+    <h2>🚀 Top Gainers</h2>
+    <table class="report-table">
+      <thead><tr><th>Ticker</th><th class="r">% Day</th><th class="r">Last</th></tr></thead>
+      <tbody>
+        {% for s in top_gainers %}
+        <tr><td><b>{{ s['Ticker'] }}</b></td><td class="r up">+{{ '{:.2f}'.format(s['%1D']) }}%</td><td class="r">{{ '{:,.2f}'.format(s['Last Price']) }}</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  <div>
+    <h2>📉 Top Losers</h2>
+    <table class="report-table">
+      <thead><tr><th>Ticker</th><th class="r">% Day</th><th class="r">Last</th></tr></thead>
+      <tbody>
+        {% for s in top_losers %}
+        <tr><td><b>{{ s['Ticker'] }}</b></td><td class="r down">{{ '{:.2f}'.format(s['%1D']) }}%</td><td class="r">{{ '{:,.2f}'.format(s['Last Price']) }}</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- Volume Leaders -->
+<section class="report-section">
+  <h2>⚡ Volume Leaders <small>(% of 30-day average)</small></h2>
+  <table class="report-table">
+    <thead><tr><th>Ticker</th><th class="r">vs 30D Avg</th><th class="r">Volume</th><th class="r">% Day</th></tr></thead>
+    <tbody>
+      {% for s in vol_leaders %}
+      <tr>
+        <td><b>{{ s['Ticker'] }}</b></td>
+        <td class="r"><b>{{ (s._vol_ratio * 100) | round(0) | int }}%</b></td>
+        <td class="r">{{ '{:,.1f}M'.format(s['Volume'] / 1e6) if s['Volume'] >= 1e6 else '{:,.0f}'.format(s['Volume']) }}</td>
+        <td class="r {{ 'up' if (s['%1D'] or 0) >= 0 else 'down' }}">{{ '{:+.2f}'.format(s['%1D']) }}%</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</section>
+
+<!-- ChartEdge Scan -->
+<section class="report-section">
+  <h2>🎯 ChartEdge Scan <small>({{ scan_total }} stocks)</small></h2>
+  <div class="metric-grid">
+    <div class="metric metric-tag"><div class="m-val">{{ stage2_count }}</div><div class="m-lbl">✅ Stage 2</div></div>
+    <div class="metric metric-tag"><div class="m-val">{{ potential_count }}</div><div class="m-lbl">📍 Potential</div></div>
+    <div class="metric metric-tag"><div class="m-val">{{ score10_count }}</div><div class="m-lbl">🏆 Score 10/10</div></div>
+  </div>
+</section>
+
+<!-- Top Picks -->
+<section class="report-section">
+  <h2>🏆 Top 10 Ranked Picks</h2>
+  <table class="report-table">
+    <thead><tr><th>Ticker</th><th>Company</th><th class="r">Score</th><th>Stage</th><th class="r">RS</th><th class="r">12m %</th></tr></thead>
+    <tbody>
+      {% for r in top_picks %}
+      <tr>
+        <td><b>{{ r.get('Ticker','') }}</b></td>
+        <td dir="rtl" lang="ar">{{ r.get('Company','').strip('"') }}</td>
+        <td class="r"><b>{{ r.get('Score','—') }}/10</b></td>
+        <td>{{ r.get('Stage','—') }}</td>
+        <td class="r">{{ r.get('RS','—') }}</td>
+        <td class="r">{{ r.get('12m%','—') }}%</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</section>
+
+{% if yahoo and yahoo.sessions %}
+<!-- 5-day history -->
+<section class="report-section">
+  <h2>📅 Last 5 Sessions</h2>
+  <table class="report-table">
+    <thead><tr><th>Date</th><th class="r">Open</th><th class="r">High</th><th class="r">Low</th><th class="r">Close</th><th class="r">Volume</th></tr></thead>
+    <tbody>
+      {% for s in yahoo.sessions %}
+      <tr {% if loop.last %}class="row-today"{% endif %}>
+        <td><b>{{ s.date }}</b>{% if loop.last %} <span style="color:var(--accent);font-size:11px">· TODAY</span>{% endif %}</td>
+        <td class="r">{{ '{:,.2f}'.format(s.open) if s.open else '—' }}</td>
+        <td class="r">{{ '{:,.2f}'.format(s.high) if s.high else '—' }}</td>
+        <td class="r">{{ '{:,.2f}'.format(s.low) if s.low else '—' }}</td>
+        <td class="r"><b>{{ '{:,.2f}'.format(s.close) }}</b></td>
+        <td class="r">{{ '{:,.1f}M'.format(s.volume / 1e6) if s.volume else '—' }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</section>
+{% endif %}
+
+<section class="credits">
+  <img src="{{ url_for('static', filename='chartedge_logo.svg') }}" alt="ChartEdge" class="credits-logo" onerror="this.style.display='none'">
+  <div class="credits-text">
+    <div class="credits-line">Created by <b>ChartEdge Analytics</b> · AI Powered · Generated {{ generated_at }}</div>
+    <div class="credits-links">
+      <a href="https://t.me/+R_m5lVLFnBJhYWJk" target="_blank" rel="noopener">📢 Channel · @chartedgeai</a>
+      <span class="credits-sep">·</span>
+      <a href="https://t.me/chartedgeai" target="_blank" rel="noopener">💬 Admin DM</a>
+      <span class="credits-sep">·</span>
+      <a href="https://x.com/chartedgeai" target="_blank" rel="noopener">𝕏 @chartedgeai</a>
+      <span class="credits-sep">·</span>
+      <a href="{{ url_for('product_page', key='tradepulse_sar') }}">📊 Full SAR Dashboard</a>
+    </div>
+  </div>
+</section>
+{% endblock %}

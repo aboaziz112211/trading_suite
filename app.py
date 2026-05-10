@@ -196,6 +196,47 @@ def load_live_data():
     }
 
 
+_YAHOO_CACHE = {"ts": 0.0, "data": None}
+_YAHOO_TTL = 30 * 60  # 30 min
+
+
+def fetch_tasi_yahoo():
+    """Fetch TASI 5-day daily history from Yahoo Finance. Cached 30 min."""
+    import time as _t
+    import urllib.request as _ur
+    now = _t.time()
+    if _YAHOO_CACHE["data"] and (now - _YAHOO_CACHE["ts"]) < _YAHOO_TTL:
+        return _YAHOO_CACHE["data"]
+    try:
+        url = "https://query1.finance.yahoo.com/v8/finance/chart/%5ETASI.SR?range=5d&interval=1d"
+        req = _ur.Request(url, headers={"User-Agent": "Mozilla/5.0"})
+        with _ur.urlopen(req, timeout=15) as resp:
+            d = __import__("json").loads(resp.read().decode("utf-8"))
+        r = (d.get("chart", {}).get("result") or [None])[0]
+        if not r:
+            return None
+        ts = r.get("timestamp", [])
+        q = (r.get("indicators", {}).get("quote") or [{}])[0]
+        sessions = []
+        for i, t in enumerate(ts):
+            sessions.append({
+                "date": datetime.utcfromtimestamp(t).strftime("%Y-%m-%d"),
+                "open": (q.get("open") or [None])[i] if i < len(q.get("open") or []) else None,
+                "high": (q.get("high") or [None])[i] if i < len(q.get("high") or []) else None,
+                "low":  (q.get("low")  or [None])[i] if i < len(q.get("low")  or []) else None,
+                "close": (q.get("close") or [None])[i] if i < len(q.get("close") or []) else None,
+                "volume": (q.get("volume") or [None])[i] if i < len(q.get("volume") or []) else None,
+            })
+        out = {"sessions": [s for s in sessions if s["close"] is not None]}
+        if out["sessions"]:
+            out["today"] = out["sessions"][-1]
+            out["prev"] = out["sessions"][-2] if len(out["sessions"]) >= 2 else None
+        _YAHOO_CACHE.update({"ts": now, "data": out})
+        return out
+    except Exception:
+        return None
+
+
 @app.route("/")
 def index():
     return render_template("index.html", products=PRODUCTS)
@@ -208,6 +249,102 @@ def contact():
         tg_channel_url="https://t.me/+R_m5lVLFnBJhYWJk",
         tg_admin_url="https://t.me/chartedgeai",
         tg_admin_handle="@chartedgeai",
+    )
+
+
+@app.route("/report")
+def market_report():
+    """Closing brief for the Saudi market — TASI close from Yahoo + scan from chartedge_sa.csv."""
+    yahoo = fetch_tasi_yahoo()
+
+    # Build scan summary from chartedge_sa.csv (in-memory if pushed, else disk)
+    import csv as _csv
+    import io as _io
+    csv_path = DATA_DIR / "chartedge_sa.csv"
+    rows = []
+    if csv_path.exists():
+        try:
+            with open(csv_path, encoding="utf-8-sig") as f:
+                rows = list(_csv.DictReader(f))
+        except Exception:
+            rows = []
+    stage2 = [r for r in rows if "stage2" in (r.get("Stage", "") or "").lower()]
+    potential = [r for r in rows if (r.get("Stage", "") or "").lower() == "potential"]
+    score10 = [r for r in rows if (r.get("Score", "") or "").isdigit() and int(r["Score"]) == 10]
+    top_picks = sorted(
+        [r for r in rows if (r.get("Score", "") or "").isdigit()],
+        key=lambda r: (-int(r["Score"]), -(int(r.get("RS") or "0") if (r.get("RS") or "").isdigit() else 0)),
+    )[:10]
+
+    # Build movers + breadth from /api/data data (in-memory or disk)
+    market = load_live_data()
+    api_rows = market.get("rows", [])
+
+    def num(v):
+        return v if isinstance(v, (int, float)) else None
+
+    def pct(s):
+        return num(s.get("%1D"))
+
+    stocks = []
+    for r in api_rows:
+        t = (r.get("Ticker") or "").strip()
+        if t == "SASEIDX":
+            continue
+        if "(" in t and any(c.isalpha() for c in t):
+            continue  # section header rows
+        if r.get("Last Price") is None:
+            continue
+        stocks.append(r)
+
+    valid_pct = [s for s in stocks if pct(s) is not None]
+    top_g = sorted(valid_pct, key=lambda s: pct(s), reverse=True)[:5]
+    top_l = sorted(valid_pct, key=lambda s: pct(s))[:5]
+
+    above_ma200 = sum(1 for s in stocks if num(s.get("MA 200D Pct Chg")) is not None and s["MA 200D Pct Chg"] > 0)
+    total_ma200 = sum(1 for s in stocks if num(s.get("MA 200D Pct Chg")) is not None)
+    new_highs = sum(1 for s in stocks
+                    if num(s.get("Last Price")) and num(s.get("52W High")) and s["52W High"] > 0
+                    and s["Last Price"] / s["52W High"] >= 0.99)
+    new_lows = sum(1 for s in stocks
+                   if num(s.get("Last Price")) and num(s.get("52W Low")) and s["52W Low"] > 0
+                   and s["Last Price"] / s["52W Low"] <= 1.01)
+    adv = sum(1 for s in valid_pct if pct(s) > 0)
+    dec = sum(1 for s in valid_pct if pct(s) < 0)
+    ad_ratio = (adv / dec) if dec else None
+
+    def vol_ratio(s):
+        v = num(s.get("Volume"))
+        a = num(s.get("Avg Vol 30D"))
+        if v is not None and a is not None and a > 0:
+            return v / a
+        return None
+
+    vol_leaders = sorted(
+        [s for s in stocks if vol_ratio(s) is not None],
+        key=lambda s: vol_ratio(s),
+        reverse=True,
+    )[:5]
+    for s in vol_leaders:
+        s["_vol_ratio"] = vol_ratio(s)
+
+    return render_template(
+        "report.html",
+        yahoo=yahoo,
+        stage2_count=len(stage2),
+        potential_count=len(potential),
+        score10_count=len(score10),
+        scan_total=len(rows),
+        top_picks=top_picks,
+        top_gainers=top_g,
+        top_losers=top_l,
+        vol_leaders=vol_leaders,
+        breadth={
+            "above_ma200": above_ma200, "total_ma200": total_ma200,
+            "new_highs": new_highs, "new_lows": new_lows,
+            "advancers": adv, "decliners": dec, "ad_ratio": ad_ratio,
+        },
+        generated_at=datetime.now().isoformat(timespec="seconds"),
     )
 
 
