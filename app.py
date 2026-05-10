@@ -31,6 +31,11 @@ GH_BRANCH = _secret("GH_BRANCH", "main")
 GH_XLSX_PATH = "data/all.xlsx"
 GH_CSV_US_PATH = "data/chartedge_us.csv"
 GH_CSV_SA_PATH = "data/chartedge_sa.csv"
+GH_PDF_PATHS = {
+    "chartedge":      "data/guide_chartedge.pdf",
+    "tradepulse_us":  "data/guide_tradepulse_us.pdf",
+    "tradepulse_sar": "data/guide_tradepulse_sar.pdf",
+}
 
 
 def _detect_csv_market(filename: str):
@@ -63,19 +68,28 @@ def _detect_csv_market_from_content(raw: bytes) -> str:
     return "sa" if (numeric / len(first_cells)) >= 0.6 else "us"
 
 
-def _resolve_upload_target(filename: str, market_form: str = None, raw: bytes = None):
+def _resolve_upload_target(filename: str, market_form: str = None, raw: bytes = None,
+                            pdf_target: str = None):
     """Decide where the uploaded file should be committed in the GitHub repo.
 
-    Priority:
+    Priority for CSV:
       1. Explicit market dropdown ('us' or 'sa')
       2. Filename markers ('_US', '_SA', etc.)
       3. CSV content sniff (numeric Tadawul codes -> Saudi, else US)
+
+    For PDFs, the 'pdf_target' dropdown picks the product slot.
     """
     n = filename.lower()
     if n.endswith(".xlsx"):
         return GH_XLSX_PATH, None
+    if n.endswith(".pdf"):
+        target = (pdf_target or "").lower().strip()
+        if target in GH_PDF_PATHS:
+            return GH_PDF_PATHS[target], None
+        return None, ("Pick a product (ChartEdge / TradePulse US / TradePulse SAR) "
+                      "from the dropdown when uploading a PDF guide.")
     if not n.endswith(".csv"):
-        return None, "Upload a .xlsx or .csv file."
+        return None, "Upload a .xlsx, .csv, or .pdf file."
 
     market = (market_form or "").lower().strip()
     if market not in ("us", "sa"):
@@ -186,6 +200,16 @@ def load_live_data():
 @app.route("/")
 def index():
     return render_template("index.html", products=PRODUCTS)
+
+
+@app.route("/contact")
+def contact():
+    return render_template(
+        "contact.html",
+        tg_channel_url="https://t.me/+R_m5lVLFnBJhYWJk",
+        tg_admin_url="https://t.me/chartedgeai",
+        tg_admin_handle="@chartedgeai",
+    )
 
 
 @app.route("/p/<key>")
