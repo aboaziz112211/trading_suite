@@ -324,6 +324,41 @@ main { max-width: 1400px; margin: 0 auto; padding: 32px 24px; }
 }
 .drop-zone .dz-file.have { display: block; }
 
+.stats-summary {
+  display: flex;
+  gap: 24px;
+  align-items: center;
+  margin-bottom: 24px;
+  flex-wrap: wrap;
+}
+.stat-big {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-left: 4px solid var(--accent);
+  border-radius: 12px;
+  padding: 22px 32px;
+}
+.stat-num {
+  font-size: 42px;
+  font-weight: 700;
+  color: var(--accent);
+  font-variant-numeric: tabular-nums;
+  line-height: 1;
+}
+.stat-lbl {
+  margin-top: 6px;
+  color: var(--muted);
+  font-size: 13px;
+  letter-spacing: 0.5px;
+}
+.stat-meta {
+  font-size: 13px;
+  color: var(--muted);
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
 .notice {
   background: #1f2a14;
   border: 1px solid #3b4f1f;

@@ -310,6 +310,52 @@ def healthz():
     return {"ok": True}
 
 
+# ── Visit counter (in-memory; resets on dyno restart) ──────────────────
+import threading as _threading
+_visit_lock = _threading.Lock()
+_visit_counts = {}        # path -> count
+_visit_first_seen = datetime.now()
+
+
+@app.before_request
+def _count_visit():
+    if not request.endpoint:
+        return
+    # Only count human-facing pages, not API spam or static files
+    countable = {"index", "product_page"}
+    if request.endpoint not in countable:
+        return
+    key = request.path
+    with _visit_lock:
+        _visit_counts[key] = _visit_counts.get(key, 0) + 1
+        _visit_counts["_total"] = _visit_counts.get("_total", 0) + 1
+
+
+@app.route("/admin/stats")
+def admin_stats():
+    # Auth via admin password as ?p= query param so you can bookmark
+    if not ADMIN_PASSWORD or request.args.get("p") != ADMIN_PASSWORD:
+        return ("Append ?p=<ADMIN_PASSWORD> to the URL.", 401, {"Content-Type": "text/plain"})
+    with _visit_lock:
+        data = dict(_visit_counts)
+    rows = []
+    label_map = {
+        "/": "Home",
+        "/p/chartedge": "ChartEdge",
+        "/p/tradepulse_us": "TradePulse US",
+        "/p/tradepulse_sar": "TradePulse SAR",
+    }
+    for path, label in label_map.items():
+        rows.append({"label": label, "path": path, "count": data.get(path, 0)})
+    return render_template(
+        "admin_stats.html",
+        rows=rows,
+        total=data.get("_total", 0),
+        first_seen=_visit_first_seen.isoformat(timespec="seconds"),
+        now=datetime.now().isoformat(timespec="seconds"),
+    )
+
+
 @app.route("/admin/diag")
 def admin_diag():
     """Public diagnostic — no auth required. Shows whether env vars are set

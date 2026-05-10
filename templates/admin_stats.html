@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+{% block title %}Visit Stats{% endblock %}
+{% block body %}
+<section class="hero">
+  <h1>📊 Visit Stats</h1>
+  <p>Page views since {{ first_seen }}. Resets on every Render restart/redeploy.</p>
+</section>
+
+<div class="stats-summary">
+  <div class="stat-big">
+    <div class="stat-num">{{ total }}</div>
+    <div class="stat-lbl">Total page views</div>
+  </div>
+  <div class="stat-meta">
+    <div>Tracking since: <code>{{ first_seen }}</code></div>
+    <div>Server time now: <code>{{ now }}</code></div>
+  </div>
+</div>
+
+<div class="table-wrap" style="max-width: 800px;">
+  <table>
+    <thead><tr><th>Page</th><th>Path</th><th style="text-align:right">Views</th></tr></thead>
+    <tbody>
+      {% for row in rows %}
+      <tr>
+        <td><strong>{{ row.label }}</strong></td>
+        <td><code>{{ row.path }}</code></td>
+        <td style="text-align:right; font-variant-numeric: tabular-nums;">{{ row.count }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+
+<p class="muted" style="margin-top:18px;font-size:13px;color:var(--muted);max-width:800px">
+  This counter lives in the server's memory. When Render restarts the service (after a code push, daily cycling on free tier, or admin upload),
+  the counts reset to zero. For permanent analytics with unique-visitor counts, country breakdown, and traffic sources, plug in a free service like
+  <a href="https://goatcounter.com" target="_blank" rel="noopener" style="color:var(--accent)">GoatCounter</a> or
+  <a href="https://www.cloudflare.com/web-analytics/" target="_blank" rel="noopener" style="color:var(--accent)">Cloudflare Web Analytics</a>.
+</p>
+{% endblock %}
