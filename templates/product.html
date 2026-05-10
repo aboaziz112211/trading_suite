@@ -16,6 +16,17 @@
 </div>
 {% endif %}
 
+<div class="disclaimer">
+  <div class="disc-ar" dir="rtl" lang="ar">
+    <strong>إخلاء مسؤولية:</strong>
+    هذه اللوحة لأغراض إعلامية وتعليمية فقط. لا يُعد ما هو معروض هنا توصية مالية أو نصيحة استثمارية أو عرضاً لشراء أو بيع الأوراق المالية. التداول ينطوي على مخاطر خسارة. استشر مستشاراً مالياً مرخصاً قبل اتخاذ أي قرارات استثمارية.
+  </div>
+  <div class="disc-en" lang="en">
+    <strong>Disclaimer:</strong>
+    This dashboard is for informational and educational purposes only. Nothing shown here constitutes a financial recommendation, investment advice, or an offer to buy or sell securities. Trading involves risk of loss. Consult a licensed financial advisor before making any investment decisions.
+  </div>
+</div>
+
 <iframe id="productFrame" class="product-frame" src="{{ url_for('product_file', key=key) }}" title="{{ product.title }}"></iframe>
 
 {% if auto_load_data %}
