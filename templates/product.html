@@ -6,9 +6,6 @@
     <h1>{{ product.title }}</h1>
     <p>{{ product.tagline }}</p>
   </div>
-  <div class="actions">
-    <a class="btn" href="{{ url_for('product_file', key=key) }}" target="_blank" rel="noopener">Open in new tab</a>
-  </div>
 </section>
 
 {% if needs_ibkr %}
