@@ -119,16 +119,45 @@
     doc.head.appendChild(style);
   }
 
+  function replaceBrandText(doc){
+    // Replace "Bloomberg" mentions with neutral wording so the data source isn't exposed.
+    // Walks all text nodes in the iframe body. Idempotent — only runs once.
+    if(!doc || !doc.body) return;
+    if(doc.body.dataset.brandStripped === '1') return;
+    doc.body.dataset.brandStripped = '1';
+    var walker = doc.createTreeWalker(doc.body, NodeFilter.SHOW_TEXT, null, false);
+    var nodes = [];
+    var n;
+    while((n = walker.nextNode())) {
+      if (n.nodeValue && /Bloomberg/i.test(n.nodeValue)) nodes.push(n);
+    }
+    nodes.forEach(function(node){
+      node.nodeValue = node.nodeValue
+        .replace(/Bloomberg XLSX/gi, 'Live Feed')
+        .replace(/Bloomberg RT/gi, 'Live RT')
+        .replace(/Bloomberg/gi, 'Live');
+    });
+  }
+
   iframe.addEventListener('load', function(){
     setTimeout(async function(){
       var doc = getDoc();
       if(!doc) return;
       hideUploadUI(doc);
+      replaceBrandText(doc);
       // ORDER MATTERS — feed ChartEdge CSV first (step 1 in the dashboard's
       // workflow), then xlsx (step 3). Reversing this leaves the scan empty.
       await load(doc, CSV_URL, CSV_NAME, 'text/csv', 'ce-in');
       await new Promise(function(r){ setTimeout(r, 1500); });
       await load(doc, XLSX_URL, XLSX_NAME, XLSX_MIME, 'bbg-in');
+      // Some text gets re-rendered after data loads — replace once more
+      setTimeout(function(){
+        var d = getDoc();
+        if (d) {
+          d.body.dataset.brandStripped = '';
+          replaceBrandText(d);
+        }
+      }, 3000);
 
       // Re-poll only the price feed (xlsx). The ChartEdge CSV was loaded once on
       // page open above — it's a daily scan and doesn't change throughout the day.
