@@ -1,0 +1,121 @@
+{% extends "base.html" %}
+{% block title %}TASI Brief · {{ date }}{% endblock %}
+{% block body %}
+
+{% set today = brief.yahoo.today if brief.yahoo else None %}
+{% set prev = brief.yahoo.prev if brief.yahoo else None %}
+
+<section class="hero hero-branded">
+  <img src="{{ url_for('static', filename='chartedge_logo.svg') }}" alt="ChartEdge" class="hero-logo" onerror="this.style.display='none'">
+  <div>
+    <h1>📊 TASI Closing Brief · {{ date }}</h1>
+    <p>Saudi Tadawul session snapshot · published {{ brief.generated_at }}</p>
+  </div>
+</section>
+
+{% if today %}
+{% set chg_pts = today.close - prev.close if prev else 0 %}
+{% set chg_pct = (chg_pts / prev.close * 100) if prev and prev.close else 0 %}
+<section class="report-hero">
+  <div class="rh-left">
+    <div class="rh-label">TASI · {{ today.date }}</div>
+    <div class="rh-price">{{ '{:,.2f}'.format(today.close) }}</div>
+    <div class="rh-chg {{ 'up' if chg_pts >= 0 else 'down' }}">
+      {{ '▲' if chg_pts >= 0 else '▼' }} {{ '{:+,.2f}'.format(chg_pts) }} pts
+      &nbsp;({{ '{:+.2f}'.format(chg_pct) }}%)
+    </div>
+  </div>
+  <div class="rh-right">
+    <div class="rh-stat"><div class="lbl">OPEN</div><div class="val">{{ '{:,.2f}'.format(today.open) }}</div></div>
+    <div class="rh-stat"><div class="lbl">HIGH</div><div class="val">{{ '{:,.2f}'.format(today.high) }}</div></div>
+    <div class="rh-stat"><div class="lbl">LOW</div><div class="val">{{ '{:,.2f}'.format(today.low) }}</div></div>
+    <div class="rh-stat"><div class="lbl">VOL</div><div class="val">{{ '{:,.1f}M'.format(today.volume / 1e6) }}</div></div>
+  </div>
+</section>
+{% endif %}
+
+<section class="report-section">
+  <h2>🌡️ Market Health</h2>
+  <div class="metric-grid">
+    {% if brief.breadth.total_ma200 %}
+    <div class="metric"><div class="m-val">{{ ((100 * brief.breadth.above_ma200) / brief.breadth.total_ma200) | round(0) | int }}%</div><div class="m-lbl">Above 200MA</div></div>
+    {% endif %}
+    <div class="metric"><div class="m-val">{{ brief.breadth.new_highs }}</div><div class="m-lbl">New 52W Highs</div></div>
+    <div class="metric"><div class="m-val">{{ brief.breadth.new_lows }}</div><div class="m-lbl">New 52W Lows</div></div>
+    <div class="metric"><div class="m-val up">{{ brief.breadth.advancers }}</div><div class="m-lbl">Advancers</div></div>
+    <div class="metric"><div class="m-val down">{{ brief.breadth.decliners }}</div><div class="m-lbl">Decliners</div></div>
+    {% if brief.breadth.ad_ratio %}
+    <div class="metric"><div class="m-val">{{ '{:.2f}'.format(brief.breadth.ad_ratio) }}</div><div class="m-lbl">A/D Ratio</div></div>
+    {% endif %}
+  </div>
+</section>
+
+<section class="report-section report-cols">
+  <div>
+    <h2>🚀 Top Gainers</h2>
+    <table class="report-table">
+      <thead><tr><th>Ticker</th><th class="r">% Day</th><th class="r">Last</th></tr></thead>
+      <tbody>
+        {% for s in brief.top_gainers %}
+        <tr><td><b>{{ s['Ticker'].split('.')[0] }}</b></td><td class="r up">+{{ '{:.2f}'.format(s['%1D']) }}%</td><td class="r">{{ '{:,.2f}'.format(s['Last Price']) }}</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  <div>
+    <h2>📉 Top Losers</h2>
+    <table class="report-table">
+      <thead><tr><th>Ticker</th><th class="r">% Day</th><th class="r">Last</th></tr></thead>
+      <tbody>
+        {% for s in brief.top_losers %}
+        <tr><td><b>{{ s['Ticker'].split('.')[0] }}</b></td><td class="r down">{{ '{:.2f}'.format(s['%1D']) }}%</td><td class="r">{{ '{:,.2f}'.format(s['Last Price']) }}</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<section class="report-section">
+  <h2>🎯 ChartEdge Scan <small>({{ brief.scan_total }} stocks)</small></h2>
+  <div class="metric-grid">
+    <div class="metric metric-tag"><div class="m-val">{{ brief.stage2_count }}</div><div class="m-lbl">✅ Stage 2</div></div>
+    <div class="metric metric-tag"><div class="m-val">{{ brief.potential_count }}</div><div class="m-lbl">📍 Potential</div></div>
+    <div class="metric metric-tag"><div class="m-val">{{ brief.score10_count }}</div><div class="m-lbl">🏆 Score 10/10</div></div>
+  </div>
+</section>
+
+<section class="report-section">
+  <h2>🏆 Top Ranked Picks</h2>
+  <table class="report-table">
+    <thead><tr><th>Ticker</th><th>Company</th><th class="r">Score</th><th>Stage</th><th class="r">RS</th><th class="r">12m</th></tr></thead>
+    <tbody>
+      {% for r in brief.top_picks %}
+      <tr>
+        <td><b>{{ r['Ticker'].split('.')[0] }}</b></td>
+        <td dir="rtl" lang="ar">{{ r.get('Company','').strip('"') }}</td>
+        <td class="r"><b>{{ r.get('Score','—') }}/10</b></td>
+        <td>{{ r.get('Stage','—') }}</td>
+        <td class="r">{{ r.get('RS','—') }}</td>
+        <td class="r">{{ r.get('12m%','—') }}%</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</section>
+
+<section class="credits" style="margin-top:24px">
+  <img src="{{ url_for('static', filename='chartedge_logo.svg') }}" alt="ChartEdge" class="credits-logo" onerror="this.style.display='none'">
+  <div class="credits-text">
+    <div class="credits-line"><b>ChartEdge Analytics</b> · Brief archived {{ brief.generated_at }}</div>
+    <div class="credits-links">
+      <a href="{{ url_for('brief_index') }}">📅 All briefs</a>
+      <span class="credits-sep">·</span>
+      <a href="{{ url_for('market_report') }}">📊 Live Market Report</a>
+      <span class="credits-sep">·</span>
+      <a href="https://t.me/+R_m5lVLFnBJhYWJk" target="_blank" rel="noopener">📢 Channel</a>
+      <span class="credits-sep">·</span>
+      <a href="https://x.com/chartedgeai" target="_blank" rel="noopener">𝕏 @chartedgeai</a>
+    </div>
+  </div>
+</section>
+{% endblock %}

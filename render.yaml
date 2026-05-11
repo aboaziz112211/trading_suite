@@ -22,3 +22,5 @@ services:
         sync: false
       - key: SA_PUSH_TOKEN
         sync: false
+      - key: CRON_TOKEN
+        sync: false

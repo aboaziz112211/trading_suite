@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% block title %}Closing Brief Archive{% endblock %}
+{% block body %}
+<section class="hero hero-branded">
+  <img src="{{ url_for('static', filename='chartedge_logo.svg') }}" alt="ChartEdge" class="hero-logo" onerror="this.style.display='none'">
+  <div>
+    <h1>📅 Closing Brief Archive</h1>
+    <p>Daily TASI closing snapshots — auto-published at 15:30 AST Sun–Thu.</p>
+  </div>
+</section>
+
+{% if not dates %}
+<div class="notice">
+  No briefs published yet. The first one will appear after today's 15:30 AST run.
+</div>
+{% else %}
+<div class="cards" style="display:grid; grid-template-columns:repeat(auto-fit,minmax(180px,1fr)); gap:12px;">
+  {% for d in dates %}
+  <a class="card" href="{{ url_for('brief_archived', date_str=d) }}">
+    <div class="card-tag">CLOSE</div>
+    <h2>{{ d }}</h2>
+    <p>TASI session brief</p>
+    <span class="open">View →</span>
+  </a>
+  {% endfor %}
+</div>
+{% endif %}
+{% endblock %}

@@ -123,6 +123,7 @@ def _resolve_upload_target(filename: str, market_form: str = None, raw: bytes = 
 
 US_PUSH_TOKEN = _secret("US_PUSH_TOKEN")
 SA_PUSH_TOKEN = _secret("SA_PUSH_TOKEN")
+CRON_TOKEN    = _secret("CRON_TOKEN")
 # in-memory live US feed: bytes of xlsx + last update timestamp
 _US_STATE = {"xlsx": None, "updated": None, "rows": 0}
 # in-memory live SA feed: raw xlsx bytes pushed by sar_feed.py from the user's PC
@@ -368,6 +369,141 @@ def _compute_brief_data():
 def market_report():
     """Closing brief for the Saudi market."""
     return render_template("report.html", **_compute_brief_data())
+
+
+# ── Brief archive: snapshots saved per day ──────────────────────────────
+BRIEFS_DIR = DATA_DIR / "briefs"
+BRIEFS_DIR.mkdir(parents=True, exist_ok=True)
+
+
+def _serialize_brief(brief):
+    """Make the brief data JSON-safe (drop heavy objects, keep what's needed)."""
+    def keep(s):
+        wanted = ["Ticker","Last Price","%1D","%1M","%YTD","Volume","Avg Vol 30D",
+                  "_vol_ratio","Company","Stage","Score","RS","12m%"]
+        return {k: s.get(k) for k in wanted if k in s or k == "_vol_ratio"}
+    return {
+        "generated_at": brief.get("generated_at"),
+        "yahoo": brief.get("yahoo"),
+        "stage2_count": brief.get("stage2_count"),
+        "potential_count": brief.get("potential_count"),
+        "score10_count": brief.get("score10_count"),
+        "scan_total": brief.get("scan_total"),
+        "top_picks": [keep(r) for r in (brief.get("top_picks") or [])],
+        "top_gainers": [keep(s) for s in (brief.get("top_gainers") or [])],
+        "top_losers": [keep(s) for s in (brief.get("top_losers") or [])],
+        "vol_leaders": [keep(s) for s in (brief.get("vol_leaders") or [])],
+        "breadth": brief.get("breadth"),
+    }
+
+
+def _commit_brief_to_github(date_str, payload_bytes):
+    """Commit data/briefs/<date>.json to GitHub. Returns (ok, message)."""
+    if not GH_PAT:
+        return False, "GH_PAT not set; saved locally only"
+    import requests as _rq
+    path = f"data/briefs/{date_str}.json"
+    api = f"https://api.github.com/repos/{GH_REPO}/contents/{path}"
+    headers = {"Authorization": f"token {GH_PAT}",
+               "Accept": "application/vnd.github.v3+json",
+               "User-Agent": "trading-suite-cron"}
+    sha = None
+    try:
+        r = _rq.get(api, headers=headers, params={"ref": GH_BRANCH}, timeout=20)
+        if r.status_code == 200:
+            sha = r.json().get("sha")
+    except Exception:
+        pass
+    payload = {
+        "message": f"Closing brief {date_str}",
+        "content": base64.b64encode(payload_bytes).decode("ascii"),
+        "branch": GH_BRANCH,
+    }
+    if sha:
+        payload["sha"] = sha
+    try:
+        r = _rq.put(api, headers=headers, json=payload, timeout=60)
+        if r.status_code in (200, 201):
+            return True, "committed"
+        return False, f"GitHub PUT {r.status_code}: {r.text[:200]}"
+    except Exception as e:
+        return False, f"exception: {e}"
+
+
+@app.route("/cron/closing-brief", methods=["GET", "POST"])
+def cron_closing_brief():
+    """Triggered by external cron (e.g. cron-job.org) at 15:30 AST Sun-Thu.
+    Generates today's brief from live data, saves to disk + GitHub. Idempotent."""
+    if not CRON_TOKEN:
+        return {"error": "server missing CRON_TOKEN"}, 500
+    token = request.args.get("token") or request.headers.get("X-Cron-Token")
+    if token != CRON_TOKEN:
+        return {"error": "bad token"}, 401
+
+    import json as _json
+    brief = _compute_brief_data()
+    today = datetime.now().strftime("%Y-%m-%d")
+    serial = _serialize_brief(brief)
+    raw = _json.dumps(serial, indent=2, default=str).encode("utf-8")
+
+    # Save to local disk (ephemeral on Render but instant)
+    local_path = BRIEFS_DIR / f"{today}.json"
+    try:
+        local_path.write_bytes(raw)
+    except Exception:
+        pass
+
+    # Commit to GitHub for permanence
+    ok, msg = _commit_brief_to_github(today, raw)
+
+    return {
+        "ok": True, "date": today, "bytes": len(raw),
+        "github_committed": ok, "github_message": msg,
+        "tasi_close": serial.get("yahoo", {}).get("today", {}).get("close") if serial.get("yahoo") else None,
+        "stage2": serial.get("stage2_count"),
+        "score10": serial.get("score10_count"),
+    }
+
+
+def _load_brief(date_str):
+    """Load a brief JSON from disk."""
+    p = BRIEFS_DIR / f"{date_str}.json"
+    if not p.exists():
+        return None
+    try:
+        import json as _json
+        return _json.loads(p.read_text(encoding="utf-8"))
+    except Exception:
+        return None
+
+
+def _list_briefs():
+    """Return list of dates with saved briefs (newest first)."""
+    if not BRIEFS_DIR.exists():
+        return []
+    files = sorted(
+        [p for p in BRIEFS_DIR.glob("*.json") if len(p.stem) == 10],
+        key=lambda p: p.stem, reverse=True,
+    )
+    return [p.stem for p in files]
+
+
+@app.route("/brief")
+def brief_index():
+    """Public archive of all saved closing briefs."""
+    dates = _list_briefs()
+    return render_template("brief_index.html", dates=dates)
+
+
+@app.route("/brief/<date_str>")
+def brief_archived(date_str):
+    """Public view of a specific date's archived brief."""
+    if not (len(date_str) == 10 and date_str.count("-") == 2):
+        abort(404)
+    data = _load_brief(date_str)
+    if not data:
+        abort(404)
+    return render_template("brief_view.html", date=date_str, brief=data)
 
 
 def _tk(t):
