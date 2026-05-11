@@ -117,7 +117,7 @@
     <tbody>
       {% for r in top_picks %}
       <tr>
-        <td><b>{{ r.get('Ticker','') }}</b></td>
+        <td><b>{{ r.get('Ticker','').split('.')[0] }}</b></td>
         <td dir="rtl" lang="ar">{{ r.get('Company','').strip('"') }}</td>
         <td class="r"><b>{{ r.get('Score','—') }}/10</b></td>
         <td>{{ r.get('Stage','—') }}</td>

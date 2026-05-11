@@ -166,6 +166,9 @@
       v = v.replace(/\bUSv\d+(\.\d+)?\b/gi, 'US');
       v = v.replace(/\s*[—\-]\s*Boss\s+Report\b/gi, '');
       v = v.replace(/\bBoss\s+Report\b/gi, '');
+      // 0a. Strip ".SR" suffix from any ticker (e.g. "2380.SR" -> "2380")
+      v = v.replace(/\.SR\b/g, '');
+      v = v.replace(/\.sr\b/g, '');
 
       // 1. Surgical removals first — strip the source-attribution chunks cleanly
       v = v.replace(/\s*[·•+]\s*ChartEdge\s*\+\s*Bloomberg XLSX/gi, '');
