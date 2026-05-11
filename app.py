@@ -359,17 +359,26 @@ def _compute_brief_data(for_date: str = None):
     top_g = sorted(valid_pct, key=lambda s: pct(s), reverse=True)[:5]
     top_l = sorted(valid_pct, key=lambda s: pct(s))[:5]
 
+    # ── Match TradePulse SA dashboard rules exactly (updateBreadth in TradePulse_SARv1_LIVE.html) ──
     above_ma200 = sum(1 for s in stocks if num(s.get("MA 200D Pct Chg")) is not None and s["MA 200D Pct Chg"] > 0)
     total_ma200 = sum(1 for s in stocks if num(s.get("MA 200D Pct Chg")) is not None)
+    # Dashboard: new high = today's High touched/exceeded 52W high (within 0.2%)
     new_highs = sum(1 for s in stocks
-                    if num(s.get("Last Price")) and num(s.get("52W High")) and s["52W High"] > 0
-                    and s["Last Price"] / s["52W High"] >= 0.99)
+                    if num(s.get("High")) and num(s.get("52W High")) and s["52W High"] > 0
+                    and s["High"] >= s["52W High"] * 0.998)
+    # Dashboard: new low = today's Low touched/breached 52W low (within 0.2%)
     new_lows = sum(1 for s in stocks
-                   if num(s.get("Last Price")) and num(s.get("52W Low")) and s["52W Low"] > 0
-                   and s["Last Price"] / s["52W Low"] <= 1.01)
+                   if num(s.get("Low")) and num(s.get("52W Low")) and s["52W Low"] > 0
+                   and s["Low"] <= s["52W Low"] * 1.002)
+    # Dashboard: advancers/decliners use %1D (chg)
     adv = sum(1 for s in valid_pct if pct(s) > 0)
     dec = sum(1 for s in valid_pct if pct(s) < 0)
+    unch = sum(1 for s in stocks if num(s.get("%1D")) is None or s.get("%1D") == 0)
     ad_ratio = (adv / dec) if dec else None
+    # Above 50MA — dashboard uses Mov Avg 50; only counts rows where MA50 is non-null
+    has50 = [s for s in stocks if num(s.get("Mov Avg 50")) is not None
+             and num(s.get("Last Price")) is not None]
+    abv50 = sum(1 for s in has50 if s["Last Price"] > s["Mov Avg 50"])
 
     def vol_ratio(s):
         v = num(s.get("Volume"))
@@ -398,8 +407,11 @@ def _compute_brief_data(for_date: str = None):
         "vol_leaders": vol_leaders,
         "breadth": {
             "above_ma200": above_ma200, "total_ma200": total_ma200,
+            "above_ma50": abv50, "total_ma50": len(has50),
             "new_highs": new_highs, "new_lows": new_lows,
-            "advancers": adv, "decliners": dec, "ad_ratio": ad_ratio,
+            "advancers": adv, "decliners": dec, "unchanged": unch,
+            "ad_ratio": ad_ratio,
+            "total_stocks": len(stocks),
         },
         "generated_at": datetime.now().isoformat(timespec="seconds"),
         "market_source": market_source,
