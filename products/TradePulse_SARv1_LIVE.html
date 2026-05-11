@@ -170,6 +170,33 @@ h1{font-size:18px;font-weight:700;}
 .bw-m{font-size:9px;font-weight:700;padding:1px 5px;border-radius:5px;background:#F4F3EF;color:#1a1a18;}
 .bw-gap{font-size:12px;font-weight:800;direction:ltr;margin-top:4px;}
 .bw-empty{text-align:center;padding:16px;color:#6b6b65;font-size:11px;}
+/* PULLBACK WATCH */
+.pb-wrap{background:#fff;border:1.5px solid #B5D4F4;border-radius:12px;padding:14px 16px;margin-bottom:12px;display:none;}
+.pb-wrap.show{display:block;}
+.pb-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;}
+.pb-title{font-size:13px;font-weight:800;color:#185FA5;}
+.pb-count{font-size:10px;font-weight:700;color:#1a1a18;background:#E6F1FB;padding:2px 8px;border-radius:10px;}
+.pb-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;}
+.pb-card{background:#F0F7FF;border:1px solid #B5D4F4;border-radius:9px;padding:10px 12px;transition:all .15s;}
+.pb-card:hover{box-shadow:0 2px 10px rgba(24,95,165,.12);}
+.pb-card.reclaim{border-color:#3B6D11;background:#F5FFF0;animation:pbPulse 2s infinite;}
+@keyframes pbPulse{0%,100%{box-shadow:none}50%{box-shadow:0 0 0 4px rgba(59,109,17,.35);}}
+.pb-tag{font-size:9px;font-weight:700;padding:2px 6px;border-radius:5px;}
+.pb-tag-reclaim{background:#EAF3DE;color:#3B6D11;border:0.5px solid #C0DD97;}
+.pb-tag-test{background:#FAEEDA;color:#BA7517;border:0.5px solid #FAC775;}
+.pb-tag-below{background:#FDE8E8;color:#A32D2D;border:0.5px solid #F4B8B8;}
+.pb-nm{font-size:10px;color:#6b6b65;margin-bottom:5px;}
+.pb-row{display:flex;align-items:baseline;gap:6px;margin-bottom:4px;}
+.pb-price{font-size:16px;font-weight:800;direction:ltr;}
+.pb-chg{font-size:10px;font-weight:700;direction:ltr;}
+.pb-levels{display:grid;grid-template-columns:1fr 1fr 1fr;gap:4px;margin-top:6px;}
+.pb-lv{background:#F4F3EF;border-radius:5px;padding:4px 6px;}
+.pb-lv-lbl{font-size:8px;font-weight:700;text-transform:uppercase;letter-spacing:.04em;color:#6b6b65;}
+.pb-lv-val{font-size:11px;font-weight:800;direction:ltr;}
+.pb-metrics{display:flex;gap:4px;margin-top:6px;flex-wrap:wrap;}
+.pb-m{font-size:9px;font-weight:700;padding:1px 5px;border-radius:5px;background:#F4F3EF;color:#1a1a18;}
+.pb-ma{font-size:11px;font-weight:700;direction:ltr;margin-top:4px;}
+
 
 /* TOP 3 */
 .top3{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:12px;}
@@ -585,6 +612,15 @@ document.addEventListener('drop',      function(e){
   <div class="bw-grid" id="bw-grid"></div>
 </div>
 
+
+<!-- PULLBACK WATCH -->
+<div class="pb-wrap" id="pb-wrap">
+  <div class="pb-hdr">
+    <span class="pb-title">📉 Pullback Watch — Leaders Retesting 50MA</span>
+    <span class="pb-count" id="pb-count">0</span>
+  </div>
+  <div class="pb-grid" id="pb-grid"></div>
+</div>
 <!-- PARSE DIAGNOSTIC (shown when unexpected results) -->
 <div id="parse-diag" style="display:none;background:#FFF3CD;border:1.5px solid #FFC107;border-radius:10px;padding:12px 16px;margin-bottom:12px;font-size:11px;font-family:monospace;white-space:pre-wrap;color:#856404;max-height:200px;overflow:auto"></div>
 
@@ -641,7 +677,7 @@ document.addEventListener('drop',      function(e){
 </div>
 
 <div class="footer">
-  <span>🇸🇦 TradePulse SARv1 · TASI · 10-SEPA · VCP Pivot · 22 GICS · Bloomberg RT</span>
+  <span>🇸🇦 TradePulse SARv1.1 · TASI · 10-SEPA · VCP Pivot · 22 GICS · Bloomberg RT</span>
   <span class="fl" id="ft">—</span>
   <span id="tp-ver" style="color:#bbb;font-size:9px"></span>
 </div>
@@ -651,7 +687,7 @@ document.addEventListener('drop',      function(e){
 // ══════════════════════════════════════════════
 // VERSION — used to verify which build is running
 // ══════════════════════════════════════════════
-const TP_VERSION = 'SARv1-2026-05-05';
+const TP_VERSION = 'SARv1.1-2026-05-11';
 console.log('%c[TradePulse] ' + TP_VERSION + ' loaded', 'color:#3B6D11;font-weight:bold;font-size:13px');
 
 // ══════════════════════════════════════════════
@@ -1590,6 +1626,7 @@ function parseChartEdge(text, filename) {
 
   render(); renderTop3(); updateSummary(); updateBreadth(); renderSectors();
   try { renderBreakoutWatch(); } catch(e) { console.error('[TradePulse] ❌ renderBreakoutWatch error:', e); }
+  try { renderPullbackWatch(); } catch(e) { console.error('[TradePulse] ❌ renderPullbackWatch error:', e); }
   renderLeaderboard(); checkVolSpikes(); showShareBtn();
   toast('📊 ChartEdge loaded',`${stocks.length} stocks · ${buys} BUY · ${onr} On Radar`);
 }
@@ -1906,6 +1943,7 @@ function parseBloomberg(text, filename) {
   // ── Step 5: Update UI ──────────────────────────────────────────────────
   updateSummary(); render(); renderTop3(); updateBreadth(); renderSectors();
   try { renderBreakoutWatch(); } catch(e) { console.error('[TradePulse] ❌ renderBreakoutWatch error (bbg):', e); }
+  try { renderPullbackWatch(); } catch(e) { console.error('[TradePulse] ❌ renderPullbackWatch error (bbg):', e); }
   renderLeaderboard(); checkVolSpikes(); showShareBtn();
 
   const t = nowStr();
@@ -2461,6 +2499,99 @@ function renderBreakoutWatch() {
   }).join('');
 }
 
+
+// ══════════════════════════════════════════════════════
+// PULLBACK WATCH — Leaders retesting 50MA
+// Stop = last 30D low (Bloomberg) or 50MA×0.97 fallback
+// Completely isolated: reads STOCKS[], pb-* ids only
+// ══════════════════════════════════════════════════════
+function renderPullbackWatch() {
+  const wrap = el('pb-wrap'); if (!wrap) return;
+  if (!STOCKS.length) return;
+
+  const price = s => s.livePrice || s.price;
+
+  // Filter: Stage2 · RS≥80 · MA stack intact · price within 8% below OR 5% above 50MA · trending (12m≥20%)
+  const candidates = STOCKS.filter(s => {
+    if (s.stage !== 'stage2') return false;
+    if (s.rs < 80) return false;
+    if (!s.ma50 || !s.ma150 || !s.ma200) return false;
+    if (!(s.ma50 > s.ma150 && s.ma150 > s.ma200)) return false;
+    if (s.pct12 < 20) return false;
+    const p = price(s);
+    const distPct = (p - s.ma50) / s.ma50 * 100;  // + = above, - = below
+    return distPct >= -8 && distPct <= 5;           // within band around 50MA
+  }).sort((a, b) => b.rs - a.rs);                   // best RS first
+
+  if (!candidates.length) { wrap.style.display = 'none'; return; }
+
+  wrap.style.display = 'block';
+  wrap.classList.add('show');
+  el('pb-count').textContent = candidates.length + ' on pullback watch';
+
+  el('pb-grid').innerHTML = candidates.map(s => {
+    const p       = price(s);
+    const distPct = (p - s.ma50) / s.ma50 * 100;
+
+    // Status tag
+    const isReclaim = distPct >  0.5;
+    const isAt      = distPct >= -0.5 && distPct <= 0.5;
+    const isBelow   = distPct < -0.5;
+
+    const tag = isReclaim
+      ? '<span class="pb-tag pb-tag-reclaim">✅ RECLAIMING 50MA</span>'
+      : isAt
+      ? '<span class="pb-tag pb-tag-test">〰 AT 50MA</span>'
+      : '<span class="pb-tag pb-tag-below">⏳ BELOW 50MA</span>';
+
+    const cardCls = isReclaim ? 'pb-card reclaim' : 'pb-card';
+
+    // Stop = 30D low (Bloomberg) if available, else 50MA × 0.97
+    const lastLow   = s.lo30d && s.lo30d > 0 ? s.lo30d : null;
+    const stopPrice = lastLow ? +(lastLow * 0.99).toFixed(2) : +(s.ma50 * 0.97).toFixed(2);
+    const stopLabel = lastLow ? 'Last Low' : '~50MA−3%';
+    const risk      = p > stopPrice ? (p - stopPrice) : null;
+
+    // R:R to previous high
+    const target = s.high52 || s.breakout_level;
+    const rr     = (risk && target && target > p)
+                   ? ((target - p) / risk).toFixed(1)
+                   : null;
+
+    const entry = p.toFixed(2);
+    const ma50v = s.ma50.toFixed(2);
+    const liveDot = s.isLive ? '<span style="font-size:7px;color:#3B6D11;margin-left:3px">● LIVE</span>' : '';
+    const prcColor = s.isLive ? '#3B6D11' : '#1a1a18';
+
+    return `<div class="${cardCls}">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;">
+        <span class="bw-tk">${dtk(s)}</span>
+        ${tag}
+      </div>
+      <div class="pb-nm">${s.company}</div>
+      <div class="pb-row">
+        <span class="pb-price" style="color:${prcColor}">${entry}</span>${liveDot}
+        ${s.liveChg != null ? '<span class="pb-chg" style="color:' + (s.liveChg >= 0 ? '#3B6D11' : '#A32D2D') + '">' + (s.liveChg >= 0 ? '+' : '') + s.liveChg.toFixed(2) + '%</span>' : ''}
+      </div>
+      <div class="pb-ma" style="color:${isReclaim?'#3B6D11':isAt?'#BA7517':'#A32D2D'}">
+        50MA ${ma50v} · ${distPct>=0?'+':''}${distPct.toFixed(1)}%
+      </div>
+      <div class="pb-levels">
+        <div class="pb-lv"><div class="pb-lv-lbl">Entry</div><div class="pb-lv-val" style="color:#185FA5">${entry}</div></div>
+        <div class="pb-lv"><div class="pb-lv-lbl">${stopLabel}</div><div class="pb-lv-val" style="color:#A32D2D">${stopPrice}</div></div>
+        <div class="pb-lv"><div class="pb-lv-lbl">Target</div><div class="pb-lv-val" style="color:#3B6D11">${target ? target.toFixed(2) : '—'}</div></div>
+      </div>
+      <div class="pb-metrics">
+        <span class="pb-m" style="background:#E6F1FB;color:#185FA5">RS ${s.rs}</span>
+        <span class="pb-m" style="background:#EAF3DE;color:#3B6D11">Boss ${s.total}</span>
+        <span class="pb-m">12m +${s.pct12}%</span>
+        ${risk ? '<span class="pb-m" style="background:#FDE8E8;color:#A32D2D">Risk ' + risk.toFixed(2) + '</span>' : ''}
+        ${rr   ? '<span class="pb-m" style="background:#EAF3DE;color:#3B6D11">R:R ' + rr + ':1</span>' : ''}
+        ${lastLow ? '' : '<span class="pb-m" style="color:#BA7517" title="Connect Bloomberg for exact last low">⚠ est. stop</span>'}
+      </div>
+    </div>`;
+  }).join('');
+}
 // ══════════════════════════════════════════════
 // TABLE RENDER
 // ══════════════════════════════════════════════
