@@ -192,13 +192,44 @@ def _clean(v):
     return v
 
 
-def load_live_data():
-    # Prefer the live in-memory feed pushed by sar_feed.py; fall back to disk.
+def _close_snapshot_path(date_str: str) -> Path:
+    """Path to the frozen post-close xlsx snapshot for a given date."""
+    return DATA_DIR / "sa_close" / f"{date_str}.xlsx"
+
+
+def load_live_data(for_date: str = None):
+    """Read TASI live data.
+
+    Resolution order:
+      1. If `for_date` is given AND a frozen close snapshot exists for it -> use it.
+      2. Live in-memory feed pushed by sar_feed.py (most recent intraday).
+      3. Disk `all.xlsx` last uploaded manually (may be stale).
+    """
+    import io
+    if for_date:
+        snap = _close_snapshot_path(for_date)
+        if snap.exists():
+            df = pd.read_excel(snap, sheet_name=LIVE_XLSX_SHEET)
+            df.columns = [str(c) for c in df.columns]
+            df = df.dropna(axis=1, how="all")
+            bad = df.columns.str.startswith("Unnamed") | df.columns.str.lower().isin(["nan", "nat"])
+            df = df.loc[:, ~bad]
+            df = df.dropna(subset=[df.columns[0]])
+            rows = [{c: _clean(v) for c, v in r.items()} for r in df.to_dict(orient="records")]
+            return {
+                "columns": list(df.columns),
+                "rows": rows,
+                "row_count": len(rows),
+                "updated_at": datetime.now().isoformat(timespec="seconds"),
+                "source": f"close_snapshot:{for_date}",
+            }
+
     if _SA_STATE.get("xlsx"):
-        import io
         df = pd.read_excel(io.BytesIO(_SA_STATE["xlsx"]), sheet_name=LIVE_XLSX_SHEET)
+        src = "live_memory"
     elif LIVE_XLSX_PATH.exists():
         df = pd.read_excel(LIVE_XLSX_PATH, sheet_name=LIVE_XLSX_SHEET)
+        src = "disk_all_xlsx"
     else:
         return {"error": f"xlsx not found: {LIVE_XLSX_PATH}", "rows": [], "columns": []}
     df.columns = [str(c) for c in df.columns]
@@ -212,6 +243,7 @@ def load_live_data():
         "rows": rows,
         "row_count": len(rows),
         "updated_at": datetime.now().isoformat(timespec="seconds"),
+        "source": src,
     }
 
 
@@ -271,8 +303,14 @@ def contact():
     )
 
 
-def _compute_brief_data():
-    """Build a unified data bundle for both /report and /agent."""
+def _compute_brief_data(for_date: str = None):
+    """Build a unified data bundle for both /report and /agent.
+
+    If `for_date` is given (YYYY-MM-DD), the breadth/movers are computed from
+    the frozen post-close snapshot for that date (if it exists). This is what
+    the cron uses so the brief is reproducible and can't be polluted by stale
+    intraday data after a Render redeploy.
+    """
     yahoo = fetch_tasi_yahoo()
 
     # Build scan summary from chartedge_sa.csv (in-memory if pushed, else disk)
@@ -294,9 +332,11 @@ def _compute_brief_data():
         key=lambda r: (-int(r["Score"]), -(int(r.get("RS") or "0") if (r.get("RS") or "").isdigit() else 0)),
     )[:10]
 
-    # Build movers + breadth from /api/data data (in-memory or disk)
-    market = load_live_data()
+    # Build movers + breadth from the close-snapshot if for_date is given,
+    # otherwise from live /api/data (in-memory or disk fallback).
+    market = load_live_data(for_date=for_date)
     api_rows = market.get("rows", [])
+    market_source = market.get("source", "unknown")
 
     def num(v):
         return v if isinstance(v, (int, float)) else None
@@ -362,13 +402,22 @@ def _compute_brief_data():
             "advancers": adv, "decliners": dec, "ad_ratio": ad_ratio,
         },
         "generated_at": datetime.now().isoformat(timespec="seconds"),
+        "market_source": market_source,
     }
 
 
 @app.route("/report")
 def market_report():
-    """Closing brief for the Saudi market."""
-    return render_template("report.html", **_compute_brief_data())
+    """Closing brief for the Saudi market.
+
+    After 15:30 AST, if today's frozen close snapshot exists, use it so the
+    page matches what the cron published. Before 15:30 (or if no snapshot),
+    fall back to live in-memory feed.
+    """
+    today = datetime.now().strftime("%Y-%m-%d")
+    use_snap = _close_snapshot_path(today).exists()
+    return render_template("report.html",
+                           **_compute_brief_data(for_date=today if use_snap else None))
 
 
 # ── Brief archive: snapshots saved per day ──────────────────────────────
@@ -397,13 +446,12 @@ def _serialize_brief(brief):
     }
 
 
-def _commit_brief_to_github(date_str, payload_bytes):
-    """Commit data/briefs/<date>.json to GitHub. Returns (ok, message)."""
+def _commit_bytes_to_github(repo_path: str, payload_bytes: bytes, message: str):
+    """Commit arbitrary bytes to a path in the GitHub repo. Returns (ok, message)."""
     if not GH_PAT:
         return False, "GH_PAT not set; saved locally only"
     import requests as _rq
-    path = f"data/briefs/{date_str}.json"
-    api = f"https://api.github.com/repos/{GH_REPO}/contents/{path}"
+    api = f"https://api.github.com/repos/{GH_REPO}/contents/{repo_path}"
     headers = {"Authorization": f"token {GH_PAT}",
                "Accept": "application/vnd.github.v3+json",
                "User-Agent": "trading-suite-cron"}
@@ -415,14 +463,14 @@ def _commit_brief_to_github(date_str, payload_bytes):
     except Exception:
         pass
     payload = {
-        "message": f"Closing brief {date_str}",
+        "message": message,
         "content": base64.b64encode(payload_bytes).decode("ascii"),
         "branch": GH_BRANCH,
     }
     if sha:
         payload["sha"] = sha
     try:
-        r = _rq.put(api, headers=headers, json=payload, timeout=60)
+        r = _rq.put(api, headers=headers, json=payload, timeout=90)
         if r.status_code in (200, 201):
             return True, "committed"
         return False, f"GitHub PUT {r.status_code}: {r.text[:200]}"
@@ -430,38 +478,211 @@ def _commit_brief_to_github(date_str, payload_bytes):
         return False, f"exception: {e}"
 
 
+def _commit_brief_to_github(date_str, payload_bytes):
+    """Commit data/briefs/<date>.json to GitHub. Returns (ok, message)."""
+    return _commit_bytes_to_github(
+        f"data/briefs/{date_str}.json",
+        payload_bytes,
+        f"Closing brief {date_str}",
+    )
+
+
+def _freeze_sa_close(date_str: str, force: bool = False):
+    """Freeze the current live SA feed as the post-close snapshot for date_str.
+
+    Writes to disk (data/sa_close/<date>.xlsx) AND commits to GitHub so it
+    survives Render redeploys. Returns (ok, message, source_meta).
+
+    Refuses to freeze if there's no in-memory feed unless force=True, in
+    which case it falls back to the disk all.xlsx (last manual upload).
+    """
+    snap_path = _close_snapshot_path(date_str)
+    snap_path.parent.mkdir(parents=True, exist_ok=True)
+
+    raw = None
+    source = None
+    feed_age_sec = None
+    if _SA_STATE.get("xlsx"):
+        raw = _SA_STATE["xlsx"]
+        source = "live_memory"
+        upd = _SA_STATE.get("updated")
+        if upd:
+            try:
+                dt = datetime.fromisoformat(upd)
+                feed_age_sec = (datetime.now() - dt).total_seconds()
+            except Exception:
+                feed_age_sec = None
+    elif force and LIVE_XLSX_PATH.exists():
+        raw = LIVE_XLSX_PATH.read_bytes()
+        source = "disk_fallback"
+    else:
+        return False, "no live SA feed in memory; refuse to freeze stale data", {
+            "source": None, "feed_age_sec": None,
+        }
+
+    try:
+        snap_path.write_bytes(raw)
+    except Exception as e:
+        return False, f"local write failed: {e}", {
+            "source": source, "feed_age_sec": feed_age_sec,
+        }
+
+    gh_ok, gh_msg = _commit_bytes_to_github(
+        f"data/sa_close/{date_str}.xlsx",
+        raw,
+        f"SA close snapshot {date_str}",
+    )
+    return True, f"frozen ({source}); github: {gh_msg}", {
+        "source": source,
+        "feed_age_sec": feed_age_sec,
+        "bytes": len(raw),
+        "github_committed": gh_ok,
+        "github_message": gh_msg,
+    }
+
+
 @app.route("/cron/closing-brief", methods=["GET", "POST"])
 def cron_closing_brief():
     """Triggered by external cron (e.g. cron-job.org) at 15:30 AST Sun-Thu.
-    Generates today's brief from live data, saves to disk + GitHub. Idempotent."""
+
+    Hardened flow:
+      1. Verify the live SA feed is fresh (in-memory, last push within fresh-window).
+      2. Freeze the current SA xlsx to disk + GitHub as the post-close snapshot.
+      3. Compute the brief explicitly from that snapshot (reproducible).
+      4. Save the brief JSON to disk + GitHub.
+
+    Query params:
+      token=<CRON_TOKEN>      required
+      force=1                 skip freshness check (use disk fallback if no feed)
+      date=YYYY-MM-DD         override the date stamp (default: today AST)
+    """
     if not CRON_TOKEN:
         return {"error": "server missing CRON_TOKEN"}, 500
     token = request.args.get("token") or request.headers.get("X-Cron-Token")
     if token != CRON_TOKEN:
         return {"error": "bad token"}, 401
 
+    force = request.args.get("force") == "1"
+    today = request.args.get("date") or datetime.now().strftime("%Y-%m-%d")
+
+    # ── Step 1: freshness check on the live feed ──
+    feed_age = None
+    upd = _SA_STATE.get("updated")
+    if upd:
+        try:
+            feed_age = (datetime.now() - datetime.fromisoformat(upd)).total_seconds()
+        except Exception:
+            feed_age = None
+
+    if not force:
+        if not _SA_STATE.get("xlsx"):
+            return {
+                "ok": False, "stage": "freshness_check",
+                "error": "no live SA feed in memory — sar_feed.py is not pushing. "
+                         "Start it on the desktop, wait for one push, then retry. "
+                         "Or call with &force=1 to use the last disk all.xlsx (NOT recommended).",
+            }, 409
+        # Allow up to 6h of staleness — covers the case where sar_feed.py last pushed
+        # at 15:20 and cron fires at 15:30. Reject older.
+        if feed_age is not None and feed_age > 6 * 3600:
+            return {
+                "ok": False, "stage": "freshness_check",
+                "error": f"live SA feed is stale (last push {feed_age/60:.0f} min ago). "
+                         "Restart sar_feed.py, wait for a push, then retry. "
+                         "Or call with &force=1 to use it anyway.",
+                "feed_age_sec": feed_age,
+            }, 409
+
+    # ── Step 2: freeze the snapshot ──
+    frozen_ok, frozen_msg, frozen_meta = _freeze_sa_close(today, force=force)
+    if not frozen_ok:
+        return {
+            "ok": False, "stage": "freeze",
+            "error": frozen_msg, "meta": frozen_meta,
+        }, 500
+
+    # ── Step 3: compute brief from the frozen snapshot ──
     import json as _json
-    brief = _compute_brief_data()
-    today = datetime.now().strftime("%Y-%m-%d")
+    brief = _compute_brief_data(for_date=today)
     serial = _serialize_brief(brief)
     raw = _json.dumps(serial, indent=2, default=str).encode("utf-8")
 
-    # Save to local disk (ephemeral on Render but instant)
+    # ── Step 4: save brief JSON ──
     local_path = BRIEFS_DIR / f"{today}.json"
     try:
         local_path.write_bytes(raw)
     except Exception:
         pass
-
-    # Commit to GitHub for permanence
     ok, msg = _commit_brief_to_github(today, raw)
 
     return {
         "ok": True, "date": today, "bytes": len(raw),
+        "snapshot": frozen_meta,
+        "snapshot_message": frozen_msg,
+        "market_source": brief.get("market_source"),
+        "feed_age_sec_at_trigger": feed_age,
         "github_committed": ok, "github_message": msg,
         "tasi_close": serial.get("yahoo", {}).get("today", {}).get("close") if serial.get("yahoo") else None,
         "stage2": serial.get("stage2_count"),
         "score10": serial.get("score10_count"),
+        "top_gainer": (serial.get("top_gainers") or [{}])[0].get("Ticker"),
+        "top_loser": (serial.get("top_losers") or [{}])[0].get("Ticker"),
+    }
+
+
+@app.route("/admin/regen-brief", methods=["GET", "POST"])
+def admin_regen_brief():
+    """Manually regenerate today's (or any) brief.
+
+    Useful when:
+      - The 15:30 cron fired but the data was wrong.
+      - You re-uploaded a post-close all.xlsx and want to rebuild from it.
+
+    Query params:
+      p=<ADMIN_PASSWORD>      required
+      date=YYYY-MM-DD         which brief to (re)generate (default: today)
+      force=1                 allow using disk fallback if no live feed
+      use_existing_snapshot=1 skip the freeze step; recompute from the existing snapshot
+    """
+    if not ADMIN_PASSWORD or request.args.get("p") != ADMIN_PASSWORD:
+        return ("Append ?p=<ADMIN_PASSWORD>. Optional: &date=YYYY-MM-DD&force=1&use_existing_snapshot=1",
+                401, {"Content-Type": "text/plain"})
+
+    today = request.args.get("date") or datetime.now().strftime("%Y-%m-%d")
+    force = request.args.get("force") == "1"
+    use_existing = request.args.get("use_existing_snapshot") == "1"
+
+    frozen_meta = {"source": "skipped_use_existing"}
+    frozen_msg = "skipped"
+    if not use_existing:
+        ok_freeze, frozen_msg, frozen_meta = _freeze_sa_close(today, force=force)
+        if not ok_freeze:
+            return {
+                "ok": False, "stage": "freeze",
+                "error": frozen_msg, "meta": frozen_meta,
+            }, 409
+
+    import json as _json
+    brief = _compute_brief_data(for_date=today)
+    serial = _serialize_brief(brief)
+    raw = _json.dumps(serial, indent=2, default=str).encode("utf-8")
+    local_path = BRIEFS_DIR / f"{today}.json"
+    try:
+        local_path.write_bytes(raw)
+    except Exception:
+        pass
+    gh_ok, gh_msg = _commit_brief_to_github(today, raw)
+
+    return {
+        "ok": True, "date": today, "bytes": len(raw),
+        "snapshot": frozen_meta, "snapshot_message": frozen_msg,
+        "market_source": brief.get("market_source"),
+        "github_committed": gh_ok, "github_message": gh_msg,
+        "tasi_close": serial.get("yahoo", {}).get("today", {}).get("close") if serial.get("yahoo") else None,
+        "stage2": serial.get("stage2_count"),
+        "score10": serial.get("score10_count"),
+        "top_gainer": (serial.get("top_gainers") or [{}])[0].get("Ticker"),
+        "top_loser": (serial.get("top_losers") or [{}])[0].get("Ticker"),
     }
 
 
@@ -681,7 +902,9 @@ def agent():
         return ("Server missing ADMIN_PASSWORD env var.", 500, {"Content-Type": "text/plain"})
     if request.args.get("p") != ADMIN_PASSWORD:
         return render_template("admin_gate.html"), 401
-    brief = _compute_brief_data()
+    today = datetime.now().strftime("%Y-%m-%d")
+    use_snap = _close_snapshot_path(today).exists()
+    brief = _compute_brief_data(for_date=today if use_snap else None)
     drafts = _build_tweet_drafts(brief)
     return render_template("agent.html", drafts=drafts, brief=brief)
 
@@ -798,10 +1021,25 @@ def api_sa_push():
 
 @app.route("/api/sa/status")
 def api_sa_status():
+    age = None
+    upd = _SA_STATE.get("updated")
+    if upd:
+        try:
+            age = (datetime.now() - datetime.fromisoformat(upd)).total_seconds()
+        except Exception:
+            age = None
+    # List frozen close snapshots so admin can see what's been captured
+    snap_dir = DATA_DIR / "sa_close"
+    snapshots = []
+    if snap_dir.exists():
+        snapshots = sorted([p.stem for p in snap_dir.glob("*.xlsx")], reverse=True)[:10]
     return {
         "have_data": bool(_SA_STATE.get("xlsx")),
         "bytes": _SA_STATE.get("size", 0),
         "updated": _SA_STATE.get("updated"),
+        "age_sec": age,
+        "fresh": (age is not None and age < 600),  # last push within 10 min
+        "close_snapshots": snapshots,
     }
 
 
