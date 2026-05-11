@@ -370,6 +370,12 @@ def market_report():
     return render_template("report.html", **_compute_brief_data())
 
 
+def _tk(t):
+    """Clean a ticker for display in tweets: drop '.SR' suffix."""
+    if not t: return ""
+    return str(t).split(".")[0].strip()
+
+
 def _build_tweet_drafts(brief):
     """Generate tweet templates from the brief data. Returns list of draft cards."""
     yahoo = brief.get("yahoo")
@@ -413,13 +419,13 @@ def _build_tweet_drafts(brief):
         vol_str_ar = f" بحجم {vol_ratio*100:.0f}% من المتوسط" if vol_ratio and vol_ratio > 1.5 else ""
         en = (
             f"🚀 Today's top gainer on #TASI:\n\n"
-            f"#{g['Ticker']}  +{g['%1D']:.2f}%{vol_str_en}\n"
+            f"#{_tk(g['Ticker'])}  +{g['%1D']:.2f}%{vol_str_en}\n"
             f"🏷️ Last: {g['Last Price']:,.2f}\n\n"
             f"More setups → trading-suite-l9e4.onrender.com/report"
         )
         ar = (
             f"🚀 أعلى ارتفاع اليوم في #تاسي:\n\n"
-            f"#{g['Ticker']}  +{g['%1D']:.2f}%{vol_str_ar}\n"
+            f"#{_tk(g['Ticker'])}  +{g['%1D']:.2f}%{vol_str_ar}\n"
             f"🏷️ السعر: {g['Last Price']:,.2f}\n\n"
             f"المزيد → trading-suite-l9e4.onrender.com/report"
         )
@@ -436,8 +442,8 @@ def _build_tweet_drafts(brief):
         medals = ["🥇", "🥈", "🥉"]
         for i, s in enumerate(v):
             ratio = s.get("_vol_ratio", 0) * 100
-            en_lines.append(f"{medals[i]} #{s['Ticker']}  {ratio:.0f}% of 30D avg")
-            ar_lines.append(f"{medals[i]} #{s['Ticker']}  {ratio:.0f}% من المتوسط")
+            en_lines.append(f"{medals[i]} #{_tk(s['Ticker'])}  {ratio:.0f}% of 30D avg")
+            ar_lines.append(f"{medals[i]} #{_tk(s['Ticker'])}  {ratio:.0f}% من المتوسط")
         en_lines.append("\nWhen stocks trade 3x+ avg volume, it's worth a look.")
         ar_lines.append("\nالحجم 3x+ من المتوسط يستحق المتابعة.")
         en_lines.append("→ trading-suite-l9e4.onrender.com/report")
@@ -455,8 +461,8 @@ def _build_tweet_drafts(brief):
         for p in s10:
             rs = p.get("RS", "—")
             twm = p.get("12m%", "—")
-            en_lines.append(f"📈 #{p['Ticker']} — RS {rs}, 12m {twm}%")
-            ar_lines.append(f"📈 #{p['Ticker']} — قوة نسبية {rs}، عام {twm}%")
+            en_lines.append(f"📈 #{_tk(p['Ticker'])} — RS {rs}, 12m {twm}%")
+            ar_lines.append(f"📈 #{_tk(p['Ticker'])} — قوة نسبية {rs}، عام {twm}%")
         en_lines.append("\nAll Stage 2 confirmed.\nFull scan → trading-suite-l9e4.onrender.com/report")
         ar_lines.append("\nجميعها في المرحلة الثانية.\nالماسح الكامل → trading-suite-l9e4.onrender.com/report")
         drafts.append({"id": "picks", "title": "🏆 Top SEPA Picks",
@@ -494,10 +500,10 @@ def _build_tweet_drafts(brief):
         # T3 — top movers
         gn = (brief.get("top_gainers") or [])[:3]
         ls = (brief.get("top_losers") or [])[:3]
-        gn_en = "\n".join(f"#{s['Ticker']}  +{s['%1D']:.2f}%" for s in gn)
-        ls_en = "\n".join(f"#{s['Ticker']}  {s['%1D']:.2f}%" for s in ls)
-        gn_ar = "\n".join(f"#{s['Ticker']}  +{s['%1D']:.2f}%" for s in gn)
-        ls_ar = "\n".join(f"#{s['Ticker']}  {s['%1D']:.2f}%" for s in ls)
+        gn_en = "\n".join(f"#{_tk(s['Ticker'])}  +{s['%1D']:.2f}%" for s in gn)
+        ls_en = "\n".join(f"#{_tk(s['Ticker'])}  {s['%1D']:.2f}%" for s in ls)
+        gn_ar = "\n".join(f"#{_tk(s['Ticker'])}  +{s['%1D']:.2f}%" for s in gn)
+        ls_ar = "\n".join(f"#{_tk(s['Ticker'])}  {s['%1D']:.2f}%" for s in ls)
         thread.append({
             "en": f"3/ 🚀 Top movers\n\nGainers:\n{gn_en}\n\nLosers:\n{ls_en}",
             "ar": f"3/ 🚀 الأكثر حركة\n\nمرتفعون:\n{gn_ar}\n\nمتراجعون:\n{ls_ar}",
@@ -515,8 +521,8 @@ def _build_tweet_drafts(brief):
         })
         # T5 — top picks + CTA
         s10 = [p for p in (brief.get("top_picks") or []) if (p.get("Score") or "") == "10"][:3]
-        s10_en = "\n".join(f"#{p['Ticker']} — RS {p.get('RS','—')}" for p in s10)
-        s10_ar = "\n".join(f"#{p['Ticker']} — قوة نسبية {p.get('RS','—')}" for p in s10)
+        s10_en = "\n".join(f"#{_tk(p['Ticker'])} — RS {p.get('RS','—')}" for p in s10)
+        s10_ar = "\n".join(f"#{_tk(p['Ticker'])} — قوة نسبية {p.get('RS','—')}" for p in s10)
         thread.append({
             "en": f"5/ 🏆 Highest-conviction setups today:\n\n{s10_en}\n\n"
                   f"Full report + live dashboard → trading-suite-l9e4.onrender.com\n\n"
