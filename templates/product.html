@@ -155,6 +155,18 @@
     }
     nodes.forEach(function(node){
       var v = node.nodeValue;
+      // 0. Strip version numbers + "Boss Report" from headings
+      //    "TradePulse SARv1 — TASI Boss Report" -> "TradePulse TASI"
+      //    "TradePulse USv1.1 — NYSE/NASDAQ Boss Report" -> "TradePulse US"
+      v = v.replace(/TradePulse\s+SARv\d+(\.\d+)?\s*[—\-]\s*TASI\s+Boss\s+Report/gi, 'TradePulse TASI');
+      v = v.replace(/TradePulse\s+USv\d+(\.\d+)?\s*[—\-]\s*NYSE\/NASDAQ\s+Boss\s+Report/gi, 'TradePulse US');
+      v = v.replace(/TradePulse\s+SARv\d+(\.\d+)?/gi, 'TradePulse TASI');
+      v = v.replace(/TradePulse\s+USv\d+(\.\d+)?/gi, 'TradePulse US');
+      v = v.replace(/\bSARv\d+(\.\d+)?\b/gi, 'TASI');
+      v = v.replace(/\bUSv\d+(\.\d+)?\b/gi, 'US');
+      v = v.replace(/\s*[—\-]\s*Boss\s+Report\b/gi, '');
+      v = v.replace(/\bBoss\s+Report\b/gi, '');
+
       // 1. Surgical removals first — strip the source-attribution chunks cleanly
       v = v.replace(/\s*[·•+]\s*ChartEdge\s*\+\s*Bloomberg XLSX/gi, '');
       v = v.replace(/\s*[·•+]\s*ChartEdge\s*\+\s*IBKR Live/gi, '');

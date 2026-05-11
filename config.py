@@ -19,7 +19,7 @@ PRODUCTS = {
         "file": "TradePulse_USv1_LIVE.html",
     },
     "tradepulse_sar": {
-        "title": "TradePulse SAR",
+        "title": "TradePulse TASI",
         "tagline": "Saudi market live dashboard",
         "dir": PRODUCTS_DIR,
         "file": "TradePulse_SARv1_LIVE.html",
