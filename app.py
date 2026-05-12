@@ -1194,6 +1194,52 @@ _visit_first_seen = datetime.now()
 _COUNTABLE_ENDPOINTS = {"index", "product_page", "market_report", "contact"}
 
 
+# ── Maintenance / Under-Construction gate ──────────────────────────────
+# Toggle by setting MAINTENANCE=1 in Render env vars. Backend stays alive
+# so sar_feed.py/us_feed.py can still push, cron-job.org can still trigger
+# the closing brief, and you can still admin via ?p=ADMIN_PASSWORD.
+_MAINT_ALLOW_ENDPOINTS = {
+    "healthz",            # uptime monitor
+    "api_sa_push",        # sar_feed.py POST → keep the feed pipeline alive
+    "api_sa_status",
+    "api_us_push",
+    "api_us_status",
+    "cron_closing_brief", # external cron at 15:30 AST
+    "static",             # logo + css for the maintenance page itself
+    "data_file",          # /data/<filename> — closing brief json is downloadable
+}
+# Path prefixes that bypass the gate (covers /admin/*, /api/* etc.).
+_MAINT_ALLOW_PATH_PREFIXES = ("/admin", "/api/", "/cron/", "/static/", "/healthz")
+
+
+def _maintenance_active() -> bool:
+    v = _secret("MAINTENANCE", "")
+    return str(v).strip().lower() in ("1", "true", "yes", "on")
+
+
+@app.before_request
+def _maintenance_gate():
+    if not _maintenance_active():
+        return
+    # Admin with valid password bypasses (so you can preview the live site
+    # while everyone else sees the maintenance page).
+    if ADMIN_PASSWORD and request.args.get("p") == ADMIN_PASSWORD:
+        return
+    # Whitelisted endpoints + paths bypass.
+    if request.endpoint in _MAINT_ALLOW_ENDPOINTS:
+        return
+    path = request.path or ""
+    for pref in _MAINT_ALLOW_PATH_PREFIXES:
+        if path.startswith(pref):
+            return
+    # Everything else gets the maintenance page (HTTP 503 so search engines
+    # know it's temporary, not a real 404).
+    return render_template("maintenance.html"), 503, {
+        "Cache-Control": "no-store, max-age=0",
+        "Retry-After": "3600",  # hint to bots: check back in an hour
+    }
+
+
 @app.before_request
 def _count_visit():
     if not request.endpoint:

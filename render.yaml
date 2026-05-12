@@ -10,6 +10,11 @@ services:
         value: 3.12.6
       - key: REFRESH_SECONDS
         value: "30"
+      # Toggle "Under Construction" mode for public visitors.
+      # 1 = maintenance page shown to everyone (admin + APIs + cron stay alive).
+      # 0 (or unset) = site fully online. Change in Render dashboard → no redeploy.
+      - key: MAINTENANCE
+        value: "0"
       - key: GH_REPO
         value: aboaziz112211/trading_suite
       - key: GH_BRANCH

@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Under Construction · ChartEdge Analytics</title>
+  <link rel="icon" type="image/svg+xml" href="{{ url_for('static', filename='chartedge_logo.svg') }}">
+  <style>
+    :root {
+      --bg:#0c0c0a;
+      --panel:#161613;
+      --border:#272721;
+      --accent:#d4a84b;
+      --text:#e8e5dc;
+      --muted:#9b988a;
+    }
+    *{box-sizing:border-box}
+    html,body{margin:0;padding:0;background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;min-height:100vh}
+    body{display:flex;align-items:center;justify-content:center;padding:20px}
+    .card{
+      background:var(--panel);
+      border:1px solid var(--border);
+      border-radius:16px;
+      padding:48px 40px;
+      max-width:560px;
+      width:100%;
+      text-align:center;
+      box-shadow:0 10px 40px rgba(0,0,0,0.4);
+    }
+    .logo{
+      width:80px;height:80px;margin:0 auto 24px;display:block;
+      opacity:0.9;
+    }
+    h1{
+      font-size:28px;font-weight:700;letter-spacing:-0.3px;margin:0 0 8px;
+      color:var(--text);
+    }
+    .brand{
+      font-size:13px;color:var(--accent);font-weight:600;
+      letter-spacing:1.5px;text-transform:uppercase;margin-bottom:12px;
+    }
+    .icon{
+      font-size:48px;margin-bottom:8px;display:block;
+    }
+    .msg-en{
+      font-size:15px;color:var(--muted);line-height:1.6;margin:18px 0 6px;
+    }
+    .msg-ar{
+      font-size:15px;color:var(--muted);line-height:1.7;margin:6px 0 24px;
+      direction:rtl;font-family:"Tahoma","Segoe UI Arabic",sans-serif;
+    }
+    .divider{
+      height:1px;background:var(--border);margin:28px auto;width:80%;
+    }
+    .links{
+      display:flex;gap:16px;justify-content:center;flex-wrap:wrap;
+      font-size:14px;
+    }
+    .links a{
+      color:var(--accent);text-decoration:none;padding:8px 16px;
+      border:1px solid var(--border);border-radius:8px;
+      transition:all .15s;
+    }
+    .links a:hover{
+      background:var(--accent);color:var(--bg);border-color:var(--accent);
+    }
+    .footer-note{
+      margin-top:32px;font-size:11px;color:var(--muted);letter-spacing:0.5px;
+    }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <img src="{{ url_for('static', filename='chartedge_logo.svg') }}" alt="ChartEdge" class="logo" onerror="this.style.display='none'">
+    <div class="brand">ChartEdge Analytics</div>
+
+    <span class="icon">🚧</span>
+    <h1>Under Construction</h1>
+
+    <p class="msg-en">
+      We're making improvements to the platform.<br>
+      Please check back soon.
+    </p>
+    <p class="msg-ar" dir="rtl" lang="ar">
+      الموقع تحت الصيانة حالياً.<br>
+      نعمل على تحسينات — يرجى المعاودة لاحقاً.
+    </p>
+
+    <div class="divider"></div>
+
+    <div class="links">
+      <a href="https://t.me/+R_m5lVLFnBJhYWJk" target="_blank" rel="noopener">📢 Telegram Channel</a>
+      <a href="https://x.com/chartedgeai" target="_blank" rel="noopener">𝕏 @chartedgeai</a>
+    </div>
+
+    <div class="footer-note">© 2026 ChartEdge Analytics. All rights reserved.</div>
+  </div>
+</body>
+</html>
