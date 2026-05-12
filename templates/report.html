@@ -10,8 +10,8 @@
   </div>
 </section>
 
-{% set today = yahoo.today if yahoo else None %}
-{% set prev = yahoo.prev if yahoo else None %}
+{% set today = index.today if index else None %}
+{% set prev = index.prev if index else None %}
 
 {% if today %}
 {% set chg_pts = today.close - prev.close if prev else 0 %}
@@ -129,14 +129,14 @@
   </table>
 </section>
 
-{% if yahoo and yahoo.sessions %}
+{% if index and index.sessions %}
 <!-- 5-day history -->
 <section class="report-section">
   <h2>📅 Last 5 Sessions</h2>
   <table class="report-table">
     <thead><tr><th>Date</th><th class="r">Open</th><th class="r">High</th><th class="r">Low</th><th class="r">Close</th><th class="r">Volume</th></tr></thead>
     <tbody>
-      {% for s in yahoo.sessions %}
+      {% for s in index.sessions %}
       <tr {% if loop.last %}class="row-today"{% endif %}>
         <td><b>{{ s.date }}</b>{% if loop.last %} <span style="color:var(--accent);font-size:11px">· TODAY</span>{% endif %}</td>
         <td class="r">{{ '{:,.2f}'.format(s.open) if s.open else '—' }}</td>

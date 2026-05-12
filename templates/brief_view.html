@@ -2,8 +2,9 @@
 {% block title %}TASI Brief · {{ date }}{% endblock %}
 {% block body %}
 
-{% set today = brief.yahoo.today if brief.yahoo else None %}
-{% set prev = brief.yahoo.prev if brief.yahoo else None %}
+{% set _idx = brief.index or brief.yahoo %}
+{% set today = _idx.today if _idx else None %}
+{% set prev = _idx.prev if _idx else None %}
 
 <section class="hero hero-branded">
   <img src="{{ url_for('static', filename='chartedge_logo.svg') }}" alt="ChartEdge" class="hero-logo" onerror="this.style.display='none'">

@@ -247,45 +247,48 @@ def load_live_data(for_date: str = None):
     }
 
 
-_YAHOO_CACHE = {"ts": 0.0, "data": None}
-_YAHOO_TTL = 30 * 60  # 30 min
+def fetch_tasi_index(for_date: str = None):
+    """Read the TASI index OHLCV from the SASEIDX row of the Bloomberg xlsx.
 
+    Same source the TradePulse SA dashboard uses (the live xlsx pushed by
+    sar_feed.py). No external API.
 
-def fetch_tasi_yahoo():
-    """Fetch TASI 5-day daily history from Yahoo Finance. Cached 30 min."""
-    import time as _t
-    import urllib.request as _ur
-    now = _t.time()
-    if _YAHOO_CACHE["data"] and (now - _YAHOO_CACHE["ts"]) < _YAHOO_TTL:
-        return _YAHOO_CACHE["data"]
-    try:
-        url = "https://query1.finance.yahoo.com/v8/finance/chart/%5ETASI.SR?range=5d&interval=1d"
-        req = _ur.Request(url, headers={"User-Agent": "Mozilla/5.0"})
-        with _ur.urlopen(req, timeout=15) as resp:
-            d = __import__("json").loads(resp.read().decode("utf-8"))
-        r = (d.get("chart", {}).get("result") or [None])[0]
-        if not r:
-            return None
-        ts = r.get("timestamp", [])
-        q = (r.get("indicators", {}).get("quote") or [{}])[0]
-        sessions = []
-        for i, t in enumerate(ts):
-            sessions.append({
-                "date": datetime.utcfromtimestamp(t).strftime("%Y-%m-%d"),
-                "open": (q.get("open") or [None])[i] if i < len(q.get("open") or []) else None,
-                "high": (q.get("high") or [None])[i] if i < len(q.get("high") or []) else None,
-                "low":  (q.get("low")  or [None])[i] if i < len(q.get("low")  or []) else None,
-                "close": (q.get("close") or [None])[i] if i < len(q.get("close") or []) else None,
-                "volume": (q.get("volume") or [None])[i] if i < len(q.get("volume") or []) else None,
-            })
-        out = {"sessions": [s for s in sessions if s["close"] is not None]}
-        if out["sessions"]:
-            out["today"] = out["sessions"][-1]
-            out["prev"] = out["sessions"][-2] if len(out["sessions"]) >= 2 else None
-        _YAHOO_CACHE.update({"ts": now, "data": out})
-        return out
-    except Exception:
+    Returns dict shaped like:
+      {
+        "today": {"date": "...", "open":..., "high":..., "low":..., "close":..., "volume":...},
+        "prev":  {"close": ...}   # from Prev Cls column
+      }
+    or None if the index row can't be located.
+    """
+    market = load_live_data(for_date=for_date)
+    rows = market.get("rows", []) or []
+    saseidx = None
+    for r in rows:
+        t = (r.get("Ticker") or "").strip().upper()
+        if t == "SASEIDX" or t.startswith("SASEIDX"):
+            saseidx = r
+            break
+    if not saseidx:
         return None
+
+    def num(v):
+        return v if isinstance(v, (int, float)) else None
+
+    today = {
+        "date": for_date or datetime.now().strftime("%Y-%m-%d"),
+        "open":  num(saseidx.get("Open")),
+        "high":  num(saseidx.get("High")),
+        "low":   num(saseidx.get("Low")),
+        "close": num(saseidx.get("Last Price")),
+        "volume": num(saseidx.get("Volume")),
+    }
+    prev = None
+    pc = num(saseidx.get("Prev Cls"))
+    if pc is not None:
+        prev = {"close": pc}
+    if today["close"] is None:
+        return None
+    return {"today": today, "prev": prev, "source": "bloomberg_xlsx"}
 
 
 @app.route("/")
@@ -306,12 +309,15 @@ def contact():
 def _compute_brief_data(for_date: str = None):
     """Build a unified data bundle for both /report and /agent.
 
-    If `for_date` is given (YYYY-MM-DD), the breadth/movers are computed from
-    the frozen post-close snapshot for that date (if it exists). This is what
-    the cron uses so the brief is reproducible and can't be polluted by stale
-    intraday data after a Render redeploy.
+    All data — TASI index OHLCV, movers, breadth, volume leaders — comes from
+    the same Bloomberg xlsx that TradePulse SA reads (the live feed pushed by
+    sar_feed.py). No external APIs.
+
+    If `for_date` is given (YYYY-MM-DD), values come from the frozen post-close
+    snapshot for that date if it exists, so the brief is reproducible and can't
+    be polluted by stale intraday data after a Render redeploy.
     """
-    yahoo = fetch_tasi_yahoo()
+    tasi = fetch_tasi_index(for_date=for_date)
 
     # Build scan summary from chartedge_sa.csv (in-memory if pushed, else disk)
     import csv as _csv
@@ -396,7 +402,7 @@ def _compute_brief_data(for_date: str = None):
         s["_vol_ratio"] = vol_ratio(s)
 
     return {
-        "yahoo": yahoo,
+        "index": tasi,
         "stage2_count": len(stage2),
         "potential_count": len(potential),
         "score10_count": len(score10),
@@ -419,9 +425,13 @@ def _compute_brief_data(for_date: str = None):
 
 
 def _brief_to_report_ctx(brief_json, source_label):
-    """Adapt an archived brief JSON into the context shape report.html expects."""
+    """Adapt an archived brief JSON into the context shape report.html expects.
+
+    Accepts both the new "index" key and legacy "yahoo" key for back-compat with
+    any old archived brief JSONs that predate the rename.
+    """
     return {
-        "yahoo":          brief_json.get("yahoo"),
+        "index":          brief_json.get("index") or brief_json.get("yahoo"),
         "breadth":        brief_json.get("breadth") or {},
         "top_gainers":    brief_json.get("top_gainers") or [],
         "top_losers":     brief_json.get("top_losers") or [],
@@ -490,7 +500,7 @@ def _serialize_brief(brief):
         return {k: s.get(k) for k in wanted if k in s or k == "_vol_ratio"}
     return {
         "generated_at": brief.get("generated_at"),
-        "yahoo": brief.get("yahoo"),
+        "index": brief.get("index") or brief.get("yahoo"),
         "stage2_count": brief.get("stage2_count"),
         "potential_count": brief.get("potential_count"),
         "score10_count": brief.get("score10_count"),
@@ -679,7 +689,7 @@ def cron_closing_brief():
         "market_source": brief.get("market_source"),
         "feed_age_sec_at_trigger": feed_age,
         "github_committed": ok, "github_message": msg,
-        "tasi_close": serial.get("yahoo", {}).get("today", {}).get("close") if serial.get("yahoo") else None,
+        "tasi_close": (serial.get("index") or {}).get("today", {}).get("close") if serial.get("index") else None,
         "stage2": serial.get("stage2_count"),
         "score10": serial.get("score10_count"),
         "top_gainer": (serial.get("top_gainers") or [{}])[0].get("Ticker"),
@@ -735,7 +745,7 @@ def admin_regen_brief():
         "snapshot": frozen_meta, "snapshot_message": frozen_msg,
         "market_source": brief.get("market_source"),
         "github_committed": gh_ok, "github_message": gh_msg,
-        "tasi_close": serial.get("yahoo", {}).get("today", {}).get("close") if serial.get("yahoo") else None,
+        "tasi_close": (serial.get("index") or {}).get("today", {}).get("close") if serial.get("index") else None,
         "stage2": serial.get("stage2_count"),
         "score10": serial.get("score10_count"),
         "top_gainer": (serial.get("top_gainers") or [{}])[0].get("Ticker"),
@@ -792,9 +802,9 @@ def _tk(t):
 
 def _build_tweet_drafts(brief):
     """Generate tweet templates from the brief data. Returns list of draft cards."""
-    yahoo = brief.get("yahoo")
-    today = yahoo.get("today") if yahoo else None
-    prev = yahoo.get("prev") if yahoo else None
+    idx = brief.get("index") or brief.get("yahoo")  # accept legacy key from old archives
+    today = idx.get("today") if idx else None
+    prev = idx.get("prev") if idx else None
     breadth = brief.get("breadth") or {}
     site = "chartedge"  # short tag
     drafts = []

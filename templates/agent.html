@@ -12,8 +12,9 @@
 
 <div class="agent-meta">
   <div>Generated: <code>{{ brief.generated_at }}</code></div>
-  {% if brief.yahoo and brief.yahoo.today %}
-  <div>TASI close: <b>{{ '{:,.2f}'.format(brief.yahoo.today.close) }}</b> · {{ brief.yahoo.today.date }}</div>
+  {% set _idx = brief.index or brief.yahoo %}
+  {% if _idx and _idx.today %}
+  <div>TASI close: <b>{{ '{:,.2f}'.format(_idx.today.close) }}</b> · {{ _idx.today.date }}</div>
   {% endif %}
   <div>Scan: <b>{{ brief.scan_total }}</b> stocks · <b>{{ brief.stage2_count }}</b> Stage 2 · <b>{{ brief.score10_count }}</b> at 10/10</div>
   <div><a href="{{ url_for('agent') }}?p={{ request.args.get('p') }}" class="btn ghost" style="padding:6px 14px;font-size:13px">↻ Refresh drafts</a></div>
