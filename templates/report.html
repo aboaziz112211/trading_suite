@@ -63,7 +63,7 @@
       <thead><tr><th>Ticker</th><th class="r">% Day</th><th class="r">Last</th></tr></thead>
       <tbody>
         {% for s in top_gainers %}
-        <tr><td><b>{{ s['Ticker'] }}</b></td><td class="r up">+{{ '{:.2f}'.format(s['%1D']) }}%</td><td class="r">{{ '{:,.2f}'.format(s['Last Price']) }}</td></tr>
+        <tr><td><b>{{ s['Ticker'].split('.')[0] }}</b></td><td class="r up">+{{ '{:.2f}'.format(s['%1D']) }}%</td><td class="r">{{ '{:,.2f}'.format(s['Last Price']) }}</td></tr>
         {% endfor %}
       </tbody>
     </table>
@@ -74,7 +74,7 @@
       <thead><tr><th>Ticker</th><th class="r">% Day</th><th class="r">Last</th></tr></thead>
       <tbody>
         {% for s in top_losers %}
-        <tr><td><b>{{ s['Ticker'] }}</b></td><td class="r down">{{ '{:.2f}'.format(s['%1D']) }}%</td><td class="r">{{ '{:,.2f}'.format(s['Last Price']) }}</td></tr>
+        <tr><td><b>{{ s['Ticker'].split('.')[0] }}</b></td><td class="r down">{{ '{:.2f}'.format(s['%1D']) }}%</td><td class="r">{{ '{:,.2f}'.format(s['Last Price']) }}</td></tr>
         {% endfor %}
       </tbody>
     </table>
@@ -89,7 +89,7 @@
     <tbody>
       {% for s in vol_leaders %}
       <tr>
-        <td><b>{{ s['Ticker'] }}</b></td>
+        <td><b>{{ s['Ticker'].split('.')[0] }}</b></td>
         <td class="r"><b>{{ (s._vol_ratio * 100) | round(0) | int }}%</b></td>
         <td class="r">{{ '{:,.1f}M'.format(s['Volume'] / 1e6) if s['Volume'] >= 1e6 else '{:,.0f}'.format(s['Volume']) }}</td>
         <td class="r {{ 'up' if (s['%1D'] or 0) >= 0 else 'down' }}">{{ '{:+.2f}'.format(s['%1D']) }}%</td>
