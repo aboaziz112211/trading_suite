@@ -322,7 +322,15 @@ def _compute_brief_data(for_date: str = None):
     # Build scan summary from chartedge_sa.csv (in-memory if pushed, else disk)
     import csv as _csv
     import io as _io
+    # Prefer the frozen scan CSV for `for_date` (so an archived brief always
+    # uses the scan it was generated with), falling back to the live one.
+    scan_source = "live_csv"
     csv_path = DATA_DIR / "chartedge_sa.csv"
+    if for_date:
+        snap = _scan_snapshot_path(for_date)
+        if snap.exists():
+            csv_path = snap
+            scan_source = f"scan_snapshot:{for_date}"
     rows = []
     if csv_path.exists():
         try:
@@ -421,6 +429,7 @@ def _compute_brief_data(for_date: str = None):
         },
         "generated_at": datetime.now().isoformat(timespec="seconds"),
         "market_source": market_source,
+        "scan_source": scan_source,
     }
 
 
@@ -554,6 +563,45 @@ def _commit_brief_to_github(date_str, payload_bytes):
     )
 
 
+def _scan_snapshot_path(date_str: str) -> Path:
+    """Path to the frozen ChartEdge scan CSV for a given date."""
+    return DATA_DIR / "sa_scan" / f"{date_str}.csv"
+
+
+def _freeze_sa_scan(date_str: str):
+    """Freeze the current chartedge_sa.csv as the post-close scan for date_str.
+
+    The CSV is uploaded daily and changes day to day (new scores, new
+    Stage 2 promotions etc.), so we snapshot whatever's on disk at brief
+    generation time to disk + GitHub. Each archived brief becomes fully
+    reproducible from its (xlsx, csv) snapshot pair.
+
+    Returns (ok, message, meta). It's non-fatal if this fails — the brief
+    still gets built; we just lose the audit trail for that day.
+    """
+    csv_path = DATA_DIR / "chartedge_sa.csv"
+    if not csv_path.exists():
+        return False, "chartedge_sa.csv not on disk", {"source": None}
+    snap_path = _scan_snapshot_path(date_str)
+    snap_path.parent.mkdir(parents=True, exist_ok=True)
+    try:
+        raw = csv_path.read_bytes()
+        snap_path.write_bytes(raw)
+    except Exception as e:
+        return False, f"local write failed: {e}", {"source": "disk"}
+    gh_ok, gh_msg = _commit_bytes_to_github(
+        f"data/sa_scan/{date_str}.csv",
+        raw,
+        f"SA scan snapshot {date_str}",
+    )
+    return True, f"frozen; github: {gh_msg}", {
+        "source": "disk",
+        "bytes": len(raw),
+        "github_committed": gh_ok,
+        "github_message": gh_msg,
+    }
+
+
 def _freeze_sa_close(date_str: str, force: bool = False):
     """Freeze the current live SA feed as the post-close snapshot for date_str.
 
@@ -660,13 +708,16 @@ def cron_closing_brief():
                 "feed_age_sec": feed_age,
             }, 409
 
-    # ── Step 2: freeze the snapshot ──
+    # ── Step 2a: freeze the Bloomberg xlsx ──
     frozen_ok, frozen_msg, frozen_meta = _freeze_sa_close(today, force=force)
     if not frozen_ok:
         return {
-            "ok": False, "stage": "freeze",
+            "ok": False, "stage": "freeze_xlsx",
             "error": frozen_msg, "meta": frozen_meta,
         }, 500
+
+    # ── Step 2b: freeze the ChartEdge scan CSV (non-fatal if it fails) ──
+    scan_ok, scan_msg, scan_meta = _freeze_sa_scan(today)
 
     # ── Step 3: compute brief from the frozen snapshot ──
     import json as _json
@@ -686,6 +737,9 @@ def cron_closing_brief():
         "ok": True, "date": today, "bytes": len(raw),
         "snapshot": frozen_meta,
         "snapshot_message": frozen_msg,
+        "scan_snapshot": scan_meta,
+        "scan_snapshot_message": scan_msg,
+        "scan_snapshot_ok": scan_ok,
         "market_source": brief.get("market_source"),
         "feed_age_sec_at_trigger": feed_age,
         "github_committed": ok, "github_message": msg,
@@ -721,13 +775,17 @@ def admin_regen_brief():
 
     frozen_meta = {"source": "skipped_use_existing"}
     frozen_msg = "skipped"
+    scan_ok = None
+    scan_msg = "skipped"
+    scan_meta = {"source": "skipped_use_existing"}
     if not use_existing:
         ok_freeze, frozen_msg, frozen_meta = _freeze_sa_close(today, force=force)
         if not ok_freeze:
             return {
-                "ok": False, "stage": "freeze",
+                "ok": False, "stage": "freeze_xlsx",
                 "error": frozen_msg, "meta": frozen_meta,
             }, 409
+        scan_ok, scan_msg, scan_meta = _freeze_sa_scan(today)
 
     import json as _json
     brief = _compute_brief_data(for_date=today)
@@ -743,6 +801,8 @@ def admin_regen_brief():
     return {
         "ok": True, "date": today, "bytes": len(raw),
         "snapshot": frozen_meta, "snapshot_message": frozen_msg,
+        "scan_snapshot": scan_meta, "scan_snapshot_message": scan_msg,
+        "scan_snapshot_ok": scan_ok,
         "market_source": brief.get("market_source"),
         "github_committed": gh_ok, "github_message": gh_msg,
         "tasi_close": (serial.get("index") or {}).get("today", {}).get("close") if serial.get("index") else None,
