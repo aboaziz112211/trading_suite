@@ -68,24 +68,6 @@
 
 <iframe id="productFrame" class="product-frame" src="{{ url_for('product_file', key=key) }}" title="{{ product.title }}"></iframe>
 
-<section class="credits">
-  <img src="{{ url_for('static', filename='chartedge_logo.svg') }}" alt="ChartEdge" class="credits-logo" onerror="this.style.display='none'">
-  <div class="credits-text">
-    <div class="credits-line">Created by <b>ChartEdge Analytics</b> · AI Powered</div>
-    <div class="credits-links">
-      <a href="https://t.me/+R_m5lVLFnBJhYWJk" target="_blank" rel="noopener">📢 Channel · @chartedgeai</a>
-      <span class="credits-sep">·</span>
-      <a href="https://t.me/chartedgeai" target="_blank" rel="noopener">💬 Admin DM</a>
-      <span class="credits-sep">·</span>
-      <a href="https://x.com/chartedgeai" target="_blank" rel="noopener">𝕏 @chartedgeai</a>
-      {% if has_guide %}
-      <span class="credits-sep">·</span>
-      <a href="{{ guide_url }}" target="_blank" rel="noopener">📖 User Guide</a>
-      {% endif %}
-    </div>
-  </div>
-</section>
-
 {% if auto_load_data %}
 <script>
 (function(){
