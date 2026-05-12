@@ -1,328 +1,137 @@
 {
-  "generated_at": "2026-05-12T06:18:50",
+  "generated_at": "2026-05-12T08:58:16",
   "yahoo": {
-    "sessions": [
-      {
-        "date": "2026-05-05",
-        "open": 11077.5400390625,
-        "high": 11081.650390625,
-        "low": 10973.650390625,
-        "close": 11006.9697265625,
-        "volume": 285241900
-      },
-      {
-        "date": "2026-05-06",
-        "open": 11024.1396484375,
-        "high": 11052.8701171875,
-        "low": 10949.26953125,
-        "close": 10949.26953125,
-        "volume": 320962900
-      },
-      {
-        "date": "2026-05-07",
-        "open": 10986.990234375,
-        "high": 11044.7998046875,
-        "low": 10965.599609375,
-        "close": 11031.3203125,
-        "volume": 298896000
-      },
-      {
-        "date": "2026-05-10",
-        "open": 11060.6396484375,
-        "high": 11144.83984375,
-        "low": 11029.51953125,
-        "close": 11115.0703125,
-        "volume": 202193800
-      },
-      {
-        "date": "2026-05-11",
-        "open": 11113.58984375,
-        "high": 11192.1201171875,
-        "low": 11090.6904296875,
-        "close": 11158.4501953125,
-        "volume": 319177000
-      }
-    ],
     "today": {
       "date": "2026-05-11",
-      "open": 11113.58984375,
-      "high": 11192.1201171875,
-      "low": 11090.6904296875,
-      "close": 11158.4501953125,
-      "volume": 319177000
+      "open": 11113.59,
+      "high": 11192.12,
+      "low": 11090.69,
+      "close": 11158.45,
+      "volume": 313600000
     },
     "prev": {
-      "date": "2026-05-10",
-      "open": 11060.6396484375,
-      "high": 11144.83984375,
-      "low": 11029.51953125,
-      "close": 11115.0703125,
-      "volume": 202193800
+      "date": "2026-05-07",
+      "close": 11031.32
     }
   },
-  "stage2_count": 26,
-  "potential_count": 34,
-  "score10_count": 0,
-  "scan_total": 273,
-  "top_picks": [
-    {
-      "Ticker": "8313.SR",
-      "_vol_ratio": null,
-      "Company": "\u0631\u0633\u0646",
-      "Stage": "stage2",
-      "Score": "9",
-      "RS": "99",
-      "12m%": "81.8"
-    },
-    {
-      "Ticker": "4280.SR",
-      "_vol_ratio": null,
-      "Company": "\u0627\u0644\u0645\u0645\u0644\u0643\u0629",
-      "Stage": "stage2",
-      "Score": "9",
-      "RS": "97",
-      "12m%": "31.8"
-    },
-    {
-      "Ticker": "7200.SR",
-      "_vol_ratio": null,
-      "Company": "\u0627\u0645 \u0622\u064a \u0627\u0633",
-      "Stage": "stage2",
-      "Score": "9",
-      "RS": "95",
-      "12m%": "38.9"
-    },
-    {
-      "Ticker": "5110.SR",
-      "_vol_ratio": null,
-      "Company": "\u0627\u0644\u0633\u0639\u0648\u062f\u064a\u0629 \u0644\u0644\u0637\u0627\u0642\u0629",
-      "Stage": "stage2",
-      "Score": "9",
-      "RS": "95",
-      "12m%": "20.3"
-    },
-    {
-      "Ticker": "4337.SR",
-      "_vol_ratio": null,
-      "Company": "\u0627\u0644\u0639\u0632\u064a\u0632\u064a\u0629 \u0631\u064a\u062a",
-      "Stage": "stage2",
-      "Score": "9",
-      "RS": "92",
-      "12m%": "23.9"
-    },
-    {
-      "Ticker": "2380.SR",
-      "_vol_ratio": null,
-      "Company": "\u0628\u062a\u0631\u0648 \u0631\u0627\u0628\u063a",
-      "Stage": "stage2",
-      "Score": "9",
-      "RS": "90",
-      "12m%": "119.6"
-    },
-    {
-      "Ticker": "1321.SR",
-      "_vol_ratio": null,
-      "Company": "\u0623\u0646\u0627\u0628\u064a\u0628 \u0627\u0644\u0634\u0631\u0642",
-      "Stage": "stage2",
-      "Score": "9",
-      "RS": "90",
-      "12m%": "60.4"
-    },
-    {
-      "Ticker": "2020.SR",
-      "_vol_ratio": null,
-      "Company": "\u0633\u0627\u0628\u0643 \u0644\u0644\u0645\u063a\u0630\u064a\u0627\u062a \u0627\u0644\u0632\u0631\u0627\u0639\u064a\u0629",
-      "Stage": "stage2",
-      "Score": "9",
-      "RS": "90",
-      "12m%": "53.8"
-    },
-    {
-      "Ticker": "4190.SR",
-      "_vol_ratio": null,
-      "Company": "\u062c\u0631\u064a\u0631",
-      "Stage": "stage2",
-      "Score": "9",
-      "RS": "88",
-      "12m%": "22.0"
-    },
-    {
-      "Ticker": "2320.SR",
-      "_vol_ratio": null,
-      "Company": "\u0627\u0644\u0628\u0627\u0628\u0637\u064a\u0646",
-      "Stage": "stage2",
-      "Score": "9",
-      "RS": "87",
-      "12m%": "39.4"
-    }
-  ],
+  "breadth": {
+    "above_ma200": null,
+    "total_ma200": null,
+    "above_ma50": null,
+    "total_ma50": null,
+    "new_highs": 0,
+    "new_lows": 0,
+    "advancers": 132,
+    "decliners": 108,
+    "unchanged": null,
+    "ad_ratio": 1.22,
+    "total_stocks": 260
+  },
+  "stage2_count": 33,
+  "potential_count": 0,
+  "score10_count": 15,
+  "scan_total": 260,
   "top_gainers": [
     {
-      "Ticker": "SADAFCO",
-      "Last Price": 230.5,
-      "%1D": 9.971400260925293,
-      "%1M": 7.4592,
-      "%YTD": -6.6802,
-      "Volume": 288687,
-      "Avg Vol 30D": 32132.3,
-      "_vol_ratio": 8.984324184698886
+      "Ticker": "SADAFCO.SR",
+      "%1D": 9.97,
+      "Last Price": 233.8
     },
     {
-      "Ticker": "ALMARAI",
-      "Last Price": 45.22,
-      "%1D": 9.970800399780273,
-      "%1M": 5.6542,
-      "%YTD": 4.5307,
-      "Volume": 7106061,
-      "Avg Vol 30D": 1113134,
-      "_vol_ratio": 6.383832494560403
+      "Ticker": "ALMARAI.SR",
+      "%1D": 9.97,
+      "Last Price": 45.2
     },
     {
-      "Ticker": "NADEC",
-      "Last Price": 17.44,
-      "%1D": 9.06820011138916,
-      "%1M": 2.7696,
-      "%YTD": -5.1659,
-      "Volume": 8353144,
-      "Avg Vol 30D": 927678.4,
-      "_vol_ratio": 9.004353232758248
-    },
-    {
-      "Ticker": "MESC",
-      "Last Price": 32.5,
-      "%1D": 8.261199951171875,
-      "%1M": 10.1695,
-      "%YTD": 52.7974,
-      "Volume": 1491246,
-      "Avg Vol 30D": 679238.9,
-      "_vol_ratio": null
-    },
-    {
-      "Ticker": "ACWA",
-      "Last Price": 199.9,
-      "%1D": 7.995699882507324,
-      "%1M": 17.7267,
-      "%YTD": 9.956,
-      "Volume": 3384999,
-      "Avg Vol 30D": 459171.8,
-      "_vol_ratio": 7.371966222664371
+      "Ticker": "NADEC.SR",
+      "%1D": 9.07,
+      "Last Price": 17.15
     }
   ],
   "top_losers": [
     {
-      "Ticker": "JAHEZ",
-      "Last Price": 13.01,
-      "%1D": -7.071400165557861,
-      "%1M": 17.1017,
-      "%YTD": -9.7781,
-      "Volume": 5375963,
-      "Avg Vol 30D": 4638320,
-      "_vol_ratio": null
+      "Ticker": "JAHEZ.SR",
+      "%1D": -7.07,
+      "Last Price": 12.52
     },
     {
-      "Ticker": "ZIIC",
-      "Last Price": 34.76,
-      "%1D": -3.4444000720977783,
-      "%1M": -0.7424,
-      "%YTD": -9.2428,
-      "Volume": 2021668,
-      "Avg Vol 30D": 512631.3,
-      "_vol_ratio": null
+      "Ticker": "ZIIC.SR",
+      "%1D": -3.44,
+      "Last Price": 37.23
     },
     {
-      "Ticker": "DALLAH",
-      "Last Price": 112,
-      "%1D": -3.1142001152038574,
-      "%1M": -16.8523,
-      "%YTD": -10.757,
-      "Volume": 222267,
-      "Avg Vol 30D": 114602.5,
-      "_vol_ratio": null
-    },
-    {
-      "Ticker": "JOUF",
-      "Last Price": 5.27,
-      "%1D": -2.9465999603271484,
-      "%1M": 6.4646,
-      "%YTD": -16.6139,
-      "Volume": 392036,
-      "Avg Vol 30D": 360653.6,
-      "_vol_ratio": null
-    },
-    {
-      "Ticker": "CENOMI",
-      "Last Price": 14.9,
-      "%1D": -2.868299961090088,
-      "%1M": -6.875,
-      "%YTD": -22.1119,
-      "Volume": 654074,
-      "Avg Vol 30D": 1353319,
-      "_vol_ratio": null
+      "Ticker": "DALLAH.SR",
+      "%1D": -3.11,
+      "Last Price": 115.3
     }
   ],
   "vol_leaders": [
     {
-      "Ticker": "NADEC",
-      "Last Price": 17.44,
-      "%1D": 9.06820011138916,
-      "%1M": 2.7696,
-      "%YTD": -5.1659,
-      "Volume": 8353144,
-      "Avg Vol 30D": 927678.4,
-      "_vol_ratio": 9.004353232758248
+      "Ticker": "NADEC.SR",
+      "%1D": 9.07,
+      "Last Price": 17.15,
+      "_vol_ratio": 9.0,
+      "Volume": 8184275,
+      "Avg Vol 30D": 909364
     },
     {
-      "Ticker": "SADAFCO",
-      "Last Price": 230.5,
-      "%1D": 9.971400260925293,
-      "%1M": 7.4592,
-      "%YTD": -6.6802,
-      "Volume": 288687,
-      "Avg Vol 30D": 32132.3,
-      "_vol_ratio": 8.984324184698886
+      "Ticker": "SADAFCO.SR",
+      "%1D": 9.97,
+      "Last Price": 233.8,
+      "_vol_ratio": 8.98,
+      "Volume": 295703,
+      "Avg Vol 30D": 32929
     },
     {
-      "Ticker": "HB",
-      "Last Price": 31.84,
-      "%1D": 1.0793999433517456,
-      "%1M": 2.3794,
-      "%YTD": -0.5621,
-      "Volume": 411577,
-      "Avg Vol 30D": 51117.6,
-      "_vol_ratio": 8.051571278776782
-    },
-    {
-      "Ticker": "ACWA",
-      "Last Price": 199.9,
-      "%1D": 7.995699882507324,
-      "%1M": 17.7267,
-      "%YTD": 9.956,
-      "Volume": 3384999,
-      "Avg Vol 30D": 459171.8,
-      "_vol_ratio": 7.371966222664371
-    },
-    {
-      "Ticker": "ALMARAI",
-      "Last Price": 45.22,
-      "%1D": 9.970800399780273,
-      "%1M": 5.6542,
-      "%YTD": 4.5307,
-      "Volume": 7106061,
-      "Avg Vol 30D": 1113134,
-      "_vol_ratio": 6.383832494560403
+      "Ticker": "HB.SR",
+      "%1D": 0.64,
+      "Last Price": 31.5,
+      "_vol_ratio": 8.05,
+      "Volume": 403739,
+      "Avg Vol 30D": 50154
     }
   ],
-  "breadth": {
-    "above_ma200": 84,
-    "total_ma200": 258,
-    "above_ma50": 156,
-    "total_ma50": 260,
-    "new_highs": 1,
-    "new_lows": 7,
-    "advancers": 132,
-    "decliners": 108,
-    "unchanged": 21,
-    "ad_ratio": 1.2222222222222223,
-    "total_stocks": 261
-  }
+  "top_picks": [
+    {
+      "Ticker": "8313.SR",
+      "Company": "رسن",
+      "Stage": "stage2",
+      "Score": "10",
+      "RS": "98",
+      "12m%": "65.8"
+    },
+    {
+      "Ticker": "4280.SR",
+      "Company": "المملكة",
+      "Stage": "stage2",
+      "Score": "10",
+      "RS": "97",
+      "12m%": "22.1"
+    },
+    {
+      "Ticker": "7200.SR",
+      "Company": "ام آي اس",
+      "Stage": "stage2",
+      "Score": "10",
+      "RS": "93",
+      "12m%": "35.5"
+    },
+    {
+      "Ticker": "5110.SR",
+      "Company": "السعودية للطاقة",
+      "Stage": "stage2",
+      "Score": "10",
+      "RS": "91",
+      "12m%": "17.3"
+    },
+    {
+      "Ticker": "2380.SR",
+      "Company": "بترو رابغ",
+      "Stage": "stage2",
+      "Score": "10",
+      "RS": "90",
+      "12m%": "100.3"
+    }
+  ],
+  "market_source": "manual_override:2026-05-11"
 }
