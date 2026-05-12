@@ -418,18 +418,63 @@ def _compute_brief_data(for_date: str = None):
     }
 
 
+def _brief_to_report_ctx(brief_json, source_label):
+    """Adapt an archived brief JSON into the context shape report.html expects."""
+    return {
+        "yahoo":          brief_json.get("yahoo"),
+        "breadth":        brief_json.get("breadth") or {},
+        "top_gainers":    brief_json.get("top_gainers") or [],
+        "top_losers":     brief_json.get("top_losers") or [],
+        "vol_leaders":    brief_json.get("vol_leaders") or [],
+        "top_picks":      brief_json.get("top_picks") or [],
+        "stage2_count":   brief_json.get("stage2_count", 0),
+        "potential_count":brief_json.get("potential_count", 0),
+        "score10_count":  brief_json.get("score10_count", 0),
+        "scan_total":     brief_json.get("scan_total", 0),
+        "generated_at":   brief_json.get("generated_at"),
+        "market_source":  source_label,
+    }
+
+
 @app.route("/report")
 def market_report():
     """Closing brief for the Saudi market.
 
-    After 15:30 AST, if today's frozen close snapshot exists, use it so the
-    page matches what the cron published. Before 15:30 (or if no snapshot),
-    fall back to live in-memory feed.
+    Resolution order:
+      1. Today's frozen close snapshot (post-15:30 cron has run) -> live recompute.
+      2. Live in-memory feed pushed by sar_feed.py is fresh (<10 min old) -> live recompute.
+      3. Most recent archived brief JSON -> render that as the report.
+         (Avoids showing stale movers/breadth from a disk fallback xlsx.)
+      4. Pure live recompute (will use whatever disk has — last resort).
     """
     today = datetime.now().strftime("%Y-%m-%d")
-    use_snap = _close_snapshot_path(today).exists()
-    return render_template("report.html",
-                           **_compute_brief_data(for_date=today if use_snap else None))
+
+    # 1. today's frozen snapshot exists -> recompute from it
+    if _close_snapshot_path(today).exists():
+        return render_template("report.html", **_compute_brief_data(for_date=today))
+
+    # 2. live feed is fresh enough to recompute in real time
+    upd = _SA_STATE.get("updated")
+    fresh = False
+    if _SA_STATE.get("xlsx") and upd:
+        try:
+            age = (datetime.now() - datetime.fromisoformat(upd)).total_seconds()
+            fresh = age < 600  # 10 min
+        except Exception:
+            fresh = False
+    if fresh:
+        return render_template("report.html", **_compute_brief_data())
+
+    # 3. fall back to the latest archived brief (correct closing snapshot)
+    dates = _list_briefs()
+    if dates:
+        brief = _load_brief(dates[0])
+        if brief:
+            ctx = _brief_to_report_ctx(brief, f"archived_brief:{dates[0]}")
+            return render_template("report.html", **ctx)
+
+    # 4. last resort: pure live recompute (may use stale disk all.xlsx)
+    return render_template("report.html", **_compute_brief_data())
 
 
 # ── Brief archive: snapshots saved per day ──────────────────────────────
