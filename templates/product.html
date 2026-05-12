@@ -119,7 +119,9 @@
     style.textContent =
       '.wf, .cards { display: none !important; }\n' +
       '/* also kill any standalone Market Feed / ChartEdge cards if present */\n' +
-      '#card-ce, #card-bbg, #ce-drop, #bbg-drop { display: none !important; }';
+      '#card-ce, #card-bbg, #ce-drop, #bbg-drop { display: none !important; }\n' +
+      '/* TradePulse SAR (May-12 update): hide the new collapsible Data Loaders panel */\n' +
+      '.load-wrap, #load-wrap { display: none !important; }';
     doc.head.appendChild(style);
   }
 
