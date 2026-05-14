@@ -16,7 +16,7 @@ PRODUCTS = {
         "title": "TradePulse US",
         "tagline": "US market live dashboard",
         "dir": PRODUCTS_DIR,
-        "file": "TradePulse_USv1_LIVE.html",
+        "file": "TradePulse_USv2_LIVE.html",
     },
     "tradepulse_sar": {
         "title": "TradePulse TASI",

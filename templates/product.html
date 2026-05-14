@@ -121,7 +121,9 @@
       '/* also kill any standalone Market Feed / ChartEdge cards if present */\n' +
       '#card-ce, #card-bbg, #ce-drop, #bbg-drop { display: none !important; }\n' +
       '/* TradePulse SAR (May-12 update): hide the new collapsible Data Loaders panel */\n' +
-      '.load-wrap, #load-wrap { display: none !important; }';
+      '.load-wrap, #load-wrap { display: none !important; }\n' +
+      '/* TradePulse USv2 (Polygon bridge): hide the new manual-drop fallback zone */\n' +
+      '#manual-drop { display: none !important; }';
     doc.head.appendChild(style);
   }
 
@@ -135,7 +137,7 @@
     var nodes = [];
     var n;
     while((n = walker.nextNode())) {
-      if (n.nodeValue && /Bloomberg/i.test(n.nodeValue)) nodes.push(n);
+      if (n.nodeValue && /Bloomberg|IBKR|Polygon|Interactive Brokers/i.test(n.nodeValue)) nodes.push(n);
     }
     nodes.forEach(function(node){
       var v = node.nodeValue;
@@ -157,27 +159,42 @@
       // 1. Surgical removals first — strip the source-attribution chunks cleanly
       v = v.replace(/\s*[·•+]\s*ChartEdge\s*\+\s*Bloomberg XLSX/gi, '');
       v = v.replace(/\s*[·•+]\s*ChartEdge\s*\+\s*IBKR Live/gi, '');
+      v = v.replace(/\s*[·•+]\s*ChartEdge\s*\+\s*Polygon\.io\s+Live/gi, '');
       v = v.replace(/ChartEdge\s*\+\s*Bloomberg XLSX/gi, 'ChartEdge');
       v = v.replace(/ChartEdge\s*\+\s*IBKR Live/gi, 'ChartEdge');
+      v = v.replace(/ChartEdge\s*\+\s*Polygon\.io\s+Live/gi, 'ChartEdge');
       v = v.replace(/\s*[·•|]\s*Bloomberg RT\b/gi, '');
       v = v.replace(/\s*[·•|]\s*IBKR Live\b/gi, '');
+      v = v.replace(/\s*[·•|]\s*Polygon\.io\s+Live\b/gi, '');
       v = v.replace(/Data:\s*Bloomberg XLSX/gi, 'Data: Live');
       v = v.replace(/Data:\s*IBKR Live\s*\(us_feed\.py\)/gi, 'Data: Live');
       v = v.replace(/Data:\s*IBKR Live/gi, 'Data: Live');
+      v = v.replace(/Data:\s*Polygon\.io\s+Live\s*\(polygon_feed\.py\)/gi, 'Data: Live');
+      v = v.replace(/Data:\s*Polygon\.io\s+Live/gi, 'Data: Live');
+      v = v.replace(/Data:\s*Polygon/gi, 'Data: Live');
 
       // 2. Remove the upload-flow steps that reference the brands (in case .wf hide misses)
       v = v.replace(/Start IBKR bridge\s*\(us_feed\.py\)\s*[—-]?\s*TWS must be running/gi, '');
       v = v.replace(/Connect to IBKR Bridge/gi, '');
       v = v.replace(/IBKR bridge\s*\(us_feed\.py\)/gi, '');
+      v = v.replace(/Start Polygon bridge\s*\(polygon_feed\.py\)\s*[—-]?[^.\n]*/gi, '');
+      v = v.replace(/Connect to Polygon Bridge/gi, '');
+      v = v.replace(/Polygon bridge\s*\(polygon_feed\.py\)/gi, 'bridge');
+      v = v.replace(/Polygon\.io\s+SIP\s*[·•|]\s*WebSocket bridge[^·•|<]*/gi, 'Live · WebSocket');
+      v = v.replace(/Polygon\s+Developer tier\b[^.,]*/gi, '');
 
       // 3. Catch-all for any straggler mentions
       v = v.replace(/Bloomberg XLSX/gi, '');
       v = v.replace(/Bloomberg RT/gi, '');
       v = v.replace(/IBKR Live Feed/gi, '');
       v = v.replace(/IBKR Live/gi, '');
+      v = v.replace(/Polygon\.io\s+Live Feed/gi, 'Live Feed');
+      v = v.replace(/Polygon\.io\s+Live/gi, 'Live');
+      v = v.replace(/Polygon\.io/gi, '');
       v = v.replace(/Bloomberg/gi, '');
       v = v.replace(/IBKR/gi, '');
       v = v.replace(/Interactive Brokers/gi, '');
+      v = v.replace(/\bPolygon\b/gi, '');
       v = v.replace(/Connect IBKR/gi, '—');
 
       // 4. Tidy up trailing/double separators
