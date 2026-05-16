@@ -1,0 +1,282 @@
+{
+  "generated_at": "2026-05-16T16:20:13",
+  "index": {
+    "today": {
+      "date": "2026-05-14",
+      "open": 11020.07,
+      "high": 11067.86,
+      "low": 10992.76,
+      "close": 10995.44,
+      "volume": 268210561.0
+    },
+    "prev": {
+      "close": 11020.07
+    },
+    "source": "bloomberg_xlsx"
+  },
+  "stage2_count": 36,
+  "potential_count": 21,
+  "score10_count": 16,
+  "scan_total": 269,
+  "top_picks": [
+    {
+      "Ticker": "8313.SR",
+      "_vol_ratio": null,
+      "Company": "\u0631\u0633\u0646",
+      "Stage": "stage2",
+      "Score": "10",
+      "RS": "98",
+      "12m%": "79.6"
+    },
+    {
+      "Ticker": "4280.SR",
+      "_vol_ratio": null,
+      "Company": "\u0627\u0644\u0645\u0645\u0644\u0643\u0629",
+      "Stage": "stage2",
+      "Score": "10",
+      "RS": "95",
+      "12m%": "25.1"
+    },
+    {
+      "Ticker": "7200.SR",
+      "_vol_ratio": null,
+      "Company": "\u0627\u0645 \u0622\u064a \u0627\u0633",
+      "Stage": "stage2",
+      "Score": "10",
+      "RS": "95",
+      "12m%": "41.8"
+    },
+    {
+      "Ticker": "5110.SR",
+      "_vol_ratio": null,
+      "Company": "\u0627\u0644\u0633\u0639\u0648\u062f\u064a\u0629 \u0644\u0644\u0637\u0627\u0642\u0629",
+      "Stage": "stage2",
+      "Score": "10",
+      "RS": "95",
+      "12m%": "18.9"
+    },
+    {
+      "Ticker": "2380.SR",
+      "_vol_ratio": null,
+      "Company": "\u0628\u062a\u0631\u0648 \u0631\u0627\u0628\u063a",
+      "Stage": "stage2",
+      "Score": "10",
+      "RS": "90",
+      "12m%": "137.9"
+    },
+    {
+      "Ticker": "1321.SR",
+      "_vol_ratio": null,
+      "Company": "\u0623\u0646\u0627\u0628\u064a\u0628 \u0627\u0644\u0634\u0631\u0642",
+      "Stage": "stage2",
+      "Score": "10",
+      "RS": "90",
+      "12m%": "61.5"
+    },
+    {
+      "Ticker": "4344.SR",
+      "_vol_ratio": null,
+      "Company": "\u0633\u062f\u0643\u0648 \u0643\u0627\u0628\u064a\u062a\u0627\u0644 \u0631\u064a\u062a",
+      "Stage": "stage2",
+      "Score": "10",
+      "RS": "90",
+      "12m%": "14.1"
+    },
+    {
+      "Ticker": "2320.SR",
+      "_vol_ratio": null,
+      "Company": "\u0627\u0644\u0628\u0627\u0628\u0637\u064a\u0646",
+      "Stage": "stage2",
+      "Score": "10",
+      "RS": "87",
+      "12m%": "37.4"
+    },
+    {
+      "Ticker": "1831.SR",
+      "_vol_ratio": null,
+      "Company": "\u0645\u0647\u0627\u0631\u0629",
+      "Stage": "stage2",
+      "Score": "10",
+      "RS": "86",
+      "12m%": "29.3"
+    },
+    {
+      "Ticker": "2223.SR",
+      "_vol_ratio": null,
+      "Company": "\u0644\u0648\u0628\u0631\u064a\u0641",
+      "Stage": "stage2",
+      "Score": "10",
+      "RS": "83",
+      "12m%": "29.4"
+    }
+  ],
+  "top_gainers": [
+    {
+      "Ticker": "MAHARAH",
+      "Last Price": 6.71,
+      "%1D": 7.360000133514404,
+      "%1M": 7.36,
+      "%YTD": 4.1925,
+      "Volume": 24259081.0,
+      "Avg Vol 30D": 4755940,
+      "_vol_ratio": 5.100796267404551
+    },
+    {
+      "Ticker": "UIHC",
+      "Last Price": 44.0,
+      "%1D": 2.8036999702453613,
+      "%1M": -1.3851,
+      "%YTD": -18.1928,
+      "Volume": 678459.0,
+      "Avg Vol 30D": 333432,
+      "_vol_ratio": null
+    },
+    {
+      "Ticker": "SEDCO",
+      "Last Price": 7.76,
+      "%1D": 2.6454999446868896,
+      "%1M": 2.1053,
+      "%YTD": 15.8209,
+      "Volume": 780124.0,
+      "Avg Vol 30D": 243891.5,
+      "_vol_ratio": 3.1986518595359
+    },
+    {
+      "Ticker": "ALMUNAJE",
+      "Last Price": 60.25,
+      "%1D": 2.5532000064849854,
+      "%1M": 11.4709,
+      "%YTD": 20.5965,
+      "Volume": 591137.0,
+      "Avg Vol 30D": 422749.4,
+      "_vol_ratio": null
+    },
+    {
+      "Ticker": "SRECO",
+      "Last Price": 16.3,
+      "%1D": 2.4512999057769775,
+      "%1M": 14.8696,
+      "%YTD": 26.4546,
+      "Volume": 4090530.0,
+      "Avg Vol 30D": 1284030,
+      "_vol_ratio": 3.185696595873928
+    }
+  ],
+  "top_losers": [
+    {
+      "Ticker": "EMAAR",
+      "Last Price": 10.56,
+      "%1D": -4.5208001136779785,
+      "%1M": -0.9381,
+      "%YTD": 5.4945,
+      "Volume": 652591.0,
+      "Avg Vol 30D": 1088818,
+      "_vol_ratio": null
+    },
+    {
+      "Ticker": "NADEC",
+      "Last Price": 16.29,
+      "%1D": -4.176499843597412,
+      "%1M": -5.2356,
+      "%YTD": -11.4192,
+      "Volume": 2412246.0,
+      "Avg Vol 30D": 1396397,
+      "_vol_ratio": null
+    },
+    {
+      "Ticker": "MASAR",
+      "Last Price": 15.02,
+      "%1D": -4.148099899291992,
+      "%1M": -11.9578,
+      "%YTD": -12.6236,
+      "Volume": 5015007.0,
+      "Avg Vol 30D": 1679446,
+      "_vol_ratio": null
+    },
+    {
+      "Ticker": "RAYDAN",
+      "Last Price": 14.16,
+      "%1D": -3.6735000610351562,
+      "%1M": -24.4397,
+      "%YTD": -41.2448,
+      "Volume": 88184.0,
+      "Avg Vol 30D": 65824.4,
+      "_vol_ratio": null
+    },
+    {
+      "Ticker": "KINGDOM",
+      "Last Price": 10.35,
+      "%1D": -3.5415000915527344,
+      "%1M": -1.2405,
+      "%YTD": 29.375,
+      "Volume": 395688.0,
+      "Avg Vol 30D": 1596723,
+      "_vol_ratio": null
+    }
+  ],
+  "vol_leaders": [
+    {
+      "Ticker": "MAHARAH",
+      "Last Price": 6.71,
+      "%1D": 7.360000133514404,
+      "%1M": 7.36,
+      "%YTD": 4.1925,
+      "Volume": 24259081.0,
+      "Avg Vol 30D": 4755940,
+      "_vol_ratio": 5.100796267404551
+    },
+    {
+      "Ticker": "SMASCO",
+      "Last Price": 5.83,
+      "%1D": -0.511900007724762,
+      "%1M": 0.8651,
+      "%YTD": 10.4167,
+      "Volume": 7160730.0,
+      "Avg Vol 30D": 1803357,
+      "_vol_ratio": 3.9707778326753935
+    },
+    {
+      "Ticker": "ALISADRF",
+      "Last Price": 7.06,
+      "%1D": -0.7031999826431274,
+      "%1M": -4.9798,
+      "%YTD": 0.7133,
+      "Volume": 245039.0,
+      "Avg Vol 30D": 63783.8,
+      "_vol_ratio": 3.841712158886739
+    },
+    {
+      "Ticker": "SEDCO",
+      "Last Price": 7.76,
+      "%1D": 2.6454999446868896,
+      "%1M": 2.1053,
+      "%YTD": 15.8209,
+      "Volume": 780124.0,
+      "Avg Vol 30D": 243891.5,
+      "_vol_ratio": 3.1986518595359
+    },
+    {
+      "Ticker": "SRECO",
+      "Last Price": 16.3,
+      "%1D": 2.4512999057769775,
+      "%1M": 14.8696,
+      "%YTD": 26.4546,
+      "Volume": 4090530.0,
+      "Avg Vol 30D": 1284030,
+      "_vol_ratio": 3.185696595873928
+    }
+  ],
+  "breadth": {
+    "above_ma200": 75,
+    "total_ma200": 262,
+    "above_ma50": 128,
+    "total_ma50": 268,
+    "new_highs": 5,
+    "new_lows": 13,
+    "advancers": 95,
+    "decliners": 157,
+    "unchanged": 17,
+    "ad_ratio": 0.6050955414012739,
+    "total_stocks": 269
+  }
+}
