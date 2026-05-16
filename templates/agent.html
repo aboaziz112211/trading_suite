@@ -6,18 +6,52 @@
   <img src="{{ url_for('static', filename='chartedge_logo.svg') }}" alt="ChartEdge" class="hero-logo" onerror="this.style.display='none'">
   <div>
     <h1>🧠 X Content Agent</h1>
-    <p>Auto-generated tweet drafts from today's closing data. Pick one, copy or click "Tweet" to post.</p>
+    <p>Tweet drafts for the <b>last completed trading session</b>. Pick one, copy or click "Tweet" to post.</p>
   </div>
 </section>
 
+{% set _p = request.args.get('p') %}
 <div class="agent-meta">
-  <div>Generated: <code>{{ brief.generated_at }}</code></div>
+  <div>
+    📅 <b>Session:</b>
+    <code style="font-size:14px;background:#2a2418;color:#f4d875;padding:3px 8px;border-radius:4px">{{ session_date }}</code>
+    {% if source == 'archive_latest' %}
+      <span style="color:#9aa;font-size:11px;margin-left:6px">last closed session</span>
+    {% elif source == 'archive_explicit' %}
+      <span style="color:#9aa;font-size:11px;margin-left:6px">archived brief</span>
+    {% elif source == 'live_compute' %}
+      <span style="color:#caa;font-size:11px;margin-left:6px">live · no archive yet</span>
+    {% endif %}
+  </div>
   {% set _idx = brief.index or brief.yahoo %}
   {% if _idx and _idx.today %}
-  <div>TASI close: <b>{{ '{:,.2f}'.format(_idx.today.close) }}</b> · {{ _idx.today.date }}</div>
+  <div>TASI close: <b>{{ '{:,.2f}'.format(_idx.today.close) }}</b>
+    {% if _idx.today.date and _idx.today.date != session_date %}<span style="color:#9aa;font-size:11px">· data labeled {{ _idx.today.date }}</span>{% endif %}
+  </div>
   {% endif %}
   <div>Scan: <b>{{ brief.scan_total }}</b> stocks · <b>{{ brief.stage2_count }}</b> Stage 2 · <b>{{ brief.score10_count }}</b> at 10/10</div>
-  <div><a href="{{ url_for('agent') }}?p={{ request.args.get('p') }}" class="btn ghost" style="padding:6px 14px;font-size:13px">↻ Refresh drafts</a></div>
+  <div>Generated: <code style="font-size:11px;color:#8a8a85">{{ brief.generated_at }}</code></div>
+
+  <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:10px;align-items:center">
+    {% if prev_date %}
+    <a href="{{ url_for('agent') }}?p={{ _p }}&date={{ prev_date }}" class="btn ghost" style="padding:6px 12px;font-size:12px">← {{ prev_date }}</a>
+    {% endif %}
+    {% if next_date %}
+    <a href="{{ url_for('agent') }}?p={{ _p }}&date={{ next_date }}" class="btn ghost" style="padding:6px 12px;font-size:12px">{{ next_date }} →</a>
+    {% endif %}
+    {% if archive_dates and archive_dates[0] != session_date %}
+    <a href="{{ url_for('agent') }}?p={{ _p }}" class="btn" style="padding:6px 12px;font-size:12px;background:#2a4d6a;color:#fff">⏭ Latest ({{ archive_dates[0] }})</a>
+    {% endif %}
+    <a href="{{ url_for('agent') }}?p={{ _p }}{% if request.args.get('date') %}&date={{ request.args.get('date') }}{% endif %}" class="btn ghost" style="padding:6px 12px;font-size:12px">↻ Refresh</a>
+    {% if archive_dates|length > 1 %}
+    <select onchange="if(this.value)location.href=this.value" class="btn ghost" style="padding:6px 8px;font-size:12px;background:#1a1a1a;color:#e8e5dc;border:1px solid #333">
+      <option value="">📅 Jump to session…</option>
+      {% for d in archive_dates %}
+      <option value="{{ url_for('agent') }}?p={{ _p }}&date={{ d }}" {% if d == session_date %}selected{% endif %}>{{ d }}</option>
+      {% endfor %}
+    </select>
+    {% endif %}
+  </div>
 </div>
 
 {% if not drafts %}

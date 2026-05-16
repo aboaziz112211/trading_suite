@@ -1024,16 +1024,78 @@ def _build_tweet_drafts(brief):
 
 @app.route("/agent")
 def agent():
-    """X/Twitter content generator from today's closing data. Admin-gated."""
+    """X/Twitter content generator from the last completed trading session.
+    Admin-gated.
+
+    Resolution order:
+      1. ?date=YYYY-MM-DD  → load that specific archived brief
+      2. Otherwise         → the most recently archived brief (last closed session)
+      3. If no archive yet → live compute from in-memory feed (rare; first-day case)
+
+    Why archive-first: tweet drafts should be reproducible, match what
+    subscribers got at 15:30, and never reflect mid-session data the
+    public hasn't seen yet. Re-opening /agent later in the day always
+    gives the same drafts.
+    """
     if not ADMIN_PASSWORD:
         return ("Server missing ADMIN_PASSWORD env var.", 500, {"Content-Type": "text/plain"})
     if request.args.get("p") != ADMIN_PASSWORD:
         return render_template("admin_gate.html"), 401
-    today = datetime.now().strftime("%Y-%m-%d")
-    use_snap = _close_snapshot_path(today).exists()
-    brief = _compute_brief_data(for_date=today if use_snap else None)
+
+    date_q = request.args.get("date")
+    archive_dates = _list_briefs()
+    session_date = None
+    brief = None
+    source = None
+
+    # 1. explicit date param
+    if date_q and len(date_q) == 10 and date_q.count("-") == 2:
+        loaded = _load_brief(date_q)
+        if loaded:
+            brief = loaded
+            session_date = date_q
+            source = "archive_explicit"
+
+    # 2. latest archived brief
+    if not brief and archive_dates:
+        latest = archive_dates[0]
+        loaded = _load_brief(latest)
+        if loaded:
+            brief = loaded
+            session_date = latest
+            source = "archive_latest"
+
+    # 3. fallback: live compute (only used before first brief is published)
+    if not brief:
+        today = datetime.now().strftime("%Y-%m-%d")
+        use_snap = _close_snapshot_path(today).exists()
+        brief = _compute_brief_data(for_date=today if use_snap else None)
+        session_date = today
+        source = "live_compute"
+
     drafts = _build_tweet_drafts(brief)
-    return render_template("agent.html", drafts=drafts, brief=brief)
+
+    # Build prev/next links for in-page navigation between sessions
+    prev_date = None
+    next_date = None
+    if session_date and session_date in archive_dates:
+        i = archive_dates.index(session_date)
+        # archive_dates is sorted newest-first
+        if i + 1 < len(archive_dates):
+            prev_date = archive_dates[i + 1]
+        if i > 0:
+            next_date = archive_dates[i - 1]
+
+    return render_template(
+        "agent.html",
+        drafts=drafts,
+        brief=brief,
+        session_date=session_date,
+        source=source,
+        archive_dates=archive_dates,
+        prev_date=prev_date,
+        next_date=next_date,
+    )
 
 
 @app.route("/p/<key>")
