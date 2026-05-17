@@ -4125,9 +4125,18 @@ function openCardModal(ticker){
     '<div class="tp-cm-actions">' +
       '<button class="tp-cm-btn tp-cm-btn-fav' + (isInFocus(s.ticker)?' in-focus':'') + '" onclick="toggleFocus(\''+s.ticker+'\')">' + (isInFocus(s.ticker)?'★ Remove from Focus':'☆ Add to Focus') + '</button>' +
       '<button class="tp-cm-btn tp-cm-btn-pri" onclick="filterByTicker && filterByTicker(\''+s.ticker+'\'); closeCardModal();">🔍 Filter Table</button>' +
+      '<button class="tp-cm-btn tp-cm-btn-pri" style="background:#1E88E5;" onclick="openTVChart(\''+s.ticker+'\')">📊 Open TV Chart</button>' +
       '<button class="tp-cm-btn tp-cm-btn-sec" onclick="closeCardModal()">Close</button>' +
     '</div>';
   ov.classList.add('show');
+}
+// USv1.5.x — Open TradingView chart for Tadawul tickers
+// Strip .SR suffix and use TADAWUL: prefix (e.g. 2222.SR -> TADAWUL:2222)
+function openTVChart(ticker) {
+  const clean = (ticker || '').replace(/\.SR$/i, '').replace(/\s/g,'').toUpperCase();
+  const sym = encodeURIComponent('TADAWUL:' + clean);
+  const url = 'https://www.tradingview.com/chart/?symbol=' + sym;
+  window.open(url, 'tv_' + clean, 'width=1100,height=720,resizable=yes,scrollbars=no');
 }
 function closeCardModal(){
   var ov = el('tp-cm-overlay'); if (!ov) return;

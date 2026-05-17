@@ -3972,6 +3972,7 @@ function renderAggNearMiss(){
   if (byReason.belowVwap) summary.push(byReason.belowVwap + ' below VWAP');
   if (byReason.lowVol) summary.push(byReason.lowVol + ' vol low');
   if (byReason.red) summary.push(byReason.red + ' red');
+  var nmSeenMap = markAggSeen(nms.slice(0, 12).map(function(x){ return x.s.ticker; }));
   var html = '<div class="agg-nm-wrap"><div class="agg-nm-hdr"><span>👀 Watch List - one criterion away</span><span class="agg-nm-sub">' + summary.join(' - ') + '</span></div><div class="agg-nm-grid">';
   html += nms.slice(0, 12).map(function(x){
     var s = x.s, reason = x.reason;
@@ -3993,6 +3994,7 @@ function renderAggNearMiss(){
       '<div class="agg-row"><span style="color:' + (chg>=0?'#3B6D11':'#A32D2D') + ';font-weight:700">' + (chg!=null?(chg>=0?'+':'')+chg.toFixed(2)+'%':'-') + '</span><b>$' + price.toFixed(2) + '</b></div>' +
       '<div class="agg-piv ' + pivCls + '">' + pivLbl + '</div>' +
       '<div class="agg-row"><span>Missing</span><b>' + rDetail + '</b></div>' +
+      '<div class="agg-row" style="border-top:1px dashed #E8DCBF;padding-top:3px;margin-top:4px;"><span>First seen</span><b>' + formatAgo(nmSeenMap[s.ticker]) + '</b></div>' +
     '</div>';
   }).join('');
   html += '</div></div>';
@@ -4065,7 +4067,8 @@ setTimeout(function(){
 
 // ── v1.1 TradingView popup ────────────────────────────────────────────────
 function openTVChart(ticker) {
-  const sym = encodeURIComponent('NASDAQ:' + ticker.replace(/\s/g,'').toUpperCase());
+  // Don't force NASDAQ: prefix — many tickers are NYSE/AMEX/OTC. TradingView resolves bare symbols.
+  const sym = encodeURIComponent(ticker.replace(/\s/g,'').toUpperCase());
   const url = 'https://www.tradingview.com/chart/?symbol=' + sym;
   window.open(url, 'tv_' + ticker, 'width=1100,height=720,resizable=yes,scrollbars=no');
 }
