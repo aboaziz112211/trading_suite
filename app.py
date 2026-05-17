@@ -1242,18 +1242,98 @@ def healthz():
     return {"ok": True}
 
 
-# ── Visit counter (in-memory; resets on dyno restart) ──────────────────
+# ── Visit counter — persistent across redeploys ────────────────────────
+# In-memory hot state, periodically flushed to disk + committed to GitHub
+# so cumulative counts survive worker restarts on Render's free plan.
 import threading as _threading
 from collections import defaultdict as _defaultdict
 from datetime import timedelta as _timedelta
+import json as _json
+import time as _time
 
 _visit_lock = _threading.Lock()
 _visit_counts = {}                                      # path -> all-time count
 _visit_daily = _defaultdict(lambda: _defaultdict(int))  # 'YYYY-MM-DD' -> path -> count
 _visit_first_seen = datetime.now()
+_visit_dirty = False           # set True on every new visit
+_visit_last_flush = 0.0        # epoch seconds of last successful flush
+_visit_flush_lock = _threading.Lock()
+
+VISIT_COUNTS_PATH = DATA_DIR / "visit_counts.json"
+_VISIT_FLUSH_MIN_INTERVAL = 300  # only commit to GitHub every N seconds at most
 
 # Pages we actually want to count (excludes APIs, static, /admin, etc.)
 _COUNTABLE_ENDPOINTS = {"index", "product_page", "market_report", "contact"}
+
+
+def _load_visit_counts():
+    """Restore visit counts from disk on app boot. Non-fatal if file missing
+    or unreadable — just starts fresh in that case."""
+    global _visit_first_seen
+    if not VISIT_COUNTS_PATH.exists():
+        return
+    try:
+        d = _json.loads(VISIT_COUNTS_PATH.read_text(encoding="utf-8"))
+        totals = d.get("totals") or {}
+        daily = d.get("daily") or {}
+        fs = d.get("first_seen")
+        with _visit_lock:
+            _visit_counts.update(totals)
+            for date_str, by_path in daily.items():
+                for p, n in by_path.items():
+                    _visit_daily[date_str][p] = int(n)
+            if fs:
+                try:
+                    _visit_first_seen = datetime.fromisoformat(fs)
+                except Exception:
+                    pass
+    except Exception:
+        pass  # corrupted file -> start fresh, don't crash boot
+
+
+def _flush_visit_counts(commit_to_github: bool = True):
+    """Write visit counts to disk and (optionally) commit to GitHub. Safe to
+    call from any thread. Throttled by _VISIT_FLUSH_MIN_INTERVAL when called
+    via _maybe_flush_visit_counts()."""
+    global _visit_last_flush, _visit_dirty
+    with _visit_flush_lock:
+        with _visit_lock:
+            payload = {
+                "first_seen": _visit_first_seen.isoformat(timespec="seconds"),
+                "last_flushed": datetime.now().isoformat(timespec="seconds"),
+                "totals": dict(_visit_counts),
+                "daily": {k: dict(v) for k, v in _visit_daily.items()},
+            }
+        raw = _json.dumps(payload, indent=2, default=str).encode("utf-8")
+        try:
+            VISIT_COUNTS_PATH.parent.mkdir(parents=True, exist_ok=True)
+            VISIT_COUNTS_PATH.write_bytes(raw)
+        except Exception:
+            pass  # disk write failed — still try GitHub
+        if commit_to_github:
+            try:
+                _commit_bytes_to_github(
+                    "data/visit_counts.json",
+                    raw,
+                    f"Visit stats flush ({payload.get('totals',{}).get('_total','?')} total)",
+                )
+            except Exception:
+                pass
+        _visit_last_flush = _time.time()
+        _visit_dirty = False
+
+
+def _maybe_flush_visit_counts():
+    """Throttled flush. Called from a background thread after each visit."""
+    if not _visit_dirty:
+        return
+    if (_time.time() - _visit_last_flush) < _VISIT_FLUSH_MIN_INTERVAL:
+        return
+    _flush_visit_counts(commit_to_github=True)
+
+
+# Restore previous counts at boot — runs once when the module loads
+_load_visit_counts()
 
 
 # ── Maintenance / Under-Construction gate ──────────────────────────────
@@ -1304,6 +1384,7 @@ def _maintenance_gate():
 
 @app.before_request
 def _count_visit():
+    global _visit_dirty
     if not request.endpoint:
         return
     if request.endpoint not in _COUNTABLE_ENDPOINTS:
@@ -1315,6 +1396,10 @@ def _count_visit():
         _visit_counts["_total"] = _visit_counts.get("_total", 0) + 1
         _visit_daily[today][key] += 1
         _visit_daily[today]["_total"] += 1
+        _visit_dirty = True
+    # Throttled flush in a background thread so visitors don't wait on
+    # a GitHub PUT (which can take 1-2 sec).
+    _threading.Thread(target=_maybe_flush_visit_counts, daemon=True).start()
 
 
 @app.route("/admin/stats")
@@ -1322,6 +1407,14 @@ def admin_stats():
     # Auth via admin password as ?p= query param so you can bookmark
     if not ADMIN_PASSWORD or request.args.get("p") != ADMIN_PASSWORD:
         return ("Append ?p=<ADMIN_PASSWORD> to the URL.", 401, {"Content-Type": "text/plain"})
+
+    # Force a flush (local disk only — skip GitHub commit) so the page
+    # always shows current numbers including in-memory pending visits.
+    if _visit_dirty:
+        try:
+            _flush_visit_counts(commit_to_github=False)
+        except Exception:
+            pass
 
     label_map = [
         ("/", "Home"),
@@ -1369,6 +1462,24 @@ def admin_stats():
         daily_table=daily_table,
         labels=[lbl for _, lbl in label_map],
     )
+
+
+@app.route("/admin/flush-stats")
+def admin_flush_stats():
+    """Force a sync flush of visit counts to disk + GitHub. Admin-gated."""
+    if not ADMIN_PASSWORD or request.args.get("p") != ADMIN_PASSWORD:
+        return ("Append ?p=<ADMIN_PASSWORD> to the URL.", 401, {"Content-Type": "text/plain"})
+    _flush_visit_counts(commit_to_github=True)
+    with _visit_lock:
+        total = _visit_counts.get("_total", 0)
+        first = _visit_first_seen.isoformat(timespec="seconds")
+        last = datetime.now().isoformat(timespec="seconds")
+    return {
+        "ok": True,
+        "total_visits_since_launch": total,
+        "first_seen": first,
+        "flushed_at": last,
+    }
 
 
 @app.route("/admin/diag")
