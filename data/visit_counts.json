@@ -1,11 +1,11 @@
 {
   "first_seen": "2026-05-17T19:37:56",
-  "last_flushed": "2026-05-18T11:25:06",
+  "last_flushed": "2026-05-18T12:22:23",
   "totals": {
     "/": 608,
-    "_total": 623,
+    "_total": 624,
     "/report": 3,
-    "/p/tradepulse_sar": 8,
+    "/p/tradepulse_sar": 9,
     "/p/chartedge": 1,
     "/p/tradepulse_us": 3
   },
@@ -16,9 +16,9 @@
     },
     "2026-05-18": {
       "/": 435,
-      "_total": 450,
+      "_total": 451,
       "/report": 3,
-      "/p/tradepulse_sar": 8,
+      "/p/tradepulse_sar": 9,
       "/p/chartedge": 1,
       "/p/tradepulse_us": 3
     }
