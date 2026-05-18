@@ -10,7 +10,9 @@
   <img src="{{ url_for('static', filename='chartedge_logo.svg') }}" alt="ChartEdge" class="hero-logo" onerror="this.style.display='none'">
   <div>
     <h1>📊 TASI Closing Brief · {{ date }}</h1>
+    <div class="hero-ar" dir="rtl" lang="ar">ملخص إغلاق السوق السعودي · {{ date }}</div>
     <p>Saudi Tadawul session snapshot · published {{ brief.generated_at }}</p>
+    <p class="hero-tagline-ar" dir="rtl" lang="ar">صورة جلسة السوق السعودي · صدر بتاريخ {{ brief.generated_at }}</p>
   </div>
 </section>
 

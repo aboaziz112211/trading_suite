@@ -81,12 +81,12 @@
       <span>Trading Suite</span>
     </a>
     <nav>
-      <a href="{{ url_for('index') }}">Home</a>
-      <a href="{{ url_for('product_page', key='chartedge') }}">ChartEdge</a>
-      <a href="{{ url_for('product_page', key='tradepulse_us') }}">TradePulse US</a>
-      <a href="{{ url_for('product_page', key='tradepulse_sar') }}">TradePulse TASI</a>
-      <a href="{{ url_for('market_report') }}" class="report-link">📊 Market Report</a>
-      <a href="{{ url_for('contact') }}" class="contact-link">Contact</a>
+      <a href="{{ url_for('index') }}" class="nav-bi"><span class="en">Home</span><span class="ar" dir="rtl" lang="ar">الرئيسية</span></a>
+      <a href="{{ url_for('product_page', key='chartedge') }}" class="nav-bi"><span class="en">ChartEdge</span><span class="ar" dir="rtl" lang="ar">ChartEdge</span></a>
+      <a href="{{ url_for('product_page', key='tradepulse_us') }}" class="nav-bi"><span class="en">TradePulse US</span><span class="ar" dir="rtl" lang="ar">السوق الأمريكي</span></a>
+      <a href="{{ url_for('product_page', key='tradepulse_sar') }}" class="nav-bi"><span class="en">TradePulse TASI</span><span class="ar" dir="rtl" lang="ar">السوق السعودي</span></a>
+      <a href="{{ url_for('market_report') }}" class="report-link nav-bi"><span class="en">📊 Market Report</span><span class="ar" dir="rtl" lang="ar">تقرير السوق</span></a>
+      <a href="{{ url_for('contact') }}" class="contact-link nav-bi"><span class="en">Contact</span><span class="ar" dir="rtl" lang="ar">تواصل</span></a>
       {% if is_admin %}
       <a href="{{ admin_url('admin_page') }}" class="admin-pill" title="Upload data">📤 Upload</a>
       <a href="{{ admin_url('agent') }}" class="admin-pill admin-pill-agent" title="Generate X content">🧠 Agent</a>

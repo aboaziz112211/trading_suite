@@ -10,12 +10,18 @@
     {% endif %}
     <div>
       <h1>{{ product.title }}</h1>
+      {% if product.title_ar and product.title_ar != product.title %}
+      <div class="product-title-ar" dir="rtl" lang="ar">{{ product.title_ar }}</div>
+      {% endif %}
       <p>{{ product.tagline }}</p>
+      {% if product.tagline_ar %}
+      <p class="product-tagline-ar" dir="rtl" lang="ar">{{ product.tagline_ar }}</p>
+      {% endif %}
     </div>
   </div>
   {% if has_guide %}
   <a href="{{ guide_url }}" target="_blank" rel="noopener" class="btn guide-btn" title="Open user guide PDF">
-    📖 <span>Read Guide</span>
+    📖 <span>Read Guide · الدليل</span>
   </a>
   {% endif %}
 </section>

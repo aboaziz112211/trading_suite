@@ -491,13 +491,22 @@ body {
   .footer-inner { flex-direction: column; align-items: flex-start; }
   .footer-right { align-items: flex-start; }
 }
-.topbar nav { display: flex; gap: 18px; margin-left: auto; }
+.topbar nav { display: flex; gap: 18px; margin-left: auto; align-items: center; }
 .topbar nav a {
   color: var(--muted);
   text-decoration: none;
   font-size: 14px;
 }
 .topbar nav a:hover { color: var(--text); }
+
+/* Bilingual two-line nav items (en on top, ar below) */
+.nav-bi { display: inline-flex; flex-direction: column; align-items: center; line-height: 1.15; }
+.nav-bi .en { font-size: 14px; }
+.nav-bi .ar { font-size: 11px; color: var(--muted); opacity: 0.85; margin-top: 2px; font-family: "Tahoma","Segoe UI Arabic",sans-serif; }
+.nav-bi:hover .ar { color: var(--text); opacity: 1; }
+@media (max-width: 768px) {
+  .nav-bi .ar { display: none; }  /* Mobile: hide AR sub-line to save horizontal space */
+}
 
 /* ── Disclaimer agreement modal ─────────────────────────────── */
 .modal-overlay {
@@ -1110,3 +1119,28 @@ tbody td {
 }
 tbody tr:hover { background: #1a2128; }
 .err { color: var(--err); }
+
+/* ── Bilingual headings & taglines (EN above, AR below) ─────────── */
+.hero-ar,
+.product-title-ar,
+.card-title-ar {
+  font-family: "Tahoma", "Segoe UI Arabic", sans-serif;
+  font-size: 18px;
+  color: var(--muted);
+  margin: 4px 0 8px;
+  opacity: 0.95;
+  letter-spacing: 0.2px;
+}
+.product-title-ar { font-size: 17px; }
+.card-title-ar { font-size: 15px; margin: 2px 0 6px; }
+
+.hero-tagline-ar,
+.product-tagline-ar,
+.card-tagline-ar {
+  font-family: "Tahoma", "Segoe UI Arabic", sans-serif;
+  font-size: 13px;
+  color: var(--muted);
+  margin-top: 4px;
+  opacity: 0.75;
+}
+.card-tagline-ar { font-size: 12px; }

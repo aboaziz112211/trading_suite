@@ -4,7 +4,9 @@
 <section class="hero hero-branded">
   <img src="{{ url_for('static', filename='chartedge_logo.svg') }}" alt="ChartEdge Analytics" class="hero-logo" onerror="this.style.display='none'">
   <h1>Trading Suite</h1>
+  <div class="hero-ar" dir="rtl" lang="ar">منصة التداول</div>
   <p>Live dashboards & analyzers — pick a product.</p>
+  <p class="hero-tagline-ar" dir="rtl" lang="ar">لوحات مباشرة وأدوات تحليل — اختر المنتج</p>
 </section>
 <section class="cards">
   {% for key, p in products.items() %}
@@ -16,7 +18,13 @@
     {% endif %}
     <div class="card-tag">{{ key.replace('_', ' ').upper() }}</div>
     <h2>{{ p.title }}</h2>
+    {% if p.title_ar and p.title_ar != p.title %}
+    <div class="card-title-ar" dir="rtl" lang="ar">{{ p.title_ar }}</div>
+    {% endif %}
     <p>{{ p.tagline }}</p>
+    {% if p.tagline_ar %}
+    <p class="card-tagline-ar" dir="rtl" lang="ar">{{ p.tagline_ar }}</p>
+    {% endif %}
     <span class="open">Open →</span>
   </a>
   {% endfor %}
