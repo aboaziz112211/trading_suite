@@ -1256,11 +1256,18 @@ _visit_counts = {}                                      # path -> all-time count
 _visit_daily = _defaultdict(lambda: _defaultdict(int))  # 'YYYY-MM-DD' -> path -> count
 _visit_first_seen = datetime.now()
 _visit_dirty = False           # set True on every new visit
-_visit_last_flush = 0.0        # epoch seconds of last successful flush
+_visit_last_disk_flush = 0.0   # epoch seconds of last disk write
+_visit_last_github_flush = 0.0 # epoch seconds of last GitHub commit
 _visit_flush_lock = _threading.Lock()
 
 VISIT_COUNTS_PATH = DATA_DIR / "visit_counts.json"
-_VISIT_FLUSH_MIN_INTERVAL = 300  # only commit to GitHub every N seconds at most
+# Hot-flush to local disk every N seconds (free, doesn't trigger redeploy).
+_VISIT_DISK_FLUSH_INTERVAL = 300
+# GitHub commit (which DOES trigger a Render redeploy) only happens via
+# explicit /admin/flush-stats OR a daily background timer — never on every
+# visit. Otherwise we'd push 100+ commits/day and Render free tier would
+# never finish a real code deploy.
+_VISIT_GITHUB_FLUSH_INTERVAL = 86400  # once per day at most
 
 # Pages we actually want to count (excludes APIs, static, /admin, etc.)
 _COUNTABLE_ENDPOINTS = {"index", "product_page", "market_report", "contact"}
@@ -1291,11 +1298,14 @@ def _load_visit_counts():
         pass  # corrupted file -> start fresh, don't crash boot
 
 
-def _flush_visit_counts(commit_to_github: bool = True):
+def _flush_visit_counts(commit_to_github: bool = False):
     """Write visit counts to disk and (optionally) commit to GitHub. Safe to
-    call from any thread. Throttled by _VISIT_FLUSH_MIN_INTERVAL when called
-    via _maybe_flush_visit_counts()."""
-    global _visit_last_flush, _visit_dirty
+    call from any thread. By default this writes to local disk only — set
+    commit_to_github=True for the daily / manual commit path.
+
+    GitHub commits trigger a Render redeploy, so we keep them rare; otherwise
+    the build queue churns and real code deploys never finish."""
+    global _visit_last_disk_flush, _visit_last_github_flush, _visit_dirty
     with _visit_flush_lock:
         with _visit_lock:
             payload = {
@@ -1308,8 +1318,9 @@ def _flush_visit_counts(commit_to_github: bool = True):
         try:
             VISIT_COUNTS_PATH.parent.mkdir(parents=True, exist_ok=True)
             VISIT_COUNTS_PATH.write_bytes(raw)
+            _visit_last_disk_flush = _time.time()
         except Exception:
-            pass  # disk write failed — still try GitHub
+            pass
         if commit_to_github:
             try:
                 _commit_bytes_to_github(
@@ -1317,19 +1328,24 @@ def _flush_visit_counts(commit_to_github: bool = True):
                     raw,
                     f"Visit stats flush ({payload.get('totals',{}).get('_total','?')} total)",
                 )
+                _visit_last_github_flush = _time.time()
             except Exception:
                 pass
-        _visit_last_flush = _time.time()
         _visit_dirty = False
 
 
 def _maybe_flush_visit_counts():
-    """Throttled flush. Called from a background thread after each visit."""
+    """Throttled flush. Disk-only on the per-visit path so we never spam
+    GitHub. GitHub commits happen via /admin/flush-stats or once-per-day."""
     if not _visit_dirty:
         return
-    if (_time.time() - _visit_last_flush) < _VISIT_FLUSH_MIN_INTERVAL:
-        return
-    _flush_visit_counts(commit_to_github=True)
+    now = _time.time()
+    if (now - _visit_last_disk_flush) >= _VISIT_DISK_FLUSH_INTERVAL:
+        # Auto-promote to a GitHub commit once per day so the file survives
+        # an unexpected Render restart that happens to land far from
+        # admin/flush-stats time.
+        do_gh = (now - _visit_last_github_flush) >= _VISIT_GITHUB_FLUSH_INTERVAL
+        _flush_visit_counts(commit_to_github=do_gh)
 
 
 # Restore previous counts at boot — runs once when the module loads
