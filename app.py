@@ -908,8 +908,57 @@ def _tk(t):
     return str(t).split(".")[0].strip()
 
 
+# Lazy ticker → Arabic-company-name lookup (loaded from chartedge_sa.csv on
+# first call, cached for subsequent calls).
+_TICKER_AR_CACHE = {"loaded": False, "map": {}}
+
+
+def _ticker_ar_lookup():
+    """Return a dict of {4-digit-ticker → Arabic-company-name}. Loaded lazily
+    from data/chartedge_sa.csv on first call so the agent can render Arabic
+    company names alongside numeric tickers."""
+    if _TICKER_AR_CACHE["loaded"]:
+        return _TICKER_AR_CACHE["map"]
+    import csv as _csv
+    out = {}
+    csv_path = DATA_DIR / "chartedge_sa.csv"
+    if csv_path.exists():
+        try:
+            with open(csv_path, encoding="utf-8-sig") as f:
+                for r in _csv.DictReader(f):
+                    t = (r.get("Ticker") or "").split(".")[0].strip()
+                    name = (r.get("Company") or "").strip().strip('"')
+                    if t and name:
+                        out[t] = name
+        except Exception:
+            pass
+    _TICKER_AR_CACHE["loaded"] = True
+    _TICKER_AR_CACHE["map"] = out
+    return out
+
+
+def _tk_label_ar(t, sa_id=None):
+    """Format a ticker for an Arabic tweet: '#TICKER name_ar' if we have an
+    Arabic name, else just '#TICKER'. `sa_id` (Bloomberg "SA Exch ID" column)
+    bridges Latin tickers like ARAMCO → 2222 → Arabic name."""
+    code = _tk(t)
+    if not code: return ""
+    name_map = _ticker_ar_lookup()
+    name = name_map.get(code)
+    if not name and sa_id:
+        sa_code = str(sa_id).strip()
+        if sa_code:
+            name = name_map.get(sa_code)
+    return f"#{code} {name}" if name else f"#{code}"
+
+
 def _build_tweet_drafts(brief):
-    """Generate tweet templates from the brief data. Returns list of draft cards."""
+    """Generate tweet templates from the brief data. Returns list of draft cards.
+
+    Currently emits Arabic-only tweets. The EN side is still computed and
+    persisted in tw['en'] for future re-enable, but the agent template
+    shows only AR.
+    """
     idx = brief.get("index") or brief.get("yahoo")  # accept legacy key from old archives
     today = idx.get("today") if idx else None
     prev = idx.get("prev") if idx else None
@@ -957,7 +1006,7 @@ def _build_tweet_drafts(brief):
         )
         ar = (
             f"🚀 أعلى ارتفاع اليوم في #تاسي:\n\n"
-            f"#{_tk(g['Ticker'])}  +{g['%1D']:.2f}%{vol_str_ar}\n"
+            f"{_tk_label_ar(g['Ticker'], g.get('SA Exch ID'))}  +{g['%1D']:.2f}%{vol_str_ar}\n"
             f"🏷️ السعر: {g['Last Price']:,.2f}\n\n"
             f"المزيد → trading-suite-l9e4.onrender.com/report"
         )
@@ -975,7 +1024,7 @@ def _build_tweet_drafts(brief):
         for i, s in enumerate(v):
             ratio = s.get("_vol_ratio", 0) * 100
             en_lines.append(f"{medals[i]} #{_tk(s['Ticker'])}  {ratio:.0f}% of 30D avg")
-            ar_lines.append(f"{medals[i]} #{_tk(s['Ticker'])}  {ratio:.0f}% من المتوسط")
+            ar_lines.append(f"{medals[i]} {_tk_label_ar(s['Ticker'], s.get('SA Exch ID'))}  {ratio:.0f}% من المتوسط")
         en_lines.append("\nWhen stocks trade 3x+ avg volume, it's worth a look.")
         ar_lines.append("\nالحجم 3x+ من المتوسط يستحق المتابعة.")
         en_lines.append("→ trading-suite-l9e4.onrender.com/report")
@@ -994,7 +1043,7 @@ def _build_tweet_drafts(brief):
             rs = p.get("RS", "—")
             twm = p.get("12m%", "—")
             en_lines.append(f"📈 #{_tk(p['Ticker'])} — RS {rs}, 12m {twm}%")
-            ar_lines.append(f"📈 #{_tk(p['Ticker'])} — قوة نسبية {rs}، عام {twm}%")
+            ar_lines.append(f"📈 {_tk_label_ar(p['Ticker'])} — قوة نسبية {rs}، عام {twm}%")
         en_lines.append("\nAll Stage 2 confirmed.\nFull scan → trading-suite-l9e4.onrender.com/report")
         ar_lines.append("\nجميعها في المرحلة الثانية.\nالماسح الكامل → trading-suite-l9e4.onrender.com/report")
         drafts.append({"id": "picks", "title": "🏆 Top SEPA Picks",
@@ -1034,8 +1083,8 @@ def _build_tweet_drafts(brief):
         ls = (brief.get("top_losers") or [])[:3]
         gn_en = "\n".join(f"#{_tk(s['Ticker'])}  +{s['%1D']:.2f}%" for s in gn)
         ls_en = "\n".join(f"#{_tk(s['Ticker'])}  {s['%1D']:.2f}%" for s in ls)
-        gn_ar = "\n".join(f"#{_tk(s['Ticker'])}  +{s['%1D']:.2f}%" for s in gn)
-        ls_ar = "\n".join(f"#{_tk(s['Ticker'])}  {s['%1D']:.2f}%" for s in ls)
+        gn_ar = "\n".join(f"{_tk_label_ar(s['Ticker'], s.get('SA Exch ID'))}  +{s['%1D']:.2f}%" for s in gn)
+        ls_ar = "\n".join(f"{_tk_label_ar(s['Ticker'], s.get('SA Exch ID'))}  {s['%1D']:.2f}%" for s in ls)
         thread.append({
             "en": f"3/ 🚀 Top movers\n\nGainers:\n{gn_en}\n\nLosers:\n{ls_en}",
             "ar": f"3/ 🚀 الأكثر حركة\n\nمرتفعون:\n{gn_ar}\n\nمتراجعون:\n{ls_ar}",
@@ -1054,7 +1103,7 @@ def _build_tweet_drafts(brief):
         # T5 — top picks + CTA
         s10 = [p for p in (brief.get("top_picks") or []) if (p.get("Score") or "") == "10"][:3]
         s10_en = "\n".join(f"#{_tk(p['Ticker'])} — RS {p.get('RS','—')}" for p in s10)
-        s10_ar = "\n".join(f"#{_tk(p['Ticker'])} — قوة نسبية {p.get('RS','—')}" for p in s10)
+        s10_ar = "\n".join(f"{_tk_label_ar(p['Ticker'])} — قوة نسبية {p.get('RS','—')}" for p in s10)
         thread.append({
             "en": f"5/ 🏆 Highest-conviction setups today:\n\n{s10_en}\n\n"
                   f"Full report + live dashboard → trading-suite-l9e4.onrender.com\n\n"
@@ -1081,9 +1130,11 @@ def _build_tweet_drafts(brief):
                     f"({s['advancers']}▲ / {s['decliners']}▼)  "
                     f"top: #{s['top_ticker']} {s['top_pct']:+.2f}%")
         def _row_ar(s, i):
+            top_name = _ticker_ar_lookup().get(s['top_ticker'])
+            top_lbl = f"#{s['top_ticker']} {top_name}" if top_name else f"#{s['top_ticker']}"
             return (f"  {medals[i]} {SECTOR_AR.get(s['name'], s['name'])}  {s['avg_pct']:+.2f}%  "
                     f"({s['advancers']}▲ / {s['decliners']}▼)  "
-                    f"الأعلى: #{s['top_ticker']} {s['top_pct']:+.2f}%")
+                    f"الأعلى: {top_lbl} {s['top_pct']:+.2f}%")
 
         en_lines = [f"🔀 #TASI Sector Rotation — {today['date']}", "",
                     "🔥 Leading sectors:"]

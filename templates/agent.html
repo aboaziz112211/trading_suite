@@ -5,8 +5,8 @@
 <section class="hero hero-branded">
   <img src="{{ url_for('static', filename='chartedge_logo.svg') }}" alt="ChartEdge" class="hero-logo" onerror="this.style.display='none'">
   <div>
-    <h1>🧠 X Content Agent</h1>
-    <p>Tweet drafts for the <b>last completed trading session</b>. Pick one, copy or click "Tweet" to post.</p>
+    <h1>🧠 وكيل المحتوى — مسودات الإغلاق</h1>
+    <p dir="rtl" lang="ar">مسودات تغريدات <b>آخر جلسة تداول مكتملة</b>. اختر واحدة، انسخها أو اضغط "تغريد" للنشر.</p>
   </div>
 </section>
 
@@ -76,12 +76,7 @@
     <div class="tweet-num">Tweet {{ loop.index }} / {{ draft.tweets|length }}</div>
     {% endif %}
 
-    <div class="lang-tabs">
-      <button type="button" class="lang-btn active" data-lang="en">English</button>
-      <button type="button" class="lang-btn" data-lang="ar">العربية</button>
-    </div>
-
-    <textarea class="tweet-text" data-en="{{ tw.en }}" data-ar="{{ tw.ar }}" rows="8" readonly>{{ tw.en }}</textarea>
+    <textarea class="tweet-text" data-en="{{ tw.en }}" data-ar="{{ tw.ar }}" rows="8" readonly dir="rtl" lang="ar">{{ tw.ar }}</textarea>
 
     <div class="tweet-actions">
       <span class="char-count">0 / 280</span>
@@ -107,26 +102,6 @@
 
   document.querySelectorAll('.tweet-block').forEach(function(block){
     var ta = block.querySelector('.tweet-text');
-    var enText = ta.dataset.en;
-    var arText = ta.dataset.ar;
-    var btns = block.querySelectorAll('.lang-btn');
-
-    btns.forEach(function(b){
-      b.addEventListener('click', function(){
-        btns.forEach(x => x.classList.remove('active'));
-        b.classList.add('active');
-        if (b.dataset.lang === 'ar') {
-          ta.value = arText;
-          ta.dir = 'rtl';
-          ta.lang = 'ar';
-        } else {
-          ta.value = enText;
-          ta.dir = 'ltr';
-          ta.lang = 'en';
-        }
-        updateBlock(block);
-      });
-    });
 
     block.querySelector('.copy-btn').addEventListener('click', async function(){
       try {
