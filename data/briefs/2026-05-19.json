@@ -1,0 +1,282 @@
+{
+  "generated_at": "2026-05-19T12:24:21",
+  "index": {
+    "today": {
+      "date": "2026-05-19",
+      "open": 10956.1,
+      "high": 10988.96,
+      "low": 10944.33,
+      "close": 10982.3,
+      "volume": 231494804.0
+    },
+    "prev": {
+      "close": 10956.1
+    },
+    "source": "bloomberg_xlsx"
+  },
+  "stage2_count": 36,
+  "potential_count": 21,
+  "score10_count": 16,
+  "scan_total": 269,
+  "top_picks": [
+    {
+      "Ticker": "8313.SR",
+      "_vol_ratio": null,
+      "Company": "\u0631\u0633\u0646",
+      "Stage": "stage2",
+      "Score": "10",
+      "RS": "98",
+      "12m%": "79.6"
+    },
+    {
+      "Ticker": "4280.SR",
+      "_vol_ratio": null,
+      "Company": "\u0627\u0644\u0645\u0645\u0644\u0643\u0629",
+      "Stage": "stage2",
+      "Score": "10",
+      "RS": "95",
+      "12m%": "25.1"
+    },
+    {
+      "Ticker": "7200.SR",
+      "_vol_ratio": null,
+      "Company": "\u0627\u0645 \u0622\u064a \u0627\u0633",
+      "Stage": "stage2",
+      "Score": "10",
+      "RS": "95",
+      "12m%": "41.8"
+    },
+    {
+      "Ticker": "5110.SR",
+      "_vol_ratio": null,
+      "Company": "\u0627\u0644\u0633\u0639\u0648\u062f\u064a\u0629 \u0644\u0644\u0637\u0627\u0642\u0629",
+      "Stage": "stage2",
+      "Score": "10",
+      "RS": "95",
+      "12m%": "18.9"
+    },
+    {
+      "Ticker": "2380.SR",
+      "_vol_ratio": null,
+      "Company": "\u0628\u062a\u0631\u0648 \u0631\u0627\u0628\u063a",
+      "Stage": "stage2",
+      "Score": "10",
+      "RS": "90",
+      "12m%": "137.9"
+    },
+    {
+      "Ticker": "1321.SR",
+      "_vol_ratio": null,
+      "Company": "\u0623\u0646\u0627\u0628\u064a\u0628 \u0627\u0644\u0634\u0631\u0642",
+      "Stage": "stage2",
+      "Score": "10",
+      "RS": "90",
+      "12m%": "61.5"
+    },
+    {
+      "Ticker": "4344.SR",
+      "_vol_ratio": null,
+      "Company": "\u0633\u062f\u0643\u0648 \u0643\u0627\u0628\u064a\u062a\u0627\u0644 \u0631\u064a\u062a",
+      "Stage": "stage2",
+      "Score": "10",
+      "RS": "90",
+      "12m%": "14.1"
+    },
+    {
+      "Ticker": "2320.SR",
+      "_vol_ratio": null,
+      "Company": "\u0627\u0644\u0628\u0627\u0628\u0637\u064a\u0646",
+      "Stage": "stage2",
+      "Score": "10",
+      "RS": "87",
+      "12m%": "37.4"
+    },
+    {
+      "Ticker": "1831.SR",
+      "_vol_ratio": null,
+      "Company": "\u0645\u0647\u0627\u0631\u0629",
+      "Stage": "stage2",
+      "Score": "10",
+      "RS": "86",
+      "12m%": "29.3"
+    },
+    {
+      "Ticker": "2223.SR",
+      "_vol_ratio": null,
+      "Company": "\u0644\u0648\u0628\u0631\u064a\u0641",
+      "Stage": "stage2",
+      "Score": "10",
+      "RS": "83",
+      "12m%": "29.4"
+    }
+  ],
+  "top_gainers": [
+    {
+      "Ticker": "SACO",
+      "Last Price": 46.42,
+      "%1D": 10.0,
+      "%1M": -13.2336,
+      "%YTD": -16.3604,
+      "Volume": 1488639.0,
+      "Avg Vol 30D": 278643.1,
+      "_vol_ratio": 5.342457789193417
+    },
+    {
+      "Ticker": "TAACO",
+      "Last Price": 6.49,
+      "%1D": 5.872799873352051,
+      "%1M": -7.1531,
+      "%YTD": -14.941,
+      "Volume": 1679306.0,
+      "Avg Vol 30D": 175932.2,
+      "_vol_ratio": 9.54518843054313
+    },
+    {
+      "Ticker": "SAVOLA",
+      "Last Price": 27.22,
+      "%1D": 4.772900104522705,
+      "%1M": 1.4158,
+      "%YTD": 24.349,
+      "Volume": 2644515.0,
+      "Avg Vol 30D": 1245575,
+      "_vol_ratio": null
+    },
+    {
+      "Ticker": "NADEC",
+      "Last Price": 16.9,
+      "%1D": 4.57919979095459,
+      "%1M": -1.687,
+      "%YTD": -8.1022,
+      "Volume": 3238100.0,
+      "Avg Vol 30D": 1452517,
+      "_vol_ratio": null
+    },
+    {
+      "Ticker": "NASEEJ",
+      "Last Price": 22.32,
+      "%1D": 3.2855000495910645,
+      "%1M": -17.8808,
+      "%YTD": -36.7705,
+      "Volume": 442064.0,
+      "Avg Vol 30D": 289767.8,
+      "_vol_ratio": null
+    }
+  ],
+  "top_losers": [
+    {
+      "Ticker": "BUPA",
+      "Last Price": 168.7,
+      "%1D": -4.038700103759766,
+      "%1M": -7.2567,
+      "%YTD": 21.4543,
+      "Volume": 212954.0,
+      "Avg Vol 30D": 156467.7,
+      "_vol_ratio": null
+    },
+    {
+      "Ticker": "ALMOOSA",
+      "Last Price": 114.6,
+      "%1D": -3.1275999546051025,
+      "%1M": -19.4659,
+      "%YTD": -34.6636,
+      "Volume": 68032.0,
+      "Avg Vol 30D": 42198.96,
+      "_vol_ratio": null
+    },
+    {
+      "Ticker": "THIMAR",
+      "Last Price": 29.94,
+      "%1D": -2.9811999797821045,
+      "%1M": -13.618,
+      "%YTD": -21.3761,
+      "Volume": 251080.0,
+      "Avg Vol 30D": 113670.8,
+      "_vol_ratio": null
+    },
+    {
+      "Ticker": "KINGDOM",
+      "Last Price": 10.72,
+      "%1D": -2.810499906539917,
+      "%1M": 3.4749,
+      "%YTD": 34.0,
+      "Volume": 571399.0,
+      "Avg Vol 30D": 1598063,
+      "_vol_ratio": null
+    },
+    {
+      "Ticker": "MEDGULF",
+      "Last Price": 14.22,
+      "%1D": -2.2679998874664307,
+      "%1M": -3.2653,
+      "%YTD": 22.9041,
+      "Volume": 1222117.0,
+      "Avg Vol 30D": 962229.1,
+      "_vol_ratio": null
+    }
+  ],
+  "vol_leaders": [
+    {
+      "Ticker": "SMASCO",
+      "Last Price": 5.93,
+      "%1D": 1.3674999475479126,
+      "%1M": 4.2179,
+      "%YTD": 12.3106,
+      "Volume": 19016221.0,
+      "Avg Vol 30D": 1850721,
+      "_vol_ratio": 10.275033892196609
+    },
+    {
+      "Ticker": "TAACO",
+      "Last Price": 6.49,
+      "%1D": 5.872799873352051,
+      "%1M": -7.1531,
+      "%YTD": -14.941,
+      "Volume": 1679306.0,
+      "Avg Vol 30D": 175932.2,
+      "_vol_ratio": 9.54518843054313
+    },
+    {
+      "Ticker": "MUSHREIT",
+      "Last Price": 4.03,
+      "%1D": -1.4670000076293945,
+      "%1M": -3.5885,
+      "%YTD": -1.2255,
+      "Volume": 424234.0,
+      "Avg Vol 30D": 73495.63,
+      "_vol_ratio": 5.772234349171508
+    },
+    {
+      "Ticker": "SACO",
+      "Last Price": 46.42,
+      "%1D": 10.0,
+      "%1M": -13.2336,
+      "%YTD": -16.3604,
+      "Volume": 1488639.0,
+      "Avg Vol 30D": 278643.1,
+      "_vol_ratio": 5.342457789193417
+    },
+    {
+      "Ticker": "ARABIANM",
+      "Last Price": 45.28,
+      "%1D": 2.5362000465393066,
+      "%1M": 9.5307,
+      "%YTD": 17.0026,
+      "Volume": 534494.0,
+      "Avg Vol 30D": 108166.6,
+      "_vol_ratio": 4.941395957717077
+    }
+  ],
+  "breadth": {
+    "above_ma200": 68,
+    "total_ma200": 262,
+    "above_ma50": 124,
+    "total_ma50": 268,
+    "new_highs": 4,
+    "new_lows": 18,
+    "advancers": 144,
+    "decliners": 111,
+    "unchanged": 14,
+    "ad_ratio": 1.2972972972972974,
+    "total_stocks": 269
+  }
+}
