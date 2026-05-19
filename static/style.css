@@ -1147,3 +1147,63 @@ tbody tr:hover { background: #1a2128; }
   opacity: 0.75;
 }
 .card-tagline-ar { font-size: 12px; }
+
+/* ── ChartEdge "For Display Only" notice + diagonal watermark ───────── */
+.ce-demo-notice {
+  background: linear-gradient(90deg, rgba(220,40,40,0.18) 0%, rgba(220,40,40,0.08) 100%);
+  border: 1px solid #c33;
+  border-left: 4px solid #ff3a3a;
+  border-radius: 8px;
+  padding: 10px 16px;
+  margin: 0 0 10px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 18px;
+  color: #ff6b6b;
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1.5;
+}
+.ce-demo-notice b { color: #ff3a3a; }
+.ce-demo-notice a {
+  color: #ffb3b3;
+  text-decoration: underline;
+  font-weight: 700;
+}
+.ce-demo-notice a:hover { color: #fff; }
+.ce-demo-ar { text-align: right; border-right: 1px solid #5a1f1f; padding-right: 14px; }
+.ce-demo-en { border-left: 1px solid #5a1f1f; padding-left: 14px; }
+@media (max-width: 720px) {
+  .ce-demo-notice { grid-template-columns: 1fr; gap: 8px; }
+  .ce-demo-ar, .ce-demo-en { border: none; padding: 0; }
+  .ce-demo-ar { border-bottom: 1px solid #5a1f1f; padding-bottom: 6px; }
+}
+
+/* Wrap the iframe so we can overlay a watermark on top */
+.ce-frame-wrap {
+  position: relative;
+  isolation: isolate;
+}
+.ce-frame-wrap .product-frame { display: block; }
+/* Diagonal red watermark drawn across the whole iframe area */
+.ce-watermark {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;     /* don't block clicks on the iframe content */
+  overflow: hidden;
+  z-index: 5;
+}
+.ce-watermark > span {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) rotate(-22deg);
+  font-size: clamp(28px, 4.5vw, 56px);
+  font-weight: 900;
+  letter-spacing: 4px;
+  color: rgba(255, 58, 58, 0.16);
+  text-shadow: 0 0 8px rgba(255, 58, 58, 0.22);
+  white-space: nowrap;
+  user-select: none;
+  font-family: "Segoe UI", "Tahoma", Arial, sans-serif;
+}

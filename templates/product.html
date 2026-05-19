@@ -72,7 +72,20 @@
   </div>
 </details>
 
+{% if key == 'chartedge' %}
+<div class="ce-demo-notice" role="alert">
+  <div class="ce-demo-en"><b>⚠ FOR DISPLAY ONLY</b> · This web view is a preview. The full ChartEdge app is a separate desktop application — <a href="{{ url_for('contact') }}">contact the admin</a> to download it.</div>
+  <div class="ce-demo-ar" dir="rtl" lang="ar"><b>⚠ للعرض فقط</b> · هذه نسخة عرض على الويب. تطبيق ChartEdge الكامل برنامج مستقل لسطح المكتب — <a href="{{ url_for('contact') }}">تواصل مع الإدارة</a> لتحميله.</div>
+</div>
+<div class="ce-frame-wrap">
+  <iframe id="productFrame" class="product-frame ce-demo-frame" src="{{ url_for('product_file', key=key) }}" title="{{ product.title }}"></iframe>
+  <div class="ce-watermark" aria-hidden="true">
+    <span>FOR DISPLAY ONLY · للعرض فقط · CONTACT ADMIN · تواصل مع الإدارة</span>
+  </div>
+</div>
+{% else %}
 <iframe id="productFrame" class="product-frame" src="{{ url_for('product_file', key=key) }}" title="{{ product.title }}"></iframe>
+{% endif %}
 
 {% if auto_load_data %}
 <script>
