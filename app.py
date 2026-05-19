@@ -358,15 +358,25 @@ def _compute_brief_data(for_date: str = None):
     def pct(s):
         return num(s.get("%1D"))
 
+    # Walk rows tagging each stock with the most recent sector header it appeared
+    # under. The Bloomberg xlsx groups stocks by section-header rows like
+    # "Banks  (10)" with no Last Price — that's the sector name + member count.
+    import re as _re_sec
+    current_sector = None
     stocks = []
     for r in api_rows:
         t = (r.get("Ticker") or "").strip()
         if t == "SASEIDX":
             continue
-        if "(" in t and any(c.isalpha() for c in t):
-            continue  # section header rows
+        # Detect a sector header: "<name>  (<n>)" with letters and no Last Price
+        m = _re_sec.match(r"^(.+?)\s*\((\d+)\)\s*$", t)
+        if m and r.get("Last Price") is None and any(c.isalpha() for c in t):
+            current_sector = m.group(1).strip()
+            continue
         if r.get("Last Price") is None:
             continue
+        # Stamp the row with its parent sector so downstream code can group
+        r["_sector"] = current_sector
         stocks.append(r)
 
     valid_pct = [s for s in stocks if pct(s) is not None]
@@ -409,6 +419,39 @@ def _compute_brief_data(for_date: str = None):
     for s in vol_leaders:
         s["_vol_ratio"] = vol_ratio(s)
 
+    # ── Sector rotation ────────────────────────────────────────────────
+    # Group stocks by their parent sector (set during row walk above).
+    # Only sectors with >=3 stocks contribute (smaller buckets are noisy).
+    _by_sector = {}
+    for s in stocks:
+        sec = s.get("_sector")
+        if not sec:
+            continue
+        p = pct(s)
+        if p is None:
+            continue
+        _by_sector.setdefault(sec, []).append(s)
+
+    def _sector_summary(name, members):
+        pcts = [pct(s) for s in members]
+        avg = sum(pcts) / len(pcts)
+        sec_adv = sum(1 for p in pcts if p > 0)
+        sec_dec = sum(1 for p in pcts if p < 0)
+        top = max(members, key=lambda s: pct(s))
+        return {
+            "name": name,
+            "count": len(members),
+            "avg_pct": avg,
+            "advancers": sec_adv,
+            "decliners": sec_dec,
+            "top_ticker": (top.get("Ticker") or "").split(".")[0],
+            "top_pct": pct(top),
+        }
+    _sec_stats = [_sector_summary(n, m) for n, m in _by_sector.items() if len(m) >= 3]
+    _sec_stats.sort(key=lambda s: s["avg_pct"], reverse=True)
+    sectors_leading = _sec_stats[:3]
+    sectors_lagging = list(reversed(_sec_stats[-3:])) if len(_sec_stats) >= 3 else []
+
     return {
         "index": tasi,
         "stage2_count": len(stage2),
@@ -419,6 +462,9 @@ def _compute_brief_data(for_date: str = None):
         "top_gainers": top_g,
         "top_losers": top_l,
         "vol_leaders": vol_leaders,
+        "sectors_leading": sectors_leading,
+        "sectors_lagging": sectors_lagging,
+        "sectors_all": _sec_stats,
         "breadth": {
             "above_ma200": above_ma200, "total_ma200": total_ma200,
             "above_ma50": abv50, "total_ma50": len(has50),
@@ -518,6 +564,8 @@ def _serialize_brief(brief):
         "top_gainers": [keep(s) for s in (brief.get("top_gainers") or [])],
         "top_losers": [keep(s) for s in (brief.get("top_losers") or [])],
         "vol_leaders": [keep(s) for s in (brief.get("vol_leaders") or [])],
+        "sectors_leading": brief.get("sectors_leading") or [],
+        "sectors_lagging": brief.get("sectors_lagging") or [],
         "breadth": brief.get("breadth"),
     }
 
@@ -1019,7 +1067,79 @@ def _build_tweet_drafts(brief):
                        "desc": "Full 5-tweet thread covering the session — post sequentially.",
                        "tweets": thread})
 
+    # ── 6. Sector Rotation Alert ─────────────────────────────────────
+    # Where did the money actually go today? Top 3 sectors by average %1D
+    # vs bottom 3. Built from the sector tags _compute_brief_data sets when
+    # it walks the Bloomberg xlsx row stream.
+    leading = brief.get("sectors_leading") or []
+    lagging = brief.get("sectors_lagging") or []
+    if leading and lagging and today:
+        medals = ["🥇", "🥈", "🥉"]
+
+        def _row_en(s, i):
+            return (f"  {medals[i]} {s['name']}  {s['avg_pct']:+.2f}%  "
+                    f"({s['advancers']}▲ / {s['decliners']}▼)  "
+                    f"top: #{s['top_ticker']} {s['top_pct']:+.2f}%")
+        def _row_ar(s, i):
+            return (f"  {medals[i]} {SECTOR_AR.get(s['name'], s['name'])}  {s['avg_pct']:+.2f}%  "
+                    f"({s['advancers']}▲ / {s['decliners']}▼)  "
+                    f"الأعلى: #{s['top_ticker']} {s['top_pct']:+.2f}%")
+
+        en_lines = [f"🔀 #TASI Sector Rotation — {today['date']}", "",
+                    "🔥 Leading sectors:"]
+        for i, s in enumerate(leading): en_lines.append(_row_en(s, i))
+        en_lines += ["", "❄️ Lagging sectors:"]
+        for i, s in enumerate(lagging): en_lines.append(_row_en(s, i))
+        en_lines += ["",
+                     "Money rotated into the top names — watch for follow-through tomorrow.",
+                     "→ trading-suite-l9e4.onrender.com/report"]
+
+        ar_lines = [f"🔀 دوران القطاعات — #تاسي {today['date']}", "",
+                    "🔥 القطاعات الرائدة:"]
+        for i, s in enumerate(leading): ar_lines.append(_row_ar(s, i))
+        ar_lines += ["", "❄️ القطاعات المتراجعة:"]
+        for i, s in enumerate(lagging): ar_lines.append(_row_ar(s, i))
+        ar_lines += ["",
+                     "السيولة دارت إلى القطاعات الأولى — راقب الاستمرارية غداً.",
+                     "→ trading-suite-l9e4.onrender.com/report"]
+
+        drafts.append({
+            "id": "sector_rotation",
+            "title": "🔀 Sector Rotation Alert",
+            "desc": "Where the money rotated today — top 3 sectors vs bottom 3 by average %1D.",
+            "tweets": [{"en": "\n".join(en_lines), "ar": "\n".join(ar_lines)}],
+        })
+
     return drafts
+
+
+# Tadawul official Arabic sector names (used by Sector Rotation draft + future UI)
+SECTOR_AR = {
+    "Banks": "البنوك",
+    "Energy": "الطاقة",
+    "Materials": "المواد الأساسية",
+    "Capital Goods": "السلع الرأسمالية",
+    "Commercial & Professional Services": "الخدمات التجارية والمهنية",
+    "Transportation": "النقل",
+    "Consumer Durables & Apparel": "السلع الكمالية والملابس",
+    "Consumer Services": "الخدمات الاستهلاكية",
+    "Consumer Discretionary Distribution & Retail": "تجزئة الكماليات",
+    "Consumer Staples Distribution & Retail": "تجزئة الأغذية",
+    "Media & Entertainment": "الإعلام والترفيه",
+    "Food, Beverage & Tobacco": "الأغذية والمشروبات والتبغ",
+    "Health Care Equipment & Services": "معدات وخدمات الرعاية الصحية",
+    "Pharmaceuticals, Biotechnology & Life Sciences": "الأدوية والتكنولوجيا الحيوية",
+    "Diversified Financials": "الخدمات المالية المتنوعة",
+    "Financial Services": "الخدمات المالية",
+    "Insurance": "التأمين",
+    "Software & Services": "البرمجيات والخدمات",
+    "Technology Hardware & Equipment": "أجهزة وتقنيات",
+    "Telecommunication Services": "خدمات الاتصالات",
+    "Utilities": "المرافق العامة",
+    "Equity Real Estate Investment Trusts (REITs)": "صناديق الريت العقارية",
+    "Real Estate Management & Development": "إدارة وتطوير العقارات",
+    "Household & Personal Products": "السلع المنزلية والشخصية",
+}
 
 
 @app.route("/agent")
