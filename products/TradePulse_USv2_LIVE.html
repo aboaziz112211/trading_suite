@@ -163,6 +163,9 @@ h1{font-size:18px;font-weight:700;}
 .focus-empty{text-align:center;padding:24px 16px;color:#6b6b65;font-size:11px;background:#F4F3EF;border-radius:8px;line-height:1.7;}
 .focus-empty-big{font-size:32px;display:block;margin-bottom:8px;opacity:0.6;}
 .focus-card-nm{font-size:10px;color:#3a3a35;font-weight:600;margin-top:2px;}
+.focus-card-note{font-size:10px;color:#185FA5;font-weight:600;background:#F0F6FB;border:1px dashed #B6D4EE;border-radius:5px;padding:3px 6px;margin:4px 0;cursor:pointer;line-height:1.3;word-break:break-word;}
+.focus-card-note:hover{background:#E1EEFA;border-color:#185FA5;}
+.focus-card-note .fcn-empty{color:#999;font-style:italic;font-weight:500;}
 .focus-input-row{display:flex;gap:6px;margin-bottom:10px;}
 .focus-input-row input{flex:1;padding:7px 10px;font-size:12px;border:1px solid #D0D6DD;border-radius:6px;outline:none;font-family:inherit;color:#1a1a18;background:#fff;direction:ltr;}
 .focus-input-row input::placeholder{color:#9aa0a6;}
@@ -213,6 +216,7 @@ h1{font-size:18px;font-weight:700;}
 .tp-cm-tk{font-size:32px;font-weight:800;color:#185FA5;letter-spacing:.01em;line-height:1;}
 .tp-cm-nm{font-size:15px;font-weight:600;color:#3a3a35;margin-top:5px;}
 .tp-cm-sector{font-size:11px;color:#854F0B;background:#FAEEDA;padding:2px 9px;border-radius:6px;display:inline-block;margin-top:8px;font-weight:600;}
+.tp-cm-industry{font-size:11px;color:#0C447C;background:#E6F1FB;padding:2px 9px;border-radius:6px;display:inline-block;margin-top:8px;margin-left:6px;font-weight:600;}
 .tp-cm-price-row{display:flex;align-items:baseline;justify-content:space-between;margin:14px 0 6px;}
 .tp-cm-price{font-size:30px;font-weight:800;color:#185FA5;font-variant-numeric:tabular-nums;}
 .tp-cm-chg{font-size:18px;font-weight:700;font-variant-numeric:tabular-nums;}
@@ -661,6 +665,116 @@ td{padding:7px 8px;vertical-align:middle;}
 .brk-pop-badge{display:inline-block;background:#EAF3DE;color:#3B6D11;font-size:10px;padding:2px 8px;border-radius:20px;margin-top:5px;font-weight:700;}
 .brk-pop-bar{height:3px;background:#e0e0d8;border-radius:2px;margin-top:8px;overflow:hidden;}
 .brk-pop-fill{height:100%;background:#3B6D11;border-radius:2px;transition:width 4s linear;}
+
+/* ──────────────────────────────────────────────────────────────
+   MOBILE RESPONSIVE (2026-05-14) — stack-only
+   Tablet ≤768px / Phone ≤480px
+   ────────────────────────────────────────────────────────────── */
+@media (max-width: 768px) {
+  body{padding:8px;font-size:13px;}
+  .hdr{flex-direction:column;align-items:stretch;gap:8px;}
+  .cards{grid-template-columns:1fr;gap:8px;}
+  .sec-grid{grid-template-columns:repeat(2,1fr);}
+  .top3{grid-template-columns:1fr;}
+  .abar{grid-template-columns:repeat(2,1fr);}
+  .mrow{grid-template-columns:repeat(2,1fr);}
+  .bw-grid{grid-template-columns:1fr;}
+  .agg-grid{grid-template-columns:1fr;}
+  .focus-grid{grid-template-columns:1fr;}
+  .agg-nm-grid{grid-template-columns:1fr;}
+  .tbar2{flex-wrap:wrap;gap:6px;padding:8px;}
+  .tabs-row{flex-wrap:wrap;}
+  .fbtn{font-size:11px;padding:4px 10px;}
+  .twrap{overflow-x:auto;-webkit-overflow-scrolling:touch;}
+  table{min-width:560px;}
+  .tp-cm-overlay{padding:8px;}
+  .tp-cm-content{padding:18px 18px;max-width:100%;border-radius:12px;max-height:94vh;}
+  .tp-cm-tk{font-size:24px;}
+  .tp-cm-actions{flex-wrap:wrap;}
+  .tp-cm-btn{flex:1 1 auto;font-size:12px;padding:8px 12px;}
+  .wf{flex-wrap:wrap;font-size:10px;gap:6px;}
+  .wa{display:none;}
+  .ver-pill{font-size:10px;padding:2px 6px;}
+}
+@media (max-width: 480px) {
+  body{padding:4px;font-size:12px;}
+  .sec-grid{grid-template-columns:1fr;}
+  .abar{grid-template-columns:repeat(2,1fr);gap:4px;}
+  .mrow{grid-template-columns:1fr;}
+  .ab,.mc{padding:6px 9px;}
+  .ab-val{font-size:18px;}
+  .mv{font-size:14px;}
+  .focus-card,.agg-card,.bw-card,.pick{padding:10px 12px;}
+  .focus-tk,.agg-tk,.bw-tk{font-size:13px;}
+  .tp-cm-content{padding:14px;border-radius:10px;}
+  .tp-cm-actions{flex-direction:column;}
+  .tp-cm-btn{width:100%;}
+  .agg-card-top,.focus-card-top,.bw-top{flex-wrap:wrap;gap:4px;}
+  .cnt{display:none;}
+  .ch{flex-wrap:wrap;}
+  .drop{padding:14px 10px;}
+}
+
+
+/* === Option C tabs — added 2026-05-18 (SARv1.6 / USv2.3) — NAMESPACED === */
+.tp-tabbar{background:#fff;border:0.5px solid #e0ded9;border-radius:10px;
+        margin:8px 0 8px;padding:4px;
+        display:grid;grid-template-columns:repeat(5,1fr);gap:4px;
+        position:sticky;top:4px;z-index:60;
+        box-shadow:0 1px 4px rgba(0,0,0,0.04);}
+.tp-tabbar button{border:none;background:transparent;cursor:pointer;
+               padding:9px 12px;border-radius:7px;
+               font-size:13px;font-weight:600;color:#5f5e5a;
+               display:flex;flex-direction:column;align-items:center;gap:1px;
+               line-height:1.2;transition:all .12s;font-family:inherit;}
+.tp-tabbar button:hover{background:#faf9f5;}
+.tp-tabbar button.tp-tab-on{background:#3B6D11;color:#fff;}
+.tp-tabbar button .tcount{font-size:9px;font-weight:600;opacity:.85;text-transform:none;letter-spacing:0;}
+.tp-tab{display:none;}
+.tp-tab.tp-tab-on{display:block;animation:tpFadeIn .15s ease;}
+@keyframes tpFadeIn{from{opacity:0;transform:translateY(-2px);}to{opacity:1;transform:none;}}
+body.dark-mode .tp-tabbar{background:#1f1f26;border-color:#3a3a45;}
+body.dark-mode .tp-tabbar button{color:#9b9b9b;}
+body.dark-mode .tp-tabbar button:hover{background:#25252e;}
+body.dark-mode .tp-tabbar button.tp-tab-on{background:#3B6D11;color:#fff;}
+
+/* === v2.3.2 — Industry heat-map grid === */
+.ind-wrap{background:#fff;border:0.5px solid #e0ded9;border-left:3px solid #185FA5;border-radius:12px;padding:10px 14px;margin-top:8px;}
+.ind-hdr{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;font-size:11px;font-weight:700;color:#1a1a18;text-transform:uppercase;letter-spacing:.05em;}
+.ind-hdr .ind-sub{font-weight:500;color:#6b6b65;font-size:10px;text-transform:none;letter-spacing:0;}
+.ind-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:5px;}
+.ind-card{background:#faf9f5;border:1px solid #E8DCBF;border-radius:6px;padding:6px 8px;font-size:10.5px;cursor:pointer;transition:transform .1s;}
+.ind-card:hover{transform:translateY(-1px);border-color:#C0DD97;}
+.ind-card .ind-name{font-weight:700;color:#1a1a18;font-size:11px;margin-bottom:2px;line-height:1.2;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.ind-card .ind-chg{font-size:13px;font-weight:800;font-variant-numeric:tabular-nums;}
+.ind-card .ind-meta{font-size:10px;color:#5f5e5a;margin-top:2px;font-variant-numeric:tabular-nums;}
+.ind-card.ind-active{outline:2px solid #185FA5;background:#e0e9f7 !important;}
+body.dark-mode .ind-wrap{background:#1f1f26;border-color:#3a3a45;border-left-color:#185FA5;}
+body.dark-mode .ind-card{background:#25252e;border-color:#3a3a45;color:#e8e8e8;}
+body.dark-mode .ind-card .ind-name{color:#e8e8e8;}
+body.dark-mode .ind-card .ind-meta{color:#9b9b9b;}
+.ind-rank{position:absolute;top:3px;right:4px;font-size:11px;font-weight:700;}
+.ind-rank-gold,.ind-rank-silver,.ind-rank-bronze{font-size:14px;}
+.ind-rank-num{background:#1a1a18;color:#fff;padding:1px 5px;border-radius:8px;font-size:9px;min-width:14px;text-align:center;display:inline-block;}
+.ind-card{position:relative;}
+body.dark-mode .ind-rank-num{background:#fff;color:#1a1a18;}
+
+
+/* === v2.3.6 / SARv1.7 — clear-filter status bar === */
+.tp-filter-bar{background:#FEF9EE;border:1px solid #f5d899;border-left:4px solid #BA7517;border-radius:6px;
+  padding:8px 12px;margin:6px 0;display:none;justify-content:space-between;align-items:center;
+  font-size:12px;color:#633806;flex-wrap:wrap;gap:6px;}
+.tp-filter-bar.on{display:flex;}
+.tp-filter-bar .tp-fb-label{font-weight:700;color:#1a1a18;margin-right:6px;}
+.tp-filter-bar .tp-fb-chip{padding:2px 9px;border-radius:10px;font-weight:600;font-size:11px;display:inline-block;}
+.tp-filter-bar .tp-fb-chip.sec{background:#FAEEDA;color:#854F0B;}
+.tp-filter-bar .tp-fb-chip.ind{background:#E6F1FB;color:#0C447C;}
+.tp-filter-bar .tp-fb-count{color:#888;font-size:11px;margin-left:8px;}
+.tp-filter-bar .tp-fb-clear{background:#A32D2D;color:#fff;border:none;border-radius:6px;padding:5px 12px;
+  font-size:11px;font-weight:600;cursor:pointer;transition:background .12s;}
+.tp-filter-bar .tp-fb-clear:hover{background:#7a1f1f;}
+body.dark-mode .tp-filter-bar{background:#2a2520;border-color:#4a3d28;border-left-color:#BA7517;color:#f5d899;}
+body.dark-mode .tp-filter-bar .tp-fb-label{color:#fff;}
 </style>
 </head>
 <body>
@@ -733,10 +847,10 @@ td{padding:7px 8px;vertical-align:middle;}
     </div>
     <div class="cok cok-bbg" id="bbg-ok"></div>
     <div class="how">
-      <b>How it works:</b> Run <code>python us_feed.py</code> in this folder &nbsp;→&nbsp;
-      Bridge connects to TWS on 7496/7497 &nbsp;→&nbsp; streams via WebSocket.
+      <b>How it works:</b> Run <code>python polygon_feed.py</code> in this folder &nbsp;→&nbsp;
+      Bridge calls Polygon.io REST snapshot every 5s &nbsp;→&nbsp; streams to dashboard via WebSocket on port 8787.
       <br><b>Checklist if it won't connect:</b>
-      <br>① TWS running &nbsp; ② API enabled (File → Global Config → API → Settings → ✅ Enable ActiveX and Socket Clients) &nbsp; ③ Port = 7496 (live) or 7497 (paper) &nbsp; ④ <code>python us_feed.py</code> running in terminal
+      <br>① <code>python polygon_feed.py</code> running in terminal &nbsp; ② Terminal shows "WebSocket listening on ws://127.0.0.1:8787" &nbsp; ③ No firewall blocking localhost:8787 &nbsp; ④ POLYGON_API_KEY set in polygon_feed.py
     </div>
     <div style="background:#FFF8E1;border:1px solid #FFD700;border-radius:8px;padding:10px 14px;margin-top:8px;">
       <div style="font-size:11px;font-weight:700;color:#7F6000;margin-bottom:4px;">📂 Manual Fallback — Drop XLSX or JSON</div>
@@ -774,10 +888,21 @@ td{padding:7px 8px;vertical-align:middle;}
 
 
 <!-- US INDEX BAR (SPY · QQQ · IWM · Breakouts) -->
+
+<!-- ===== TAB BAR — Option C v1.6/v2.3 added 2026-05-18 ===== -->
+<div class="tp-tabbar" id="tp-tabbar">
+  <button class="tp-tab-on" data-tab="pulse" onclick="showTpTab('pulse')">📊 Pulse<span class="tcount">market overview</span></button>
+  <button data-tab="sectors" onclick="showTpTab('sectors')">🏭 Sectors<span class="tcount">rotation grid</span></button>
+  <button data-tab="setups" onclick="showTpTab('setups')">🎯 Setups<span class="tcount">agg · focus · top 3</span></button>
+  <button data-tab="movers" onclick="showTpTab('movers')">📈 Movers<span class="tcount">agents · leaderboard</span></button>
+  <button data-tab="watchlist" onclick="showTpTab('watchlist')">📋 Watchlist<span class="tcount">scan · breakouts</span></button>
+</div>
+
+<div class="tp-tab tp-tab-on" id="tab-pulse">
 <div class="tbar" style="grid-template-columns:1.3fr 1.3fr 1.3fr 1fr 1.2fr 1fr">
-  <div class="tc main"><div class="tl">🕊️ SPY · S&amp;P 500</div><div class="tv tn" id="t-spy">—</div><div class="ts" id="t-spy-sub">Connect IBKR</div></div>
-  <div class="tc main" style="background:#F1EAF8;border-color:#D2B8E8"><div class="tl">🚀 QQQ · Nasdaq 100</div><div class="tv tn" id="t-qqq">—</div><div class="ts" id="t-qqq-sub">Connect IBKR</div></div>
-  <div class="tc main" style="background:#FFF4E1;border-color:#EECB8A"><div class="tl">🏛️ IWM · Russell 2000</div><div class="tv tn" id="t-iwm">—</div><div class="ts" id="t-iwm-sub">Connect IBKR</div></div>
+  <div class="tc main"><div class="tl">🕊️ SPY · S&amp;P 500</div><div class="tv tn" id="t-spy">—</div><div class="ts" id="t-spy-sub">Polygon offline</div></div>
+  <div class="tc main" style="background:#F1EAF8;border-color:#D2B8E8"><div class="tl">🚀 QQQ · Nasdaq 100</div><div class="tv tn" id="t-qqq">—</div><div class="ts" id="t-qqq-sub">Polygon offline</div></div>
+  <div class="tc main" style="background:#FFF4E1;border-color:#EECB8A"><div class="tl">🏛️ IWM · Russell 2000</div><div class="tv tn" id="t-iwm">—</div><div class="ts" id="t-iwm-sub">Polygon offline</div></div>
   <div class="tc"><div class="tl">📊 VIX</div><div class="tv tn" id="t-vix">—</div><div class="ts" id="t-vix-sub">—</div></div>
   <div class="tc"><div class="tl">💹 $ADV − $DEC</div><div class="tv tn" id="t-ad" style="font-size:12px">—</div><div class="ts" id="t-ad-sub">NYSE + Nasdaq</div></div>
   <div class="tc"><div class="tl">🔥 Near / 💥 Broken</div>
@@ -809,6 +934,9 @@ td{padding:7px 8px;vertical-align:middle;}
 </div>
 
 <!-- SECTOR PULSE — leading-indicator rotation engine -->
+</div> <!-- end tab-pulse -->
+
+<div class="tp-tab" id="tab-sectors">
 <div class="sec-wrap" id="sec-wrap">
   <div class="sec-hdr" onclick="togSectors()" title="Click to collapse/expand">
     <span class="sec-title">🏭 Sector Pulse — Rotation Radar</span>
@@ -832,6 +960,18 @@ td{padding:7px 8px;vertical-align:middle;}
   <div class="sec-grid" id="sec-grid"></div>
 </div>
 
+<!-- v2.3.2 — Industry heat-map (granular GICS, populated from CSV + Polygon) -->
+<div class="ind-wrap" id="ind-wrap">
+  <div class="ind-hdr">
+    <span>📂 Industries <span class="ind-sub" id="ind-sub">— upload a ChartEdge CSV to populate</span></span>
+    <span class="ind-sub">click any card to filter the watchlist</span>
+  </div>
+  <div class="ind-grid" id="ind-grid"></div>
+</div>
+
+</div> <!-- end tab-sectors -->
+
+<div class="tp-tab" id="tab-setups">
 <div class="agg-focus-row">
 <!-- AGGRESSIVE ENTRY (USv2.1) -->
 <div class="agg-wrap" id="agg-wrap">
@@ -873,6 +1013,9 @@ td{padding:7px 8px;vertical-align:middle;}
 </div>
 
 <!-- AGENT BAR -->
+</div> <!-- end tab-setups -->
+
+<div class="tp-tab" id="tab-movers">
 <div class="abar" id="abar" style="display:none">
   <div class="ab am"><div class="ab-lbl">📈 Momentum Agent</div><div class="ab-val" id="a-mom">—</div><div class="ab-sub">Stage 2 · RS · 12m% · Score</div></div>
   <div class="ab ab2"><div class="ab-lbl">🚀 Breakout Agent</div><div class="ab-val" id="a-brk">—</div><div class="ab-sub">Near pivot · NEAR HIGH</div></div>
@@ -905,6 +1048,9 @@ td{padding:7px 8px;vertical-align:middle;}
 <div class="alert-bar" id="alert-bar"><span style="font-size:15px">🔔</span><span id="alert-txt"></span></div>
 
 <!-- BREAKOUT WATCH -->
+</div> <!-- end tab-movers -->
+
+<div class="tp-tab" id="tab-watchlist">
 <div class="bw-wrap" id="bw-wrap">
   <div class="bw-hdr">
     <span class="bw-title" onclick="togBreakoutWatch()" title="Click to collapse/expand">🎯 Breakout Watch <span id="bw-chevron">▲</span></span>
@@ -952,7 +1098,17 @@ td{padding:7px 8px;vertical-align:middle;}
 </div>
 <!-- TABLE -->
 <div class="twrap">
-  <div class="tbar2">
+  <!-- v2.3.6 / SARv1.7 — clear-filter status bar (above pills) -->
+<div class="tp-filter-bar" id="tp-filter-bar">
+  <div>
+    <span class="tp-fb-label">🔍 Filtered:</span>
+    <span class="tp-fb-chip sec" id="tp-fb-sec" style="display:none;"></span>
+    <span class="tp-fb-chip ind" id="tp-fb-ind" style="display:none;"></span>
+    <span class="tp-fb-count" id="tp-fb-count"></span>
+  </div>
+  <button class="tp-fb-clear" onclick="clearAllFilters()">✕ Clear all</button>
+</div>
+<div class="tbar2">
     <span class="t2t" id="tbl-title">📋 Watchlist</span>
     <input class="srch" id="srch" placeholder="Search…" oninput="render()">
     <button class="fbtn" id="f-s2" onclick="togF('stage2')">Stage 2</button>
@@ -1455,7 +1611,7 @@ function detectFileType(csvText) {
 function readFile(f, type) {
   console.log('[TradePulse] 📂 readFile: name=' + f.name + ' size=' + f.size + ' type=' + f.type + ' dropZone=' + type);
 
-  // US build — accept IBKR snapshot JSON as a manual fallback when the bridge isn't running
+  // US build — accept Polygon snapshot JSON as a manual fallback when the bridge isn't running
   if (f.name.toLowerCase().endsWith('.json')) {
     onFile_ibkrJsonFallback(f);
     return;
@@ -1969,8 +2125,9 @@ function parseChartEdge(text, filename) {
       s.liveVol   = row.vol;    s.dayOpen  = row.dayOpen;
       s.dayHigh   = row.dayHigh; s.dayLow  = row.dayLow;
       s.vwap      = row.vwap;   s.isLive   = true;
-      s.avgVol30  = row.avgVol;  s.bid = row.bid; s.ask = row.ask;
+      if (row.avgVol != null && row.avgVol > 0) s.avgVol30 = row.avgVol;  s.bid = row.bid; s.ask = row.ask;
       if (row.sector) s.gics_ig = row.sector;
+      if (row.industry) s.industry = row.industry;  // v2.3.3 hotfix
       s.liq       = calcLiq(s);
       s.total     = calcBoss(s);
       s.action    = reAction(s);
@@ -2011,7 +2168,7 @@ function parseChartEdge(text, filename) {
     if (BBG_TASI) updateTASI(BBG_TASI);
   }
 
-  render(); renderTop3(); updateSummary(); updateBreadth(); renderSectors();
+  render(); renderTop3(); updateSummary(); updateBreadth(); renderSectors(); try{renderIndustries();}catch(e){console.error('renderIndustries:',e);}
   try { renderFocusList(); } catch(e) { console.error('renderFocusList:', e); }
   try { renderBreakoutWatch(); } catch(e) { console.error('[TradePulse] ❌ renderBreakoutWatch error:', e); }
   try { renderLeaderboard(); } catch(e){ console.error('renderLeaderboard:',e); }
@@ -2238,7 +2395,7 @@ function parseBloomberg(text, filename) {
     el('main-badge').innerHTML = '<span class="dot"></span>Market Feed ready · drop ChartEdge';
     el('upd').textContent = 'Market Feed loaded ' + t2;
     toast('⚡ Market Feed loaded', 'TASI ✅ · ' + Object.keys(BBG_MAP).length + ' prices ready · drop ChartEdge CSV next');
-    updateBreadth(); renderSectors();
+    updateBreadth(); renderSectors(); try{renderIndustries();}catch(e){console.error('renderIndustries:',e);}
     try { renderBreakoutWatch(); } catch(e) { console.error('[TradePulse] ❌ renderBreakoutWatch error (bbg pre-CE):', e); }
     return;
   }
@@ -2257,13 +2414,14 @@ function parseBloomberg(text, filename) {
     s.dayLow    = row.dayLow;
     s.vwap      = row.vwap;
     s.isLive    = true;
-    s.avgVol30  = row.avgVol;  s.bid = row.bid; s.ask = row.ask;
+    if (row.avgVol != null && row.avgVol > 0) s.avgVol30 = row.avgVol;  s.bid = row.bid; s.ask = row.ask;
     // v4 — pipe new Bloomberg fields onto the stock
     s.ma200ChgPct = row.ma200ChgPct;
     s.hi30d       = row.hi30d;
     s.lo30d       = row.lo30d;
     s.ma200_22d   = row.ma200_22d;
     s.gics_ig     = row.sector;     // GICS Industry Group for subtext
+    s.industry    = row.industry || '';  // v2.3.1 — granular GICS Industry from Polygon
     // v4 — derive current MA200 from MA200_22d_ago × (1 + MA200 22d%chg/100)
     if (row.ma200_22d != null && row.ma200ChgPct != null && !s.ma200) {
       s.ma200 = +(row.ma200_22d * (1 + row.ma200ChgPct/100)).toFixed(3);
@@ -2330,7 +2488,7 @@ function parseBloomberg(text, filename) {
   });
 
   // ── Step 5: Update UI ──────────────────────────────────────────────────
-  updateSummary(); render(); renderTop3(); updateBreadth(); renderSectors();
+  updateSummary(); render(); renderTop3(); updateBreadth(); renderSectors(); try{renderIndustries();}catch(e){console.error('renderIndustries:',e);}
   try { renderBreakoutWatch(); } catch(e) { console.error('[TradePulse] ❌ renderBreakoutWatch error (bbg):', e); }
   try { renderLeaderboard(); } catch(e){ console.error('renderLeaderboard:',e); }
   try { checkVolSpikes(); } catch(e){ console.error('checkVolSpikes:',e); }
@@ -2904,6 +3062,9 @@ function render() {
       const stockSec = (BBG_MAP[s.ticker.replace('.SR','')]?.sector) || s.gics_ig || '';
       if(stockSec !== sectorF) return false;
     }
+    if(window.industryF){
+      if((s.industry||'') !== window.industryF) return false;
+    }
     if(q&&!s.ticker.toLowerCase().includes(q)&&!s.company.toLowerCase().includes(q)&&!dtk(s).toLowerCase().includes(q)) return false;
     return true;
   });
@@ -2931,7 +3092,11 @@ function render() {
     const liveDot=s.isLive?'<span style="font-size:8px;color:#3B6D11;margin-left:2px">●</span>':'';
     const ac=s.action==='ON RADAR'?'aON':s.action==='BUY'?'aBUY':s.action==='WATCH'?'aWA':'aAV';
     const bc=s.total>=60?'#3B6D11':s.total>=40?'#BA7517':'#A32D2D';
-    const gicsSub = s.gics_ig ? `<div class="gics-row">🏭 ${s.gics_ig}</div>` : '';
+    // v2.3.1 — show industry group + granular industry side-by-side, tooltip = full hierarchy
+    const gicsLabel = s.gics_ig ? `🏭 ${s.gics_ig}` : '';
+    const indLabel  = (s.industry && s.industry !== s.gics_ig) ? ` · ${s.industry}` : '';
+    const subTitle  = [s.gics_ig, s.industry].filter(Boolean).join(' → ');
+    const gicsSub   = (gicsLabel || indLabel) ? `<div class="gics-row" title="${subTitle}">${gicsLabel}${indLabel}</div>` : '';
     const sepaBadge = s.sepa_pass === true
         ? '<span class="sepa-badge sepa-ok" title="All 10 SEPA criteria pass">SEPA ✓</span>'
         : (s.sepa_pass === false && s.sepa_passed >= 8)
@@ -3053,10 +3218,27 @@ function togAI(){
   else toast('✅ AI Filter OFF','Showing all stocks');
   render();
 }
+
+// USv2.3 — Hardcoded AI watchlist (from user's curated ailist.xlsx, 91 tickers, 2026-05-14)
+const US_AI_TICKERS = new Set([
+  'ASML','TSM','BABA','SAP','BIDU','INFY','WIT','IBM','LITE','APH','LRCX','ZETA',
+  'MPWR','MU','NET','ZS','QLYS','SNAP','SHOP','NFLX','AAOI','NOW','VIAV','QCOM',
+  'FSLY','RNG','MRVL','ORCL','PLTR','G','AVGO','INTC','WIX','SMCI','AAPL','MSFT',
+  'HPQ','S','AMZN','ALAB','MDB','META','TEAM','NBIS','TWLO','GTLB','GOOGL','OTEX',
+  'PATH','ADP','ACN','HPE','AI','CTSH','CRM','SNPS','CRWD','DT','BOX','KLAC','NVDA',
+  'AMBA','ADBE','RDDT','AMKR','DBX','CLS','CIEN','SOUN','WDC','PINS','LSCC','AMD',
+  'INTU','AMAT','SNOW','OKTA','TEM','CDNS','COHR','DDOG','DELL','CRWV','STX','AKAM',
+  'PENG','ANET','CSCO','CRDO',
+  // Foreign listings retained from source list (harmless if not in US ChartEdge universe)
+  '000660.KS','2382.TW'
+]);
 function isAiStock(s){
-  // Primary: AI Notes column from ChartEdge CSV (works without IBKR sector data)
+  // USv2.3 — Primary: curated AI ticker list (replaces ai_notes column)
+  const tk = (s.ticker || '').toUpperCase();
+  if (US_AI_TICKERS.has(tk)) return true;
+  // Fallback 1: AI Notes column from ChartEdge CSV (if user adds new names there)
   if(s.ai_notes && s.ai_notes.trim()) return true;
-  // Fallback: GICS sector if available
+  // Fallback 2: GICS sector regex
   const gics=(s.gics_ig||'').toLowerCase();
   if(!gics) return false;
   return /semiconductor|software|it service|tech.*hardware|internet.*service|interactive media|data processing|electronic equip|artificial intel|machine learn|information tech|communication.*tech/.test(gics);
@@ -3065,7 +3247,10 @@ function filterBySector(name){
   sectorF = (sectorF === name) ? null : name;
   if (sectorF) toast('🏭 Filter: '+name, 'Click the same sector again or press ✕ to clear');
   else toast('✅ Filter cleared','Showing all stocks');
-  const tbl = document.querySelector('.twrap'); if (tbl) tbl.scrollIntoView({behavior:'smooth',block:'start'});
+  // USv2.3 — switch to Watchlist tab so user actually sees the filtered table
+  try { if (typeof showTpTab === 'function') showTpTab('watchlist'); } catch(e){}
+  // Then scroll after the tab DOM has updated
+  setTimeout(function(){ var tbl = document.querySelector('.twrap'); if (tbl) tbl.scrollIntoView({behavior:'smooth',block:'start'}); }, 80);
   render();
   updateSectorFilterUI();
 }
@@ -3175,7 +3360,10 @@ function applyIbkrRows(rows) {
     }
     // Merge into BBG_MAP (partial updates OK — spread preserves previous fields)
     const prev = BBG_MAP[row.ticker] || {};
-    BBG_MAP[row.ticker] = { ...prev, ...row };
+    // USv2.3 — skip null/undefined fields so they don't wipe previous valid data (avgVol30 bug)
+    const cleaned = {};
+    for (const _k in row) if (row[_k] !== null && row[_k] !== undefined) cleaned[_k] = row[_k];
+    BBG_MAP[row.ticker] = { ...prev, ...cleaned };
   });
 
   // Rebuild sector map from BBG_MAP
@@ -3218,6 +3406,7 @@ function applyIbkrRows(rows) {
       if (row.ma200 != null) s.ma200 = row.ma200;
       if (row.ma50  != null) { s.ma50 = row.ma50; s.ma50IsProxy = row.ma50IsProxy; }
       s.gics_ig = row.sector;
+      if (row.industry) s.industry = row.industry;  // v2.3.3 hotfix
       const vcp = calcVCPPivot(s);
       s.breakout_level = vcp.pivot;
       s.buy_zone_low   = vcp.bz_low;
@@ -3263,7 +3452,7 @@ function applyIbkrRows(rows) {
   }
 
   try { updateBreadth(); } catch(e){ console.error('updateBreadth:',e); }
-  try { renderSectors(); } catch(e){ console.error('renderSectors:',e); }
+  try { renderSectors(); try{renderIndustries();}catch(e){console.error('renderIndustries:',e);} } catch(e){ console.error('renderSectors:',e); }
   try { renderAgg(); } catch(e){ console.error('renderAgg:',e); }
   try { renderBreakoutWatch(); } catch(e){ console.error('renderBreakoutWatch:',e); }
   try { render(); } catch(e){ console.error('render:',e); }
@@ -3292,13 +3481,13 @@ function connectIbkr() {
   IBKR_WS.onopen = () => {
     IBKR_RETRIES = 0;  // reset on success
     el('ibkr-conn-label').textContent = '✅ Connected · streaming';
-    el('ibkr-conn-sub').innerHTML = 'us_feed.py online · TWS → WebSocket live &nbsp; <button onclick="event.stopPropagation();stopIbkr()" style="font-size:10px;background:#c0392b;color:#fff;border:none;border-radius:4px;padding:2px 8px;cursor:pointer">⏹ Stop</button>';
+    el('ibkr-conn-sub').innerHTML = 'polygon_feed.py online · Polygon SIP streaming &nbsp; <button onclick="event.stopPropagation();stopIbkr()" style="font-size:10px;background:#c0392b;color:#fff;border:none;border-radius:4px;padding:2px 8px;cursor:pointer">⏹ Stop</button>';
     el('card-bbg').classList.add('ok-bbg');
-    el('bbg-ok').textContent = '⚡ IBKR bridge connected · ' + nowStr();
+    el('bbg-ok').textContent = '⚡ Polygon bridge connected · ' + nowStr();
     el('bbg-ok').classList.add('show');
     el('main-badge').className = 'badge b-bbg';
     el('main-badge').innerHTML = '<span class="dot"></span>IBKR Live';
-    toast('⚡ IBKR Connected', 'Live feed streaming from TWS');
+    toast('⚡ Polygon Connected', 'Live feed streaming from Polygon');
     const tickers = ['SPY','QQQ','IWM','VIX'];
     if (STOCKS.length) {
       STOCKS.forEach(s => { const t=(s.ticker||'').toUpperCase(); if(t) tickers.push(t); });
@@ -3344,7 +3533,7 @@ function connectIbkr() {
     IBKR_RETRIES++;
     if (IBKR_RETRIES >= IBKR_MAX_RETRIES) {
       el('ibkr-conn-label').textContent = '❌ Bridge not reachable after ' + IBKR_MAX_RETRIES + ' attempts. Click to retry.';
-      el('ibkr-conn-sub').innerHTML = '<b>Checklist:</b> 1) Is TWS running? 2) API enabled in TWS Config → API → Settings? 3) Run <code>python us_feed.py</code> in terminal. 4) Or drop an XLSX/JSON file below.';
+      el('ibkr-conn-sub').innerHTML = '<b>Checklist:</b> 1) Run <code>python polygon_feed.py</code> in terminal. 2) Terminal shows "WebSocket listening on ws://127.0.0.1:8787". 3) POLYGON_API_KEY set in polygon_feed.py. 4) Or drop an XLSX/JSON file below as fallback.';
       IBKR_RETRIES = 0;  // reset so next click starts fresh
       return;
     }
@@ -4096,7 +4285,7 @@ try { el('tp-ver').textContent = TP_VERSION; } catch(e) {}
     try { renderTop3(); } catch(e){}
     try { updateSummary(); } catch(e){}
     try { updateBreadth(); } catch(e){}
-    try { renderSectors(); } catch(e){}
+    try { renderSectors(); try{renderIndustries();}catch(e){console.error('renderIndustries:',e);} } catch(e){}
     try { renderBreakoutWatch(); } catch(e){}
     try { renderFocusList(); } catch(e){}
     try { renderAgg(); } catch(e){}
@@ -4219,6 +4408,8 @@ function openCardModal(ticker){
       '<div class="tp-cm-tk">' + tk + '</div>' +
       (s.company ? '<div class="tp-cm-nm">' + s.company + '</div>' : '') +
       (s.gics_ig || s.gics ? '<span class="tp-cm-sector">🏭 ' + (s.gics_ig || s.gics) + '</span>' : '') +
+      // v2.3.1 — show granular industry next to industry group when distinct
+      (s.industry && s.industry !== (s.gics_ig || s.gics) ? '<span class="tp-cm-industry">📂 ' + s.industry + '</span>' : '') +
     '</div>' +
     '<div class="tp-cm-price-row">' +
       '<span class="tp-cm-price">$' + fmt(price) + '</span>' +
@@ -4298,15 +4489,37 @@ document.addEventListener('click', function(e){ if (e.target && e.target.id === 
 
 // USv2.2 — Focus List
 var FOCUS_LS_KEY = 'tp_us_focus_list_v1';
+// USv2.3 — Focus List notes (per-ticker reason for adding)
+var FOCUS_NOTES_KEY = 'tp_us_focus_notes_v1';
+function loadFocusNotes(){
+  try { var raw = localStorage.getItem(FOCUS_NOTES_KEY); var m = raw ? JSON.parse(raw) : {}; return (m && typeof m === 'object') ? m : {}; } catch(e) { return {}; }
+}
+function saveFocusNotes(m){ try { localStorage.setItem(FOCUS_NOTES_KEY, JSON.stringify(m)); } catch(e){} }
+function getFocusNote(t){ return loadFocusNotes()[t] || ''; }
+function setFocusNote(t, note){
+  var m = loadFocusNotes();
+  if (note && note.trim()) m[t] = note.trim().slice(0, 200);
+  else delete m[t];
+  saveFocusNotes(m);
+}
+function editFocusNote(t, ev){
+  if (ev) { ev.stopPropagation(); ev.preventDefault(); }
+  var cur = getFocusNote(t);
+  var n = prompt('Note for ' + t + ' — why on Focus List?\n(e.g. "earnings 5/22", "breakout above 24", "buying ahead of FDA")', cur);
+  if (n === null) return;
+  setFocusNote(t, n);
+  renderFocusList();
+}
 function loadFocusList(){
   try { var raw = localStorage.getItem(FOCUS_LS_KEY); if (!raw) return []; var arr = JSON.parse(raw); return Array.isArray(arr) ? arr : []; } catch(e) { return []; }
 }
 function saveFocusList(arr){ try { localStorage.setItem(FOCUS_LS_KEY, JSON.stringify(arr)); } catch(e) {} }
 function isInFocus(ticker){ return loadFocusList().indexOf(ticker) >= 0; }
-function addToFocus(ticker){
+function addToFocus(ticker, note){
   var arr = loadFocusList();
   var isNew = arr.indexOf(ticker) < 0;
   if (isNew) { arr.push(ticker); saveFocusList(arr); }
+  if (note !== undefined && note !== null) setFocusNote(ticker, note);
   renderFocusList();
   // USv2.1 — auto-subscribe new Focus tickers to the live feed so Polygon starts
   // fetching them even if they weren't in the ChartEdge CSV. polygon_feed.subscribe()
@@ -4322,11 +4535,15 @@ function removeFromFocus(ticker, ev){
   if (ev) { ev.stopPropagation(); ev.preventDefault(); }
   var arr = loadFocusList().filter(function(t){ return t !== ticker; });
   saveFocusList(arr);
+  setFocusNote(ticker, '');
   renderFocusList();
 }
 function toggleFocus(ticker){
   if (isInFocus(ticker)) removeFromFocus(ticker);
-  else addToFocus(ticker);
+  else {
+    var note = prompt('Why add ' + ticker + ' to Focus? (optional)\n(e.g. "earnings 5/22", "breakout watch", "wait for pullback")', '');
+    addToFocus(ticker, note);
+  }
   var ov = el('tp-cm-overlay');
   if (ov && ov.classList.contains('show')) openCardModal(ticker);
 }
@@ -4374,6 +4591,7 @@ function renderFocusList(){
       '<button class="focus-remove" onclick="removeFromFocus(\''+t+'\', event)" title="Remove from Focus List">✕</button>' +
       '<div class="focus-card-top"><span class="focus-tk">' + tk + '</span><span class="focus-status ' + st.cls + '">' + st.label + '</span></div>' +
       (s.company ? '<div class="focus-card-nm">' + s.company + '</div>' : '') +
+      (function(){ var n = getFocusNote(t); return '<div class="focus-card-note" onclick="editFocusNote(\''+t+'\', event)" title="Click to edit reason">' + (n ? '📝 ' + n.replace(/</g,'&lt;') : '<span class="fcn-empty">+ add reason</span>') + '</div>'; })() +
       '<div class="agg-row"><span style="color:' + (chg!=null && chg>=0?'#3B6D11':chg!=null?'#A32D2D':'#6b6b65') + ';font-weight:700">' + (chg!=null?(chg>=0?'+':'')+chg.toFixed(2)+'%':'—') + '</span><b>$' + price.toFixed(2) + '</b></div>' +
       (gap != null ? '<div class="agg-piv ' + pivCls + '">' + pivLbl + '</div>' : '') +
       (rawVr!=null ? '<div class="agg-row"><span>Vol</span><b>' + rawVr.toFixed(2) + 'x</b></div>' : '') +
@@ -4392,7 +4610,8 @@ function addFocusFromInput(){
     setTimeout(function(){ inp.placeholder = 'Ticker + Enter (e.g. AAPL)'; }, 1500);
     return;
   }
-  addToFocus(ticker);
+  var note = prompt('Why add ' + ticker + ' to Focus? (optional)\n(e.g. "earnings 5/22", "breakout watch")', '');
+  addToFocus(ticker, note);
   inp.value = '';
   inp.placeholder = '✓ added ' + ticker;
     setTimeout(function(){ inp.placeholder = 'Ticker + Enter (e.g. AAPL)'; }, 1500);
@@ -4452,5 +4671,294 @@ setTimeout(function(){
 </script>
 <!-- USv2.2.10 — Card Zoom Modal container (was missing) -->
 <div class="tp-cm-overlay" id="tp-cm-overlay"><div class="tp-cm-content" id="tp-cm-body"></div></div>
+
+</div> <!-- end tab-watchlist -->
+
+<script>
+// === Option C tab switching — added 2026-05-18 — NAMESPACED ===
+// Function is showTpTab (not showTab) to avoid collision with any existing setTab usage.
+function showTpTab(name){
+  document.querySelectorAll('.tp-tab').forEach(function(t){ t.classList.remove('tp-tab-on'); });
+  document.querySelectorAll('#tp-tabbar button').forEach(function(b){ b.classList.remove('tp-tab-on'); });
+  var tab = document.getElementById('tab-' + name);
+  if (tab) tab.classList.add('tp-tab-on');
+  var btn = document.querySelector('#tp-tabbar button[data-tab="' + name + '"]');
+  if (btn) btn.classList.add('tp-tab-on');
+  try { localStorage.setItem('tp_active_tab_v1', name); } catch(e) {}
+  // Re-trigger any sizing that depends on container being visible
+  window.dispatchEvent(new Event('resize'));
+}
+// Restore last active tab on load
+(function(){
+  try {
+    var saved = localStorage.getItem('tp_active_tab_v1');
+    if (saved && document.getElementById('tab-' + saved)) {
+      showTpTab(saved);
+    }
+  } catch(e) {}
+})();
+</script>
+
+
+<script>
+// === v2.3.2 — Industry heat-map functions ===
+window.industryF = null;
+
+function renderIndustries(){
+  var grid = document.getElementById('ind-grid');
+  var sub  = document.getElementById('ind-sub');
+  if (!grid) return;
+  var stocks = (typeof STOCKS !== 'undefined' && STOCKS) ? STOCKS : [];
+  if (!stocks.length){
+    grid.innerHTML = '<div style="font-size:11px;color:#888;text-align:center;padding:14px;grid-column:1/-1;">Upload a ChartEdge CSV to populate the industry grid.</div>';
+    if (sub) sub.textContent = '— no data yet';
+    return;
+  }
+  // v2.3.4: prefer live fields over CSV-stale ones
+  function pickChg(s){ return s.liveChg != null ? s.liveChg : (s.chg != null ? s.chg : null); }
+  function pickPx(s){ return s.livePrice != null ? s.livePrice : (s.price != null ? s.price : null); }
+
+  var groups = {};
+  var withInd = 0;
+  stocks.forEach(function(s){
+    var ind = ((s.industry || '') + '').trim();
+    if (!ind) return;
+    if (!groups[ind]) groups[ind] = [];
+    groups[ind].push(s);
+    withInd++;
+  });
+  var indNames = Object.keys(groups);
+  if (!indNames.length){
+    grid.innerHTML = '<div style="font-size:11px;color:#888;text-align:center;padding:14px;grid-column:1/-1;">No industry data yet. Start the Polygon feed (polygon_feed.py) so industry per ticker arrives via WebSocket.</div>';
+    if (sub) sub.textContent = '— waiting for Polygon feed';
+    return;
+  }
+  var benchChg = (typeof BBG_TASI !== 'undefined' && BBG_TASI && BBG_TASI.chg != null) ? BBG_TASI.chg : 0;
+  var cards = indNames.map(function(name){
+    var sx = groups[name];
+    var cnt = sx.length;
+    var withChg = sx.map(function(s){ return { s:s, c:pickChg(s) }; }).filter(function(x){ return x.c != null; });
+    var adv = withChg.filter(function(x){ return x.c > 0; }).length;
+    var dec = withChg.filter(function(x){ return x.c < 0; }).length;
+    var avgChg = withChg.length ? withChg.reduce(function(a,x){ return a + x.c; }, 0) / withChg.length : 0;
+    var rsVsBench = avgChg - benchChg;
+    var nearPivot = sx.filter(function(s){
+      var g = s.liveGap != null ? s.liveGap : s.dist_to_breakout;
+      return g != null && g >= 0 && g <= 3;
+    }).length;
+    var brokenPivot = sx.filter(function(s){
+      var px = pickPx(s);
+      if (px && s.breakout_level && px > s.breakout_level) return true;
+      if (s.action === 'BUY') return true;
+      return false;
+    }).length;
+    // Pulse weights: 50% chg, 30% RS vs bench, 20% near/broken pivot density
+    var pivotDensity = cnt ? (nearPivot + brokenPivot * 1.5) / cnt * 100 : 0;
+    var pulse = Math.round(Math.max(0, Math.min(100, 50 + avgChg * 10 + rsVsBench * 6 + pivotDensity * 0.4)));
+    return { name:name, cnt:cnt, adv:adv, dec:dec, avgChg:avgChg, rsVsBench:rsVsBench, nearPivot:nearPivot, brokenPivot:brokenPivot, pulse:pulse };
+  });
+  cards.sort(function(a,b){ return b.pulse - a.pulse || b.avgChg - a.avgChg; });
+  grid.innerHTML = cards.map(function(c, i){
+    var up = c.avgChg >= 0;
+    // Color intensity by magnitude: stronger move = more saturated
+    var mag = Math.min(1, Math.abs(c.avgChg) / 3);
+    var bgAlpha = 0.05 + mag * 0.15;
+    var bg = up
+      ? 'rgba(59,109,17,' + bgAlpha.toFixed(2) + ')'
+      : 'rgba(163,45,45,' + bgAlpha.toFixed(2) + ')';
+    var borderClr = c.pulse >= 65 ? '#3B6D11' : c.pulse >= 45 ? '#B8841F' : c.pulse >= 30 ? '#888' : '#A32D2D';
+    var chgClr = up ? '#3B6D11' : '#A32D2D';
+    var isActive = (window.industryF === c.name);
+    var escName = c.name.replace(/'/g, "\\'").replace(/"/g, '&quot;');
+    // Top 3 get a rank medal; top 10 get a small number badge
+    var rankBadge = '';
+    if (i === 0) rankBadge = '<span class="ind-rank ind-rank-gold">🥇</span>';
+    else if (i === 1) rankBadge = '<span class="ind-rank ind-rank-silver">🥈</span>';
+    else if (i === 2) rankBadge = '<span class="ind-rank ind-rank-bronze">🥉</span>';
+    else if (i < 10) rankBadge = '<span class="ind-rank ind-rank-num">' + (i+1) + '</span>';
+    return '<div class="ind-card' + (isActive ? ' ind-active' : '') + '"'
+      + ' data-industry="' + escName + '"'
+      + ' onclick="filterByIndustry(\'' + escName + '\')"'
+      + ' style="background:' + bg + ';border-left:3px solid ' + borderClr + ';"'
+      + ' title="Rank #' + (i+1) + ' · ' + c.cnt + ' tickers · ' + c.adv + ' up / ' + c.dec + ' down · Pulse ' + c.pulse + ' · click to filter watchlist">'
+      + rankBadge
+      + '<div class="ind-name">' + c.name + '</div>'
+      + '<div class="ind-chg" style="color:' + chgClr + '">' + (up?'+':'') + c.avgChg.toFixed(2) + '%</div>'
+      + '<div class="ind-meta"><b>' + c.cnt + '</b> stk · RS ' + (c.rsVsBench>=0?'+':'') + c.rsVsBench.toFixed(1) + ' · P<b>' + c.pulse + '</b>'
+      + (c.nearPivot ? ' · <span style="color:#BA7517">' + c.nearPivot + ' near</span>' : '')
+      + (c.brokenPivot ? ' · <span style="color:#185FA5">' + c.brokenPivot + ' brk</span>' : '')
+      + '</div>'
+      + '</div>';
+  }).join('');
+  if (sub){
+    var top3 = cards.slice(0,3).map(function(c){ return c.name + ' (' + (c.avgChg>=0?'+':'') + c.avgChg.toFixed(1) + '%)'; }).join(' · ');
+    sub.textContent = cards.length + ' industries · ' + withInd + ' tickers · top: ' + top3;
+  }
+}
+
+function filterByIndustry(name){
+  if (!name) return;
+  window.industryF = (window.industryF === name) ? null : name;
+  if (typeof toast === 'function'){
+    if (window.industryF) toast('📂 Filter: ' + name, 'Click the same industry again or press ✕ to clear');
+    else toast('✅ Filter cleared', 'Showing all stocks');
+  }
+  // Jump to Watchlist tab so the filtered list is immediately visible
+  if (window.industryF && typeof showTpTab === 'function'){
+    showTpTab('watchlist');
+  }
+  if (typeof render === 'function') render();
+  updateIndustryFilterUI();
+}
+
+function updateIndustryFilterUI(){
+  document.querySelectorAll('.ind-card').forEach(function(card){
+    var s = card.dataset.industry;
+    card.classList.toggle('ind-active', !!window.industryF && s === window.industryF);
+  });
+}
+
+// First render on load (waits for STOCKS to be populated by initial render cycle)
+document.addEventListener('DOMContentLoaded', function(){
+  setTimeout(function(){ try{ renderIndustries(); }catch(e){ console.error('initial renderIndustries:', e); } }, 200);
+});
+</script>
+
+
+<script>
+// === v2.3.5 — auto-write live_hotlist.json via polygon_feed WS ===
+// Hotlist = priority tickers that yf_overlay should fetch in real-time during
+// the 08:00-09:45 ET window. Composed from: Focus List + near-pivot watchlist +
+// BUY-action tickers + top 20 by RS + benchmark ETFs. Sent to polygon_feed via
+// the existing IBKR_WS connection on every render(), throttled to 8s min.
+
+window.__lastHotlistSentAt = 0;
+window.__lastHotlistJson = "";
+
+function buildHotlist(){
+  var set = new Set();
+  // 1. Focus List
+  try {
+    var raw = localStorage.getItem("tp_us_focus_list_v1");
+    if (raw) {
+      var fl = JSON.parse(raw);
+      (Array.isArray(fl) ? fl : []).forEach(function(t){
+        if (t) set.add(String(t).toUpperCase());
+      });
+    }
+  } catch(e) {}
+  // 2. Stocks-derived signals (only if STOCKS loaded)
+  if (typeof STOCKS !== "undefined" && Array.isArray(STOCKS)) {
+    // 2a. Near-pivot (within -1% under to +3% past)
+    STOCKS.forEach(function(s){
+      var g = s.liveGap != null ? s.liveGap : s.dist_to_breakout;
+      if (g != null && g >= -1 && g <= 3) set.add(String(s.ticker).toUpperCase());
+    });
+    // 2b. Buy-action tickers
+    STOCKS.forEach(function(s){
+      if (s.action === "BUY") set.add(String(s.ticker).toUpperCase());
+    });
+    // 2c. Top 20 by RS
+    var sorted = STOCKS.slice().filter(function(s){ return s.rs != null; })
+                       .sort(function(a,b){ return (b.rs||0) - (a.rs||0); });
+    sorted.slice(0, 20).forEach(function(s){ set.add(String(s.ticker).toUpperCase()); });
+  }
+  // 3. Always include benchmark ETFs
+  ["SPY","QQQ","IWM","VIX"].forEach(function(t){ set.add(t); });
+  return Array.from(set).sort();
+}
+
+function sendHotlist(force){
+  try {
+    var now = Date.now();
+    if (!force && (now - window.__lastHotlistSentAt) < 8000) return;
+    var list = buildHotlist();
+    if (!list.length) return;
+    if (typeof IBKR_WS === "undefined" || !IBKR_WS) return;
+    if (IBKR_WS.readyState !== 1) return;  // not OPEN
+    var json = JSON.stringify(list);
+    if (json === window.__lastHotlistJson && !force) return;  // unchanged
+    IBKR_WS.send(JSON.stringify({ type: "hotlist", source: "dashboard-auto", tickers: list }));
+    window.__lastHotlistSentAt = now;
+    window.__lastHotlistJson = json;
+    console.log("[hotlist] sent " + list.length + " tickers to polygon_feed");
+  } catch(e) {
+    console.warn("[hotlist] sendHotlist failed:", e);
+  }
+}
+
+// Monkey-patch render() so every render triggers a (throttled) hotlist send
+(function(){
+  if (typeof window.render !== "function") return;
+  var _origRender = window.render;
+  window.render = function(){
+    var r = _origRender.apply(this, arguments);
+    try { sendHotlist(false); } catch(e) { console.error("hotlist hook:", e); }
+    return r;
+  };
+})();
+
+// Also run once on page load (after a delay to let WS connect + STOCKS populate)
+setTimeout(function(){ sendHotlist(true); }, 5000);
+setTimeout(function(){ sendHotlist(true); }, 15000);
+// And re-send periodically as a heartbeat (every 60s)
+setInterval(function(){ sendHotlist(true); }, 60000);
+</script>
+
+
+<script>
+// === v2.3.6 / SARv1.7 — clear-filter bar logic ===
+function updateFilterBar(){
+  var bar = document.getElementById('tp-filter-bar');
+  if (!bar) return;
+  var sec = (typeof sectorF !== 'undefined' && sectorF) ? sectorF : null;
+  var ind = (typeof window.industryF !== 'undefined' && window.industryF) ? window.industryF : null;
+  if (!sec && !ind){ bar.classList.remove('on'); return; }
+  bar.classList.add('on');
+  var secEl = document.getElementById('tp-fb-sec');
+  var indEl = document.getElementById('tp-fb-ind');
+  var cntEl = document.getElementById('tp-fb-count');
+  if (secEl){
+    if (sec){ secEl.textContent = '🏭 ' + sec; secEl.style.display = ''; }
+    else { secEl.style.display = 'none'; }
+  }
+  if (indEl){
+    if (ind){ indEl.textContent = '📂 ' + ind; indEl.style.display = ''; }
+    else { indEl.style.display = 'none'; }
+  }
+  if (cntEl){
+    try {
+      var total = (typeof STOCKS !== 'undefined' && STOCKS) ? STOCKS.length : 0;
+      var shown = document.querySelectorAll('#tbl tbody tr').length || 0;
+      cntEl.textContent = '→ ' + shown + ' of ' + total + ' shown';
+    } catch(e) { cntEl.textContent = ''; }
+  }
+}
+
+function clearAllFilters(){
+  try { if (typeof sectorF !== 'undefined') sectorF = null; } catch(e){}
+  try { window.industryF = null; } catch(e){}
+  if (typeof toast === 'function') toast('✅ Filters cleared', 'Showing all stocks');
+  if (typeof render === 'function') render();
+  if (typeof updateSectorFilterUI === 'function') updateSectorFilterUI();
+  if (typeof updateIndustryFilterUI === 'function') updateIndustryFilterUI();
+  updateFilterBar();
+}
+
+// Hook into render() so the bar auto-updates every time
+(function(){
+  if (typeof window.render !== 'function') return;
+  var _origRender = window.render;
+  window.render = function(){
+    var r = _origRender.apply(this, arguments);
+    try { updateFilterBar(); } catch(e){}
+    return r;
+  };
+})();
+
+// Initial update on load (in case a filter is pre-active from a previous session)
+setTimeout(function(){ try { updateFilterBar(); } catch(e){} }, 1000);
+</script>
+
 </body>
 </html>

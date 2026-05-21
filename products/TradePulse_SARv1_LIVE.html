@@ -324,6 +324,9 @@ h1{font-size:18px;font-weight:700;}
 .focus-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:8px;}
 .focus-card{background:linear-gradient(135deg,#F2F8FC 0%,#E6F1FB 100%);border:1px solid #B6D4EE;border-radius:10px;padding:10px 12px;cursor:pointer;transition:transform .15s,box-shadow .15s;direction:ltr;position:relative;}
 .focus-card:hover{transform:translateY(-2px);box-shadow:0 4px 12px rgba(24,95,165,0.18);}
+.focus-card-note{font-size:10px;color:#185FA5;font-weight:600;background:#F0F6FB;border:1px dashed #B6D4EE;border-radius:5px;padding:3px 6px;margin:4px 0;cursor:pointer;line-height:1.3;word-break:break-word;direction:ltr;}
+.focus-card-note:hover{background:#E1EEFA;border-color:#185FA5;}
+.focus-card-note .fcn-empty{color:#999;font-style:italic;font-weight:500;}
 .focus-card-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;}
 .focus-tk{font-size:14px;font-weight:800;color:#185FA5;direction:ltr;}
 .focus-status{font-size:9px;font-weight:800;padding:2px 6px;border-radius:6px;letter-spacing:.04em;text-transform:uppercase;}
@@ -708,6 +711,94 @@ td{padding:7px 8px;vertical-align:middle;}
 .brk-pop-badge{display:inline-block;background:#EAF3DE;color:#3B6D11;font-size:10px;padding:2px 8px;border-radius:20px;margin-top:5px;font-weight:700;}
 .brk-pop-bar{height:3px;background:#e0e0d8;border-radius:2px;margin-top:8px;overflow:hidden;}
 .brk-pop-fill{height:100%;background:#3B6D11;border-radius:2px;transition:width 4s linear;}
+
+/* ──────────────────────────────────────────────────────────────
+   MOBILE RESPONSIVE (2026-05-14) — stack-only
+   Tablet ≤768px / Phone ≤480px
+   ────────────────────────────────────────────────────────────── */
+@media (max-width: 768px) {
+  body{padding:8px;font-size:13px;}
+  .hdr{flex-direction:column;align-items:stretch;gap:8px;}
+  .cards{grid-template-columns:1fr;gap:8px;}
+  .sec-grid{grid-template-columns:repeat(2,1fr);}
+  .top3{grid-template-columns:1fr;}
+  .abar{grid-template-columns:repeat(2,1fr);}
+  .mrow{grid-template-columns:repeat(2,1fr);}
+  .bw-grid{grid-template-columns:1fr;}
+  .agg-grid{grid-template-columns:1fr;}
+  .focus-grid{grid-template-columns:1fr;}
+  .agg-nm-grid{grid-template-columns:1fr;}
+  .tbar2{flex-wrap:wrap;gap:6px;padding:8px;}
+  .tabs-row{flex-wrap:wrap;}
+  .fbtn{font-size:11px;padding:4px 10px;}
+  .twrap{overflow-x:auto;-webkit-overflow-scrolling:touch;}
+  table{min-width:560px;}
+  .tp-cm-overlay{padding:8px;}
+  .tp-cm-content{padding:18px 18px;max-width:100%;border-radius:12px;max-height:94vh;}
+  .tp-cm-tk{font-size:24px;}
+  .tp-cm-actions{flex-wrap:wrap;}
+  .tp-cm-btn{flex:1 1 auto;font-size:12px;padding:8px 12px;}
+  .wf{flex-wrap:wrap;font-size:10px;gap:6px;}
+  .wa{display:none;}
+  .ver-pill{font-size:10px;padding:2px 6px;}
+}
+@media (max-width: 480px) {
+  body{padding:4px;font-size:12px;}
+  .sec-grid{grid-template-columns:1fr;}
+  .abar{grid-template-columns:repeat(2,1fr);gap:4px;}
+  .mrow{grid-template-columns:1fr;}
+  .ab,.mc{padding:6px 9px;}
+  .ab-val{font-size:18px;}
+  .mv{font-size:14px;}
+  .focus-card,.agg-card,.bw-card,.pick{padding:10px 12px;}
+  .focus-tk,.agg-tk,.bw-tk{font-size:13px;}
+  .tp-cm-content{padding:14px;border-radius:10px;}
+  .tp-cm-actions{flex-direction:column;}
+  .tp-cm-btn{width:100%;}
+  .agg-card-top,.focus-card-top,.bw-top{flex-wrap:wrap;gap:4px;}
+  .cnt{display:none;}
+  .ch{flex-wrap:wrap;}
+  .drop{padding:14px 10px;}
+}
+
+
+/* === Option C tabs — added 2026-05-18 (SARv1.6 / USv2.3) — NAMESPACED === */
+.tp-tabbar{background:#fff;border:0.5px solid #e0ded9;border-radius:10px;
+        margin:8px 0 8px;padding:4px;
+        display:grid;grid-template-columns:repeat(5,1fr);gap:4px;
+        position:sticky;top:4px;z-index:60;
+        box-shadow:0 1px 4px rgba(0,0,0,0.04);}
+.tp-tabbar button{border:none;background:transparent;cursor:pointer;
+               padding:9px 12px;border-radius:7px;
+               font-size:13px;font-weight:600;color:#5f5e5a;
+               display:flex;flex-direction:column;align-items:center;gap:1px;
+               line-height:1.2;transition:all .12s;font-family:inherit;}
+.tp-tabbar button:hover{background:#faf9f5;}
+.tp-tabbar button.tp-tab-on{background:#3B6D11;color:#fff;}
+.tp-tabbar button .tcount{font-size:9px;font-weight:600;opacity:.85;text-transform:none;letter-spacing:0;}
+.tp-tab{display:none;}
+.tp-tab.tp-tab-on{display:block;animation:tpFadeIn .15s ease;}
+@keyframes tpFadeIn{from{opacity:0;transform:translateY(-2px);}to{opacity:1;transform:none;}}
+body.dark-mode .tp-tabbar{background:#1f1f26;border-color:#3a3a45;}
+body.dark-mode .tp-tabbar button{color:#9b9b9b;}
+body.dark-mode .tp-tabbar button:hover{background:#25252e;}
+body.dark-mode .tp-tabbar button.tp-tab-on{background:#3B6D11;color:#fff;}
+
+/* === v2.3.6 / SARv1.7 — clear-filter status bar === */
+.tp-filter-bar{background:#FEF9EE;border:1px solid #f5d899;border-left:4px solid #BA7517;border-radius:6px;
+  padding:8px 12px;margin:6px 0;display:none;justify-content:space-between;align-items:center;
+  font-size:12px;color:#633806;flex-wrap:wrap;gap:6px;}
+.tp-filter-bar.on{display:flex;}
+.tp-filter-bar .tp-fb-label{font-weight:700;color:#1a1a18;margin-right:6px;}
+.tp-filter-bar .tp-fb-chip{padding:2px 9px;border-radius:10px;font-weight:600;font-size:11px;display:inline-block;}
+.tp-filter-bar .tp-fb-chip.sec{background:#FAEEDA;color:#854F0B;}
+.tp-filter-bar .tp-fb-chip.ind{background:#E6F1FB;color:#0C447C;}
+.tp-filter-bar .tp-fb-count{color:#888;font-size:11px;margin-left:8px;}
+.tp-filter-bar .tp-fb-clear{background:#A32D2D;color:#fff;border:none;border-radius:6px;padding:5px 12px;
+  font-size:11px;font-weight:600;cursor:pointer;transition:background .12s;}
+.tp-filter-bar .tp-fb-clear:hover{background:#7a1f1f;}
+body.dark-mode .tp-filter-bar{background:#2a2520;border-color:#4a3d28;border-left-color:#BA7517;color:#f5d899;}
+body.dark-mode .tp-filter-bar .tp-fb-label{color:#fff;}
 </style>
 </head>
 <body>
@@ -852,6 +943,17 @@ document.addEventListener('drop',      function(e){
 
 
 <!-- TASI INDEX BAR -->
+
+<!-- ===== TAB BAR — Option C v1.6/v2.3 added 2026-05-18 ===== -->
+<div class="tp-tabbar" id="tp-tabbar">
+  <button class="tp-tab-on" data-tab="pulse" onclick="showTpTab('pulse')">📊 Pulse<span class="tcount">market overview</span></button>
+  <button data-tab="sectors" onclick="showTpTab('sectors')">🏭 Sectors<span class="tcount">rotation grid</span></button>
+  <button data-tab="setups" onclick="showTpTab('setups')">🎯 Setups<span class="tcount">agg · focus · top 3</span></button>
+  <button data-tab="movers" onclick="showTpTab('movers')">📈 Movers<span class="tcount">agents · leaderboard</span></button>
+  <button data-tab="watchlist" onclick="showTpTab('watchlist')">📋 Watchlist<span class="tcount">scan · breakouts</span></button>
+</div>
+
+<div class="tp-tab tp-tab-on" id="tab-pulse">
 <div class="tbar">
   <div class="tc main"><div class="tl">📈 TASI Index</div><div class="tv tn" id="t-idx">—</div><div class="ts" id="t-sub">Load Market Feed CSV</div></div>
   <div class="tc"><div class="tl">Change</div><div class="tv tn" id="t-chg">—</div><div class="ts" id="t-pts">—</div></div>
@@ -887,6 +989,9 @@ document.addEventListener('drop',      function(e){
 </div>
 
 <!-- SECTOR PULSE — leading-indicator rotation engine -->
+</div> <!-- end tab-pulse -->
+
+<div class="tp-tab" id="tab-sectors">
 <div class="sec-wrap" id="sec-wrap">
   <div class="sec-hdr" onclick="togSectors()" title="إظهار / إخفاء نبض القطاعات ودوران السوق">
     <span class="sec-title">🏭 Sector Pulse — Rotation Radar</span>
@@ -917,6 +1022,9 @@ document.addEventListener('drop',      function(e){
   </div><!-- /sec-body -->
 </div>
 
+</div> <!-- end tab-sectors -->
+
+<div class="tp-tab" id="tab-setups">
 <div class="agg-focus-row">
 <!-- AGGRESSIVE ENTRY (SARv1.5) -->
 <div class="agg-wrap" id="agg-wrap">
@@ -960,6 +1068,9 @@ document.addEventListener('drop',      function(e){
 </div>
 
 <!-- AGENT BAR -->
+</div> <!-- end tab-setups -->
+
+<div class="tp-tab" id="tab-movers">
 <div class="abar" id="abar" style="display:none">
   <div class="ab am"><div class="ab-lbl">📈 Momentum Agent</div><div class="ab-val" id="a-mom">—</div><div class="ab-sub">Stage 2 · RS · 12m% · Score</div></div>
   <div class="ab ab2"><div class="ab-lbl">🚀 Breakout Agent</div><div class="ab-val" id="a-brk">—</div><div class="ab-sub">Near pivot · NEAR HIGH</div></div>
@@ -984,6 +1095,9 @@ document.addEventListener('drop',      function(e){
   <div id="mom-board"><h4>⚡ Momentum Leaderboard<span style="font-size:10px;font-weight:500;color:#888">updates on Bloomberg refresh</span></h4><div class="mom-cols"><div><div class="mom-col-title">🚀 Top Movers (% chg)</div><div id="mom-movers"></div></div><div><div class="mom-col-title">📊 Volume Leaders (vs 30D avg)</div><div id="mom-vol"></div></div></div></div>
 
 <!-- BREAKOUT WATCH -->
+</div> <!-- end tab-movers -->
+
+<div class="tp-tab" id="tab-watchlist">
 <div class="bw-wrap" id="bw-wrap">
   <div class="bw-hdr">
     <span class="bw-title">🎯 Breakout Watch — Momentum Stocks Near Pivot</span>
@@ -1026,7 +1140,17 @@ document.addEventListener('drop',      function(e){
   <div id="alert-log"><div id="alert-log-header" onclick="toggleAlertLog()" title="سجل التنبيهات — انقر للعرض أو الإخفاء">🔔 Alert History <span class="al-count" id="al-count">0</span><span id="al-last-time" style="font-size:10px;color:#185FA5;font-weight:700;margin-left:6px;"></span><span style="margin-left:auto;font-size:10px" id="al-toggle-lbl">▼ Show</span></div><div id="alert-log-body" style="display:none"></div></div>
   <div id="sec-filter-bar"><span>🏭 </span><span id="sec-filter-label">Sector filter active</span><button onclick="clearSectorFilter()" title="إلغاء فلتر القطاع وعرض جميع الأسهم">✕ Show All Stocks</button></div>
   <div class="twrap">
-  <div class="tbar2">
+  <!-- v2.3.6 / SARv1.7 — clear-filter status bar (above pills) -->
+<div class="tp-filter-bar" id="tp-filter-bar">
+  <div>
+    <span class="tp-fb-label">🔍 Filtered:</span>
+    <span class="tp-fb-chip sec" id="tp-fb-sec" style="display:none;"></span>
+    <span class="tp-fb-chip ind" id="tp-fb-ind" style="display:none;"></span>
+    <span class="tp-fb-count" id="tp-fb-count"></span>
+  </div>
+  <button class="tp-fb-clear" onclick="clearAllFilters()">✕ Clear all</button>
+</div>
+<div class="tbar2">
     <span class="t2t" id="tbl-title">📋 Watchlist</span>
     <input class="srch" id="srch" placeholder="Search…" oninput="render()" title="ابحث برمز السهم أو اسم الشركة">
     <button class="fbtn" id="f-s2" onclick="togF('stage2')" title="المرحلة الثانية — أسهم في اتجاه صاعد ناضج">Stage 2</button>
@@ -3512,7 +3636,9 @@ function filterBySector(name){
   if (sectorF) toast('🏭 Filter: '+name, 'Use "Show All Stocks" button above the table to clear');
   else toast('✅ Filter cleared','Showing all '+STOCKS.length+' stocks');
   updateSectorFilterUI();
-  const tbl = document.querySelector('.twrap'); if (tbl) tbl.scrollIntoView({behavior:'smooth',block:'start'});
+  // SARv1.5.x — switch to Watchlist tab so user actually sees the filtered table
+  try { if (typeof showTpTab === 'function') showTpTab('watchlist'); } catch(e){}
+  setTimeout(function(){ var tbl = document.querySelector('.twrap'); if (tbl) tbl.scrollIntoView({behavior:'smooth',block:'start'}); }, 80);
   render();
 }
 function clearSectorFilter(){
@@ -3886,6 +4012,7 @@ function renderAggNearMiss(){
   if (byReason.belowVwap) summary.push(byReason.belowVwap + ' below VWAP');
   if (byReason.lowVol) summary.push(byReason.lowVol + ' vol pacing low');
   if (byReason.red) summary.push(byReason.red + ' red on day');
+  var nmSeenMap = markAggSeen(nms.slice(0, 12).map(function(x){ return x.s.ticker; }));
   var nmHTML = '<div class="agg-nm-wrap"><div class="agg-nm-hdr"><span>👀 Watch List - one criterion away</span><span class="agg-nm-sub">' + summary.join(' - ') + '</span></div><div class="agg-nm-grid">';
   nmHTML += nms.slice(0, 12).map(function(x){
     var s = x.s, reason = x.reason;
@@ -3913,6 +4040,7 @@ function renderAggNearMiss(){
       '<div class="agg-row"><span>Missing</span><b>' + rDetail + '</b></div>' +
       (reason !== 'lowVol' ? '<div class="agg-row"><span>Vol (paced)</span><b>' + pvr.toFixed(2) + 'x</b></div>' : '') +
       (reason !== 'belowVwap' ? '<div class="agg-row"><span>VWAP</span><b>' + (vwapPct>=0?'+':'') + vwapPct.toFixed(2) + '%</b></div>' : '') +
+      '<div class="agg-row" style="border-top:1px dashed #E8DCBF;padding-top:3px;margin-top:4px;"><span>First seen</span><b>' + formatAgo(nmSeenMap[s.ticker]) + '</b></div>' +
     '</div>';
   }).join('');
   nmHTML += '</div></div>';
@@ -4151,6 +4279,28 @@ document.addEventListener('click', function(e){
 
 // FOCUS LIST (SARv1.5.8) — user-managed watchlist, persisted to localStorage
 var FOCUS_LS_KEY = 'tp_sar_focus_list_v1';
+// SARv1.5+ — Focus List notes (per-ticker reason for adding)
+var FOCUS_NOTES_KEY = 'tp_sar_focus_notes_v1';
+function loadFocusNotes(){
+  try { var raw = localStorage.getItem(FOCUS_NOTES_KEY); var m = raw ? JSON.parse(raw) : {}; return (m && typeof m === 'object') ? m : {}; } catch(e) { return {}; }
+}
+function saveFocusNotes(m){ try { localStorage.setItem(FOCUS_NOTES_KEY, JSON.stringify(m)); } catch(e){} }
+function getFocusNote(t){ return loadFocusNotes()[t] || ''; }
+function setFocusNote(t, note){
+  var m = loadFocusNotes();
+  if (note && note.trim()) m[t] = note.trim().slice(0, 200);
+  else delete m[t];
+  saveFocusNotes(m);
+}
+function editFocusNote(t, ev){
+  if (ev) { ev.stopPropagation(); ev.preventDefault(); }
+  var cur = getFocusNote(t);
+  var tkClean = (t||'').replace('.SR','');
+  var n = prompt('Note for ' + tkClean + ' — why on Focus List?\n(e.g. "earnings 5/22", "breakout above 24", "buying ahead of earnings")', cur);
+  if (n === null) return;
+  setFocusNote(t, n);
+  renderFocusList();
+}
 function loadFocusList(){
   try { var raw = localStorage.getItem(FOCUS_LS_KEY); if (!raw) return []; var arr = JSON.parse(raw); return Array.isArray(arr) ? arr : []; } catch(e) { return []; }
 }
@@ -4160,20 +4310,26 @@ function saveFocusList(arr){
 function isInFocus(ticker){
   return loadFocusList().indexOf(ticker) >= 0;
 }
-function addToFocus(ticker){
+function addToFocus(ticker, note){
   var arr = loadFocusList();
   if (arr.indexOf(ticker) < 0) { arr.push(ticker); saveFocusList(arr); }
+  if (note !== undefined && note !== null) setFocusNote(ticker, note);
   renderFocusList();
 }
 function removeFromFocus(ticker, ev){
   if (ev) { ev.stopPropagation(); ev.preventDefault(); }
   var arr = loadFocusList().filter(function(t){ return t !== ticker; });
   saveFocusList(arr);
+  setFocusNote(ticker, '');
   renderFocusList();
 }
 function toggleFocus(ticker){
   if (isInFocus(ticker)) removeFromFocus(ticker);
-  else addToFocus(ticker);
+  else {
+    var tkClean = (ticker||'').replace('.SR','');
+    var note = prompt('Why add ' + tkClean + ' to Focus? (optional)\n(e.g. "earnings 5/22", "breakout watch", "wait for pullback")', '');
+    addToFocus(ticker, note);
+  }
   // Refresh the modal button label if modal is open for this ticker
   var ov = el('tp-cm-overlay');
   if (ov && ov.classList.contains('show')) openCardModal(ticker);
@@ -4211,9 +4367,11 @@ function addFocusFromInput(){
     setTimeout(function(){ inp.placeholder = 'Ticker + Enter (e.g. 2222)'; }, 1500);
     return;
   }
-  addToFocus(ticker);
+  var tkClean = ticker.replace('.SR','');
+  var note = prompt('Why add ' + tkClean + ' to Focus? (optional)\n(e.g. "earnings 5/22", "breakout watch")', '');
+  addToFocus(ticker, note);
   inp.value = '';
-  inp.placeholder = '✓ added ' + ticker.replace('.SR','');
+  inp.placeholder = '✓ added ' + tkClean;
   setTimeout(function(){ inp.placeholder = 'Ticker + Enter (e.g. 2222)'; }, 1500);
 }
 document.addEventListener('keydown', function(e){
@@ -4299,7 +4457,9 @@ function renderFocusList(){
   el('focus-sub').textContent = items.length + ' ticker' + (items.length>1?'s':'') + (live.length < items.length ? ' (' + (items.length-live.length) + ' not in feed)' : '');
   el('focus-grid').innerHTML = items.map(function(it){
     var t = it.ticker, s = it.s;
-    var tk = (t||'').replace('.SR','');
+    // SARv1.5.x — prefer Bloomberg mnemonic (e.g. '1303' → 'EIC') over the bare saId
+    var saId = (t||'').replace('.SR','');
+    var tk = (typeof BBG_NAMES === 'object' && BBG_NAMES && BBG_NAMES[saId]) ? BBG_NAMES[saId] : saId;
     if (!s) {
       return '<div class="focus-card" title="Not in current feed">' +
         '<button class="focus-remove" onclick="removeFromFocus(\''+t+'\', event)" title="Remove from Focus List">✕</button>' +
@@ -4324,6 +4484,7 @@ function renderFocusList(){
         '<span class="focus-status ' + st.cls + '">' + st.label + '</span>' +
       '</div>' +
       (cName ? '<div class="agg-nm-ar">' + cName + '</div>' : '') +
+      (function(){ var n = getFocusNote(t); return '<div class="focus-card-note" onclick="editFocusNote(\''+t+'\', event)" title="Click to edit reason">' + (n ? '📝 ' + n.replace(/</g,'&lt;') : '<span class="fcn-empty">+ add reason</span>') + '</div>'; })() +
       '<div class="agg-row"><span style="color:' + (chg!=null && chg>=0?'#3B6D11':chg!=null?'#A32D2D':'#6b6b65') + ';font-weight:700">' + (chg!=null?(chg>=0?'+':'')+chg.toFixed(2)+'%':'—') + '</span><b>' + price.toFixed(2) + '</b></div>' +
       (gap != null ? '<div class="agg-piv ' + pivCls + '">' + pivLbl + '</div>' : '') +
       (pvr!=null ? '<div class="agg-row"><span>Vol paced</span><b>' + pvr.toFixed(2) + 'x</b></div>' : '') +
@@ -4336,5 +4497,88 @@ try { setTimeout(renderFocusList, 100); } catch(e) {}
 </script>
 <!-- Card Zoom Modal (SARv1.5.7) -->
 <div class="tp-cm-overlay" id="tp-cm-overlay"><div class="tp-cm-content" id="tp-cm-body"></div></div>
+
+</div> <!-- end tab-watchlist -->
+
+<script>
+// === Option C tab switching — added 2026-05-18 — NAMESPACED ===
+// Function is showTpTab (not showTab) to avoid collision with any existing setTab usage.
+function showTpTab(name){
+  document.querySelectorAll('.tp-tab').forEach(function(t){ t.classList.remove('tp-tab-on'); });
+  document.querySelectorAll('#tp-tabbar button').forEach(function(b){ b.classList.remove('tp-tab-on'); });
+  var tab = document.getElementById('tab-' + name);
+  if (tab) tab.classList.add('tp-tab-on');
+  var btn = document.querySelector('#tp-tabbar button[data-tab="' + name + '"]');
+  if (btn) btn.classList.add('tp-tab-on');
+  try { localStorage.setItem('tp_active_tab_v1', name); } catch(e) {}
+  // Re-trigger any sizing that depends on container being visible
+  window.dispatchEvent(new Event('resize'));
+}
+// Restore last active tab on load
+(function(){
+  try {
+    var saved = localStorage.getItem('tp_active_tab_v1');
+    if (saved && document.getElementById('tab-' + saved)) {
+      showTpTab(saved);
+    }
+  } catch(e) {}
+})();
+</script>
+
+
+<script>
+// === v2.3.6 / SARv1.7 — clear-filter bar logic ===
+function updateFilterBar(){
+  var bar = document.getElementById('tp-filter-bar');
+  if (!bar) return;
+  var sec = (typeof sectorF !== 'undefined' && sectorF) ? sectorF : null;
+  var ind = (typeof window.industryF !== 'undefined' && window.industryF) ? window.industryF : null;
+  if (!sec && !ind){ bar.classList.remove('on'); return; }
+  bar.classList.add('on');
+  var secEl = document.getElementById('tp-fb-sec');
+  var indEl = document.getElementById('tp-fb-ind');
+  var cntEl = document.getElementById('tp-fb-count');
+  if (secEl){
+    if (sec){ secEl.textContent = '🏭 ' + sec; secEl.style.display = ''; }
+    else { secEl.style.display = 'none'; }
+  }
+  if (indEl){
+    if (ind){ indEl.textContent = '📂 ' + ind; indEl.style.display = ''; }
+    else { indEl.style.display = 'none'; }
+  }
+  if (cntEl){
+    try {
+      var total = (typeof STOCKS !== 'undefined' && STOCKS) ? STOCKS.length : 0;
+      var shown = document.querySelectorAll('#tbl tbody tr').length || 0;
+      cntEl.textContent = '→ ' + shown + ' of ' + total + ' shown';
+    } catch(e) { cntEl.textContent = ''; }
+  }
+}
+
+function clearAllFilters(){
+  try { if (typeof sectorF !== 'undefined') sectorF = null; } catch(e){}
+  try { window.industryF = null; } catch(e){}
+  if (typeof toast === 'function') toast('✅ Filters cleared', 'Showing all stocks');
+  if (typeof render === 'function') render();
+  if (typeof updateSectorFilterUI === 'function') updateSectorFilterUI();
+  if (typeof updateIndustryFilterUI === 'function') updateIndustryFilterUI();
+  updateFilterBar();
+}
+
+// Hook into render() so the bar auto-updates every time
+(function(){
+  if (typeof window.render !== 'function') return;
+  var _origRender = window.render;
+  window.render = function(){
+    var r = _origRender.apply(this, arguments);
+    try { updateFilterBar(); } catch(e){}
+    return r;
+  };
+})();
+
+// Initial update on load (in case a filter is pre-active from a previous session)
+setTimeout(function(){ try { updateFilterBar(); } catch(e){} }, 1000);
+</script>
+
 </body>
 </html>
