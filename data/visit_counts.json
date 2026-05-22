@@ -1,10 +1,10 @@
 {
   "first_seen": "2026-05-17T19:37:56",
-  "last_flushed": "2026-05-22T07:07:14",
+  "last_flushed": "2026-05-22T13:19:59",
   "totals": {
-    "/": 475,
+    "/": 474,
     "_total": 511,
-    "/p/tradepulse_sar": 21,
+    "/p/tradepulse_sar": 22,
     "/p/tradepulse_us": 5,
     "/p/chartedge": 4,
     "/contact": 3,
@@ -38,9 +38,9 @@
       "/report": 3
     },
     "2026-05-22": {
-      "/p/tradepulse_sar": 1,
+      "/p/tradepulse_sar": 2,
       "_total": 3,
-      "/": 2
+      "/": 1
     }
   }
 }
