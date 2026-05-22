@@ -7,12 +7,13 @@
   <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
+  <a href="#main-content" class="skip-link">Skip to main content · تخطّي إلى المحتوى</a>
   {# Disclaimer agreement gate — shown on first visit (and every 30 days). #}
   {# Skipped on /admin (operator already knows). #}
   {% if request.endpoint not in ('admin_page', 'admin_upload') %}
-  <div id="disclaimerModal" class="modal-overlay" aria-modal="true" role="dialog" hidden>
+  <div id="disclaimerModal" class="modal-overlay" aria-modal="true" role="dialog" aria-labelledby="disclaimerModalTitle" hidden>
     <div class="modal-content">
-      <h2 class="modal-title">⚠️ إخلاء مسؤولية &nbsp;·&nbsp; Disclaimer</h2>
+      <h2 class="modal-title" id="disclaimerModalTitle">⚠️ إخلاء مسؤولية &nbsp;·&nbsp; Disclaimer</h2>
       <div class="modal-body">
         <div class="modal-en" lang="en">
           <h3>IMPORTANT INFORMATION AND DISCLAIMER</h3>
@@ -61,17 +62,61 @@
       if (!modal) return;
       var stored = parseInt(localStorage.getItem(KEY) || '0', 10);
       if (stored && (Date.now() - stored) < TTL_MS) return; // still valid
-      modal.hidden = false;
-      document.documentElement.style.overflow = 'hidden';
+
       var cb = document.getElementById('disclaimerCheckbox');
       var btn = document.getElementById('disclaimerAgree');
-      cb.addEventListener('change', function(){ btn.disabled = !cb.checked; });
-      btn.addEventListener('click', function(){
-        if (!cb.checked) return;
+      var FOCUSABLE = 'a[href], button:not([disabled]), input:not([disabled]), [tabindex]:not([tabindex="-1"])';
+      var lastFocusBeforeOpen = null;
+
+      function focusables(){
+        return Array.prototype.slice.call(modal.querySelectorAll(FOCUSABLE));
+      }
+      function openModal(){
+        lastFocusBeforeOpen = document.activeElement;
+        modal.hidden = false;
+        document.documentElement.style.overflow = 'hidden';
+        // Auto-focus the first focusable inside the modal (the checkbox) so
+        // keyboard + screen-reader users land inside the dialog immediately.
+        setTimeout(function(){
+          var f = focusables();
+          if (f.length) f[0].focus();
+        }, 20);
+      }
+      function closeModal(){
+        if (!cb.checked) return; // can't dismiss until they agree
         localStorage.setItem(KEY, String(Date.now()));
         modal.hidden = true;
         document.documentElement.style.overflow = '';
+        // Return focus to wherever the user was before the dialog opened.
+        if (lastFocusBeforeOpen && lastFocusBeforeOpen.focus) {
+          try { lastFocusBeforeOpen.focus(); } catch(e){}
+        }
+      }
+
+      cb.addEventListener('change', function(){ btn.disabled = !cb.checked; });
+      btn.addEventListener('click', closeModal);
+
+      // Focus trap: keep Tab/Shift+Tab cycling inside the dialog so visitors
+      // never lose focus to the page underneath.
+      modal.addEventListener('keydown', function(e){
+        if (e.key === 'Escape') {
+          // Only allow Escape to dismiss if the agreement is checked,
+          // otherwise it's effectively a no-op (legal gate).
+          if (cb.checked) { e.preventDefault(); closeModal(); }
+          return;
+        }
+        if (e.key !== 'Tab') return;
+        var f = focusables();
+        if (!f.length) return;
+        var first = f[0], last = f[f.length - 1];
+        if (e.shiftKey && document.activeElement === first) {
+          e.preventDefault(); last.focus();
+        } else if (!e.shiftKey && document.activeElement === last) {
+          e.preventDefault(); first.focus();
+        }
       });
+
+      openModal();
     })();
   </script>
   {% endif %}
@@ -105,7 +150,7 @@
     <span class="sep" aria-hidden="true">•</span>
     <span class="en" lang="en">⚠️ This site is currently in <b>BETA</b> — under testing</span>
   </div>
-  <main>{% block body %}{% endblock %}</main>
+  <main id="main-content" tabindex="-1">{% block body %}{% endblock %}</main>
   <footer class="site-footer">
     <div class="footer-inner">
       <div class="footer-left">

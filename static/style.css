@@ -1207,3 +1207,84 @@ tbody tr:hover { background: #1a2128; }
   user-select: none;
   font-family: "Segoe UI", "Tahoma", Arial, sans-serif;
 }
+
+/* ════════════════════════════════════════════════════════════════════
+   Accessibility fixes (May 22 audit) — WCAG 2.1 AA polish
+   ════════════════════════════════════════════════════════════════════ */
+
+/* ── 2.4.1 Skip-to-content link (visible only on focus) ───────────── */
+.skip-link {
+  position: absolute;
+  top: 0;
+  left: 0;
+  background: var(--accent);
+  color: #fff !important;
+  padding: 10px 16px;
+  font-size: 14px;
+  font-weight: 600;
+  text-decoration: none;
+  border-radius: 0 0 6px 0;
+  z-index: 9999;
+  transform: translateY(-100%);
+  transition: transform 0.15s;
+}
+.skip-link:focus,
+.skip-link:focus-visible {
+  transform: translateY(0);
+  outline: 2px solid #fff;
+  outline-offset: -4px;
+}
+/* Don't add an extra focus ring on <main> itself when the skip-link
+   programmatically focuses it — it's a structural target, not a control. */
+main:focus { outline: none; }
+
+/* ── 2.4.7 Visible focus indicator (was browser default only) ─────── */
+/* Skip the global rule for anything that already provides its own
+   focus styling (modal inputs, tweet textareas, drop zones), and for
+   mouse clicks (:focus-visible only fires for keyboard/AT). */
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+a:focus-visible,
+button:focus-visible,
+[role="button"]:focus-visible,
+[tabindex]:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+/* Honor any pre-existing rules that set outline:none AND provide their
+   own border-color alternative (.tweet-text, .admin-form input, .drop-zone) */
+
+/* ── 2.5.5 Touch target size — bump small interactive controls ────── */
+@media (pointer: coarse), (max-width: 720px) {
+  .nav-bi,
+  .x-link,
+  .contact-link,
+  .report-link,
+  .admin-pill {
+    min-height: 44px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .guide-btn,
+  .product-head .guide-btn {
+    min-height: 44px;
+    padding: 8px 14px;
+    font-size: 13px;
+  }
+}
+
+/* ── 2.3.3 prefers-reduced-motion: kill animations + transitions ──── */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+}
