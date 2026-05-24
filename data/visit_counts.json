@@ -1,13 +1,13 @@
 {
   "first_seen": "2026-05-17T19:37:56",
-  "last_flushed": "2026-05-23T13:28:51",
+  "last_flushed": "2026-05-24T12:07:14",
   "totals": {
-    "/": 479,
-    "_total": 559,
-    "/p/tradepulse_sar": 28,
-    "/p/tradepulse_us": 41,
+    "/": 474,
+    "_total": 511,
+    "/p/tradepulse_sar": 22,
+    "/p/tradepulse_us": 5,
     "/p/chartedge": 4,
-    "/contact": 4,
+    "/contact": 3,
     "/report": 3
   },
   "daily": {
@@ -38,17 +38,13 @@
       "/report": 3
     },
     "2026-05-22": {
-      "/p/tradepulse_sar": 7,
-      "_total": 43,
-      "/": 4,
-      "/p/tradepulse_us": 32
-    },
-    "2026-05-23": {
       "/p/tradepulse_sar": 1,
-      "_total": 8,
-      "/": 2,
-      "/contact": 1,
-      "/p/tradepulse_us": 4
+      "_total": 2,
+      "/": 1
+    },
+    "2026-05-24": {
+      "/p/tradepulse_sar": 1,
+      "_total": 1
     }
   }
 }
