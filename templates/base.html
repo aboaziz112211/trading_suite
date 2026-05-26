@@ -3,7 +3,10 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>{% block title %}Trading Suite{% endblock %}</title>
+  <title>{% block title %}ChartEdge — Trader's Edge for #TASI{% endblock %}</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;700;800&family=Inter:wght@400;500;600&family=IBM+Plex+Sans+Arabic:wght@400;600;700&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
@@ -123,15 +126,23 @@
   <header class="topbar">
     <a href="{{ url_for('index') }}" class="brand">
       <img src="{{ url_for('static', filename='chartedge_logo.svg') }}" alt="ChartEdge" class="brand-logo" onerror="this.style.display='none'">
-      <span>Trading Suite</span>
+      <span>ChartEdge</span>
+      <span class="beta-chip" aria-label="Beta testing">BETA</span>
     </a>
     <nav>
       <a href="{{ url_for('index') }}" class="nav-bi"><span class="en">Home</span><span class="ar" dir="rtl" lang="ar">الرئيسية</span></a>
       <a href="{{ url_for('product_page', key='chartedge') }}" class="nav-bi"><span class="en">ChartEdge</span><span class="ar" dir="rtl" lang="ar">ChartEdge</span></a>
-      <a href="{{ url_for('product_page', key='tradepulse_us') }}" class="nav-bi"><span class="en">TradePulse US</span><span class="ar" dir="rtl" lang="ar">السوق الأمريكي</span></a>
       <a href="{{ url_for('product_page', key='tradepulse_sar') }}" class="nav-bi"><span class="en">TradePulse TASI</span><span class="ar" dir="rtl" lang="ar">السوق السعودي</span></a>
-      <a href="{{ url_for('market_report') }}" class="report-link nav-bi"><span class="en">📊 Market Report</span><span class="ar" dir="rtl" lang="ar">تقرير السوق</span></a>
+      <a href="{{ url_for('product_page', key='tradepulse_us') }}" class="nav-bi"><span class="en">TradePulse US</span><span class="ar" dir="rtl" lang="ar">السوق الأمريكي</span></a>
+      <a href="{{ url_for('market_report') }}" class="report-link nav-bi"><span class="en">📊 Brief</span><span class="ar" dir="rtl" lang="ar">التقرير</span></a>
       <a href="{{ url_for('contact') }}" class="contact-link nav-bi"><span class="en">Contact</span><span class="ar" dir="rtl" lang="ar">تواصل</span></a>
+      {# Market live pills — JS below flips classes based on time-of-day #}
+      <span class="market-pill is-closed" id="pill-tasi" data-market="tasi" title="Saudi market">
+        <span class="flag" aria-hidden="true">🇸🇦</span><span class="dot" aria-hidden="true"></span><span class="lbl">TASI</span>
+      </span>
+      <span class="market-pill is-closed" id="pill-us" data-market="us" title="US market">
+        <span class="flag" aria-hidden="true">🇺🇸</span><span class="dot" aria-hidden="true"></span><span class="lbl">US</span>
+      </span>
       {% if is_admin %}
       <a href="{{ admin_url('admin_page') }}" class="admin-pill" title="Upload data">📤 Upload</a>
       <a href="{{ admin_url('agent') }}" class="admin-pill admin-pill-agent" title="Generate X content">🧠 Agent</a>
@@ -145,11 +156,54 @@
       </a>
     </nav>
   </header>
-  <div class="beta-banner" role="status" aria-live="polite">
-    <span class="ar" dir="rtl" lang="ar">⚠️ هذا الموقع تجريبي حالياً وتحت الاختبار</span>
-    <span class="sep" aria-hidden="true">•</span>
-    <span class="en" lang="en">⚠️ This site is currently in <b>BETA</b> — under testing</span>
-  </div>
+
+  <script>
+  // ── Market live pill: green pulse during trading hours ────────────────
+  (function(){
+    // Return state for a given market at "now"
+    function state(market){
+      var now = new Date();
+      // Get hour/minute/dow in the right TZ via Intl
+      var tz = market === 'tasi' ? 'Asia/Riyadh' : 'America/New_York';
+      var fmt = new Intl.DateTimeFormat('en-US', {
+        timeZone: tz, hour12: false, weekday: 'short',
+        hour: '2-digit', minute: '2-digit'
+      });
+      var parts = fmt.formatToParts(now);
+      var dow  = parts.find(p => p.type==='weekday').value; // Mon..Sun
+      var hh   = parseInt(parts.find(p => p.type==='hour').value, 10);
+      var mm   = parseInt(parts.find(p => p.type==='minute').value, 10);
+      var mins = hh*60 + mm;
+      if (market === 'tasi') {
+        // Sun–Thu  10:00–15:00 AST
+        if (['Sun','Mon','Tue','Wed','Thu'].indexOf(dow) < 0) return 'closed';
+        if (mins >= 600 && mins < 900) return 'live';
+        if (mins >= 540 && mins < 600) return 'pre';
+        return 'closed';
+      } else {
+        // Mon–Fri  09:30–16:00 EDT/EST
+        if (['Mon','Tue','Wed','Thu','Fri'].indexOf(dow) < 0) return 'closed';
+        if (mins >= 570 && mins < 960) return 'live';
+        if (mins >= 510 && mins < 570) return 'pre';
+        return 'closed';
+      }
+    }
+    function paint(){
+      ['tasi','us'].forEach(function(m){
+        var el = document.getElementById('pill-' + m);
+        if (!el) return;
+        var s = state(m);
+        el.classList.remove('is-live','is-pre','is-closed');
+        el.classList.add('is-' + s);
+        var lbl = el.querySelector('.lbl');
+        if (lbl) lbl.textContent = (m === 'tasi' ? 'TASI · ' : 'US · ') +
+            (s === 'live' ? 'LIVE' : s === 'pre' ? 'PRE' : 'CLOSED');
+      });
+    }
+    paint();
+    setInterval(paint, 60000);  // refresh every minute
+  })();
+  </script>
   <main id="main-content" tabindex="-1">{% block body %}{% endblock %}</main>
   <footer class="site-footer">
     <div class="footer-inner">

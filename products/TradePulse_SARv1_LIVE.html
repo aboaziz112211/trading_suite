@@ -255,34 +255,34 @@ h1{font-size:18px;font-weight:700;}
 /* CARD ZOOM MODAL (SARv1.5.7) */
 .tp-cm-overlay{position:fixed;inset:0;background:rgba(20,20,18,0.65);z-index:9999;display:none;align-items:center;justify-content:center;padding:24px;opacity:0;transition:opacity .15s ease-out;backdrop-filter:blur(2px);}
 .tp-cm-overlay.show{display:flex;opacity:1;}
-.tp-cm-content{background:#fff;border-radius:18px;padding:28px 32px;max-width:560px;width:100%;max-height:90vh;overflow-y:auto;box-shadow:0 30px 90px rgba(0,0,0,0.5);transform:scale(.92);transition:transform .2s cubic-bezier(.16,1,.3,1);position:relative;direction:ltr;}
+.tp-cm-content{background:#fff;border-radius:14px;padding:16px 22px 14px;max-width:640px;width:100%;max-height:92vh;overflow-y:auto;box-shadow:0 30px 90px rgba(0,0,0,0.5);transform:scale(.92);transition:transform .2s cubic-bezier(.16,1,.3,1);position:relative;direction:ltr;}
 .tp-cm-overlay.show .tp-cm-content{transform:scale(1);}
-.tp-cm-close{position:absolute;top:14px;right:18px;font-size:30px;color:#bbb;cursor:pointer;line-height:.6;background:none;border:none;padding:6px 12px;font-weight:300;}
+.tp-cm-close{position:absolute;top:8px;right:12px;font-size:26px;color:#777;cursor:pointer;line-height:.6;background:none;border:none;padding:4px 9px;font-weight:300;}
 .tp-cm-close:hover{color:#333;}
-.tp-cm-head{margin-bottom:18px;padding-bottom:14px;border-bottom:1px solid #eee;}
-.tp-cm-tk{font-size:32px;font-weight:800;color:#185FA5;letter-spacing:.01em;line-height:1;}
-.tp-cm-nm{font-size:15px;font-weight:600;color:#3a3a35;margin-top:5px;direction:rtl;text-align:left;}
+.tp-cm-head{margin-bottom:10px;padding-bottom:8px;border-bottom:1px solid #eee;}
+.tp-cm-tk{font-size:34px;font-weight:800;color:#185FA5;letter-spacing:.01em;line-height:1;}
+.tp-cm-nm{font-size:16px;font-weight:700;color:#1a1a18;margin-top:3px;direction:rtl;text-align:left;}
 .tp-cm-sector{font-size:11px;color:#854F0B;background:#FAEEDA;padding:2px 9px;border-radius:6px;display:inline-block;margin-top:8px;font-weight:600;}
-.tp-cm-price-row{display:flex;align-items:baseline;justify-content:space-between;margin:14px 0 6px;}
+.tp-cm-price-row{display:flex;align-items:baseline;justify-content:space-between;margin:8px 0 4px;}
 .tp-cm-price{font-size:30px;font-weight:800;color:#185FA5;font-variant-numeric:tabular-nums;}
 .tp-cm-chg{font-size:18px;font-weight:700;font-variant-numeric:tabular-nums;}
 .tp-cm-chg.up{color:#3B6D11;}.tp-cm-chg.dn{color:#A32D2D;}
-.tp-cm-status{margin:8px 0 16px;}
+.tp-cm-status{margin:4px 0 8px;}
 .tp-cm-badge{display:inline-block;font-size:11px;font-weight:800;padding:4px 10px;border-radius:8px;letter-spacing:.04em;text-transform:uppercase;margin-right:6px;}
 .tp-cm-b-buy{background:#EAF3DE;color:#3B6D11;}
 .tp-cm-b-rad{background:#FAEEDA;color:#854F0B;}
 .tp-cm-b-wat{background:#E6F1FB;color:#185FA5;}
 .tp-cm-b-agg{background:#FBE6E2;color:#C8451F;}
 .tp-cm-b-nm{background:#FEEEE5;color:#9B3618;}
-.tp-cm-section{margin-top:18px;}
-.tp-cm-section-title{font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.06em;color:#854F0B;margin-bottom:8px;}
-.tp-cm-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px 16px;}
-.tp-cm-kv{display:flex;justify-content:space-between;align-items:baseline;font-size:13px;padding:6px 0;border-bottom:1px dashed #eee;font-variant-numeric:tabular-nums;}
-.tp-cm-k{color:#6b6b65;}
-.tp-cm-v{color:#1a1a18;font-weight:700;}
+.tp-cm-section{margin-top:10px;}
+.tp-cm-section-title{font-size:12px;font-weight:800;text-transform:uppercase;letter-spacing:.06em;color:#854F0B;margin-bottom:4px;}
+.tp-cm-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:2px 18px;}
+.tp-cm-kv{display:flex;justify-content:space-between;align-items:baseline;font-size:14px;padding:4px 0;border-bottom:1px dashed #eee;font-variant-numeric:tabular-nums;}
+.tp-cm-k{color:#3a3a35;font-weight:600;}
+.tp-cm-v{color:#0d0d0a;font-weight:800;}
 .tp-cm-v.up{color:#3B6D11;}.tp-cm-v.dn{color:#A32D2D;}
-.tp-cm-actions{margin-top:22px;display:flex;gap:10px;}
-.tp-cm-btn{padding:10px 18px;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer;border:none;transition:transform .1s,box-shadow .1s;}
+.tp-cm-actions{margin-top:12px;display:flex;gap:8px;flex-wrap:wrap;}
+.tp-cm-btn{padding:7px 13px;border-radius:7px;font-size:12.5px;font-weight:700;cursor:pointer;border:none;transition:transform .1s,box-shadow .1s;}
 .tp-cm-btn:hover{transform:translateY(-1px);box-shadow:0 4px 12px rgba(0,0,0,0.12);}
 .tp-cm-btn-pri{background:#185FA5;color:#fff;}
 .tp-cm-btn-sec{background:#F4F3EF;color:#3a3a35;}
@@ -766,7 +766,7 @@ td{padding:7px 8px;vertical-align:middle;}
 .tp-tabbar{background:#fff;border:0.5px solid #e0ded9;border-radius:10px;
         margin:8px 0 8px;padding:4px;
         display:grid;grid-template-columns:repeat(5,1fr);gap:4px;
-        position:sticky;top:4px;z-index:60;
+        position:sticky;top:48px;z-index:60;
         box-shadow:0 1px 4px rgba(0,0,0,0.04);}
 .tp-tabbar button{border:none;background:transparent;cursor:pointer;
                padding:9px 12px;border-radius:7px;
@@ -817,7 +817,7 @@ document.addEventListener('drop',      function(e){
 <!-- HEADER -->
 <div style="background:#1B4D0F;color:#fff;padding:8px 18px;border-radius:10px;margin-bottom:12px;display:flex;align-items:center;justify-content:space-between;font-size:13px;font-weight:700;letter-spacing:.3px;">
   <span>🇸🇦 &nbsp;SAUDI MARKET &nbsp;·&nbsp; TASI &nbsp;·&nbsp; SAR &nbsp;·&nbsp; Sun–Thu 10:00–15:30 AST</span>
-  <span style="font-size:11px;font-weight:400;opacity:.85">Data: Bloomberg XLSX &nbsp;|&nbsp; SARv1</span>
+  <span style="font-size:11px;font-weight:400;opacity:.85">Data: Bloomberg XLSX &nbsp;|&nbsp; SARv1.7</span>
 </div>
 <div class="hdr">
   <div>
@@ -829,6 +829,7 @@ document.addEventListener('drop',      function(e){
     <div id="tp-ver-hdr" class="ver-pill" style="margin-bottom:4px;"></div>
     <div class="badge b-none" id="main-badge">⚪ No data loaded</div>
     <div class="upd" id="upd">Drop ChartEdge CSV to begin</div>
+    <button id="tp-brief-btn" onclick="openMorningBrief()" class="brief-btn" title="Morning Brief print view">🖨️ Morning Brief</button>
     <button id="tp-sound-btn" onclick="toggleBreakoutSound()"
             title="تشغيل / كتم صوت تنبيهات الاختراق"
             style="margin-top:4px;padding:4px 10px;font-size:11px;background:#1f2937;color:#e5e7eb;border:1px solid #374151;border-radius:4px;cursor:pointer;">
@@ -945,6 +946,11 @@ document.addEventListener('drop',      function(e){
 <!-- TASI INDEX BAR -->
 
 <!-- ===== TAB BAR — Option C v1.6/v2.3 added 2026-05-18 ===== -->
+
+
+
+<!-- GLOBAL ALERT BAR (moved 2026-05-23) -->
+<div class="alert-bar" id="alert-bar"><span style="font-size:15px">🔔</span><span id="alert-txt"></span></div>
 <div class="tp-tabbar" id="tp-tabbar">
   <button class="tp-tab-on" data-tab="pulse" onclick="showTpTab('pulse')">📊 Pulse<span class="tcount">market overview</span></button>
   <button data-tab="sectors" onclick="showTpTab('sectors')">🏭 Sectors<span class="tcount">rotation grid</span></button>
@@ -1091,7 +1097,7 @@ document.addEventListener('drop',      function(e){
 <!-- ALERTS -->
 
   <button id="share-top3-btn" onclick="shareTop3()" title="نسخ أفضل 3 أسهم وإرسالها عبر واتساب">📋 Copy Top 3 Picks for WhatsApp</button>
-  <div class="alert-bar" id="alert-bar"><span style="font-size:15px">🔔</span><span id="alert-txt"></span></div>
+  
   <div id="mom-board"><h4>⚡ Momentum Leaderboard<span style="font-size:10px;font-weight:500;color:#888">updates on Bloomberg refresh</span></h4><div class="mom-cols"><div><div class="mom-col-title">🚀 Top Movers (% chg)</div><div id="mom-movers"></div></div><div><div class="mom-col-title">📊 Volume Leaders (vs 30D avg)</div><div id="mom-vol"></div></div></div></div>
 
 <!-- BREAKOUT WATCH -->
@@ -1105,6 +1111,7 @@ document.addEventListener('drop',      function(e){
   </div>
   <div class="bw-grid" id="bw-grid"></div>
 </div>
+
 
 
 <!-- PULLBACK WATCH -->
@@ -4254,6 +4261,7 @@ function openCardModal(ticker){
       '<button class="tp-cm-btn tp-cm-btn-fav' + (isInFocus(s.ticker)?' in-focus':'') + '" onclick="toggleFocus(\''+s.ticker+'\')">' + (isInFocus(s.ticker)?'★ Remove from Focus':'☆ Add to Focus') + '</button>' +
       '<button class="tp-cm-btn tp-cm-btn-pri" onclick="filterByTicker && filterByTicker(\''+s.ticker+'\'); closeCardModal();">🔍 Filter Table</button>' +
       '<button class="tp-cm-btn tp-cm-btn-pri" style="background:#1E88E5;" onclick="openTVChart(\''+s.ticker+'\')">📊 Open TV Chart</button>' +
+      '<button class="tp-cm-btn tp-cm-btn-sec" style="background:#FAEEDA;color:#854F0B;" onclick="detachCardModal(\''+s.ticker+'\')">📌 Detach</button>' +
       '<button class="tp-cm-btn tp-cm-btn-sec" onclick="closeCardModal()">Close</button>' +
     '</div>';
   ov.classList.add('show');
@@ -4265,6 +4273,39 @@ function openTVChart(ticker) {
   const sym = encodeURIComponent('TADAWUL:' + clean);
   const url = 'https://www.tradingview.com/chart/?symbol=' + sym;
   window.open(url, 'tv_' + clean, 'width=1100,height=720,resizable=yes,scrollbars=no');
+}
+
+// === DETACH MODAL (SARv1.7 / USv2.4) ===
+// Pops the current ticker's card modal into a stand-alone browser window
+// so the user can keep it open while clicking other tickers on the dashboard.
+// Static snapshot — does NOT auto-refresh with Bloomberg ticks.
+function detachCardModal(ticker) {
+  var modal = document.querySelector('#tp-cm-overlay .tp-cm-content');
+  if (!modal) { alert('Modal not found'); return; }
+  var w = window.open('', 'tp-detach-' + ticker, 'width=680,height=860,resizable=yes,scrollbars=yes');
+  if (!w) { alert('Popup blocked — allow popups for this page in your browser settings'); return; }
+  // gather all <style> tags so the detached window inherits look-and-feel
+  var styles = '';
+  document.querySelectorAll('style').forEach(function(st){ styles += st.outerHTML; });
+  // clone modal innards, strip the close button + actions (irrelevant in detached view)
+  var clone = modal.cloneNode(true);
+  var closeBtn = clone.querySelector('.tp-cm-close'); if (closeBtn) closeBtn.remove();
+  var actions = clone.querySelector('.tp-cm-actions'); if (actions) actions.remove();
+  // add a small footer reminding it's a snapshot
+  var foot = document.createElement('div');
+  foot.style.cssText = 'margin-top:14px;padding-top:8px;border-top:1px solid #eee;font-size:10px;color:#888;text-align:center;';
+  var ts = new Date().toLocaleString();
+  foot.textContent = '📌 Snapshot taken ' + ts + ' — does not auto-refresh';
+  clone.appendChild(foot);
+  var title = ticker + ' — TradePulse';
+  var html = '<!DOCTYPE html><html><head><meta charset="utf-8"><title>' + title + '</title>' +
+             styles +
+             '<style>body{margin:0;padding:18px;background:#f4f3ef;font-family:Inter,Arial,sans-serif;}' +
+             '.tp-cm-content{box-shadow:none;max-height:none;transform:none;margin:0 auto;}</style>' +
+             '</head><body>' +
+             clone.outerHTML +
+             '</body></html>';
+  w.document.open(); w.document.write(html); w.document.close();
 }
 function closeCardModal(){
   var ov = el('tp-cm-overlay'); if (!ov) return;
@@ -4496,9 +4537,9 @@ function renderFocusList(){
 try { setTimeout(renderFocusList, 100); } catch(e) {}
 </script>
 <!-- Card Zoom Modal (SARv1.5.7) -->
-<div class="tp-cm-overlay" id="tp-cm-overlay"><div class="tp-cm-content" id="tp-cm-body"></div></div>
-
 </div> <!-- end tab-watchlist -->
+
+<div class="tp-cm-overlay" id="tp-cm-overlay"><div class="tp-cm-content" id="tp-cm-body"></div></div>
 
 <script>
 // === Option C tab switching — added 2026-05-18 — NAMESPACED ===
@@ -4578,7 +4619,131 @@ function clearAllFilters(){
 
 // Initial update on load (in case a filter is pre-active from a previous session)
 setTimeout(function(){ try { updateFilterBar(); } catch(e){} }, 1000);
+
+// === MORNING BRIEF PRINT VIEW (SARv1.7) ===
+function openMorningBrief() {
+  var stocks = (typeof STOCKS !== 'undefined' ? STOCKS : []);
+  if (!stocks.length) {
+    alert('No data loaded. Drop ChartEdge CSV first.');
+    return;
+  }
+  var aList = stocks.filter(function(s){ return s.action === 'BUY'; })
+                    .sort(function(a,b){ return (b.total||0) - (a.total||0); })
+                    .slice(0, 15);
+  var watch = stocks.filter(function(s){ return s.action === 'ON RADAR'; })
+                    .sort(function(a,b){ return (b.total||0) - (a.total||0); })
+                    .slice(0, 20);
+  var avoid = stocks.filter(function(s){ return s.stage === 'stage4'; })
+                    .sort(function(a,b){ return (a.score||0) - (b.score||0); })
+                    .slice(0, 10);
+
+  var now = new Date();
+  var dateStr = now.toLocaleDateString('en-GB', {weekday:'long', year:'numeric', month:'long', day:'numeric'});
+  var timeStr = now.toLocaleTimeString('en-GB', {hour:'2-digit', minute:'2-digit'});
+
+  function esc(v){ return (v==null?'':String(v)).replace(/[&<>"']/g, function(c){return ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'})[c];}); }
+  function row(s) {
+    var rs = (s.rs != null && s.rs !== '') ? s.rs : '—';
+    var stage = (s.stage || '—').toString().replace('stage','S').replace('potential','POT');
+    var setup = '—';
+    if (s.near_high === 'NEAR HIGH') setup = '🎯 Near pivot';
+    else if ((s.brk||0) >= 60) setup = '🚀 Breakout';
+    else if (s.stage === 'stage2') setup = '📈 Stage 2';
+    else if (s.stage === 'potential') setup = '🔍 Potential';
+    var sector = s.sector || s.sec || '—';
+    var sectorCell = sector;
+    return '<tr><td><b>'+esc((s.ticker||'').replace('.SR',''))+'</b></td><td>'+esc(s.company||'')+'</td><td>'+esc(sectorCell)+'</td><td>'+esc(rs)+'</td><td>'+esc(stage)+'</td><td>'+esc(setup)+'</td></tr>';
+  }
+  var hdrRow = '<table><tr><th>Ticker<br><small style="font-weight:600;opacity:1;font-size:10.5px;color:#1a1a18;display:block;margin-top:1px;">الرمز</small></th><th>Company<br><small style="font-weight:600;opacity:1;font-size:10.5px;color:#1a1a18;display:block;margin-top:1px;">الشركة</small></th><th>Sector<br><small style="font-weight:600;opacity:1;font-size:10.5px;color:#1a1a18;display:block;margin-top:1px;">القطاع</small></th><th>RS<br><small style="font-weight:600;opacity:1;font-size:10.5px;color:#1a1a18;display:block;margin-top:1px;">القوة النسبية</small></th><th>Stage<br><small style="font-weight:600;opacity:1;font-size:10.5px;color:#1a1a18;display:block;margin-top:1px;">المرحلة</small></th><th>Setup<br><small style="font-weight:600;opacity:1;font-size:10.5px;color:#1a1a18;display:block;margin-top:1px;">النموذج</small></th></tr>';
+
+  var html = '<div class="brief-header" style="display:flex;align-items:center;gap:14px;border-bottom:2px solid #185FA5;padding-bottom:10px;margin-bottom:12px;">' +'<div class="brief-brand" style="display:flex;flex-direction:column;gap:2px;flex-shrink:0;">' +'<div style="font-size:24px;font-weight:900;color:#185FA5;letter-spacing:-0.4px;line-height:1;">Chart<span style="color:#3B6D11">Edge</span></div>' +'<div style="font-size:9px;color:#666;letter-spacing:.4px;font-weight:600;">MOMENTUM · SEPA · VCP</div>' +'</div>' +'<div style="flex:1;text-align:center;">' +'<h1 style="margin:0;font-size:20px;font-weight:800;color:#1a1a18;">🇸🇦 Morning Brief · موجز الصباح</h1>' +'<div class="pb-sub" style="font-size:10px;color:#555;margin-top:2px;">'+dateStr+' · Generated · تم الإنشاء '+timeStr+' · SARv1.7</div>' +'</div>' +'<div class="brief-contact" style="text-align:right;font-size:10.5px;line-height:1.55;color:#1a1a18;font-weight:600;flex-shrink:0;">' +'𝕏 @chartedgeai<br>' +'📧 chartedgeai@gmail.com<br>' +'✈️ @chartedgeai' +'</div>' +'</div>'
+    + '<h2>✅ A-List · القائمة أ ('+aList.length+') · BUY signals · إشارات شراء (Stage 2 + composite ≥ 55)</h2>'
+    + (aList.length ? hdrRow + aList.map(row).join('') + '</table>'
+                    : '<div class="empty">No A-list names today · لا توجد أسماء في القائمة أ اليوم.</div>')
+    + '<h2 class="watch-h">👀 Watch · قائمة المراقبة ('+watch.length+') · ON RADAR · على الرادار</h2>'
+    + (watch.length ? hdrRow + watch.map(row).join('') + '</table>'
+                    : '<div class="empty">No watch names today · لا توجد أسماء في قائمة المراقبة اليوم.</div>')
+    + (avoid.length ? '<h2 class="avoid-h">🚫 Avoid · تجنب ('+avoid.length+') · Stage 4 · المرحلة 4 (worst 10 by score)</h2>'
+                    + hdrRow + avoid.map(row).join('') + '</table>' : '')
+    + '<div class="pb-foot">Provided by ChartEdge · مقدم من ChartEdge · For personal trading · للاستخدام الشخصي · Verify before acting · تحقق قبل الإجراء · '+stocks.length+' stocks scanned · سهم تم فحصه</div>';
+
+  var el = document.getElementById('print-brief');
+  if (!el) { alert('Brief container missing. Reload page.'); return; }
+  // SARv1.7 / USv2.4 — open Morning Brief in a detached window instead of printing in-place
+  var w = window.open('', 'tp-brief-' + Date.now(), 'width=920,height=1000,resizable=yes,scrollbars=yes');
+  if (!w) {
+    el.innerHTML = html;
+    alert('Popup blocked — allow popups for this page, or use Ctrl+P to print the inline brief.');
+    return;
+  }
+  var styles = '';
+  document.querySelectorAll('style').forEach(function(st){ styles += st.outerHTML; });
+  var doc =
+    '<!DOCTYPE html><html><head><meta charset="utf-8">' +
+    '<title>TradePulse — Morning Brief</title>' +
+    styles +
+    '<style>' +
+    'body{margin:0;padding:24px;background:#f4f3ef;font-family:Inter,Arial,sans-serif;color:#000;}' +
+    '#brief-shell{background:#fff;padding:22px 28px;border-radius:10px;box-shadow:0 4px 24px rgba(0,0,0,0.08);max-width:880px;margin:0 auto;}' +
+    '.brief-print-btn{position:fixed;top:14px;right:14px;background:#3B6D11;color:#fff;border:none;padding:8px 16px;border-radius:6px;font-weight:700;cursor:pointer;font-size:13px;box-shadow:0 2px 8px rgba(0,0,0,0.15);z-index:9999;}' +
+    '.brief-print-btn:hover{filter:brightness(1.15);}' +
+    '#brief-shell h1{font-size:18px;margin:0 0 4px;}' +
+    '#brief-shell .pb-sub{font-size:10px;color:#555;margin-bottom:10px;}' +
+    '#brief-shell h2{font-size:13px;margin:14px 0 6px;padding:5px 9px;background:#f0f0f0;border-left:4px solid #3B6D11;}' +
+    '#brief-shell h2.watch-h{border-left-color:#C78A1B;}' +
+    '#brief-shell h2.avoid-h{border-left-color:#A32D2D;}' +
+    '#brief-shell table{width:100%;border-collapse:collapse;font-size:10.5px;}' +
+    '#brief-shell th,#brief-shell td{border:1px solid #ccc;padding:3px 6px;text-align:left;}' +
+    '#brief-shell th{background:#fafafa;font-weight:700;}' +
+    '#brief-shell .empty{font-style:italic;color:#888;padding:6px 0;font-size:11px;}' +
+    '#brief-shell .pb-foot{margin-top:14px;font-size:9px;color:#777;border-top:1px solid #ddd;padding-top:6px;}' +
+    '@media print{.brief-print-btn{display:none;}body{padding:0;background:#fff;}#brief-shell{box-shadow:none;max-width:none;border-radius:0;padding:18px;}}' +
+    '</style></head><body>' +
+    '<button class="brief-print-btn" onclick="window.print()">🖨️ Print</button>' +
+    '<div id="brief-shell">' + html + '</div>' +
+    '</body></html>';
+  w.document.open(); w.document.write(doc); w.document.close();
+}
+
+
 </script>
+
+
+<style>
+/* === MORNING BRIEF PRINT VIEW (SARv1.7) === */
+.brief-btn {
+  margin-top:4px; padding:4px 10px; font-size:11px;
+  background:#3B6D11; color:#fff; border:1px solid #1a1a1a;
+  border-radius:4px; cursor:pointer; font-weight:600;
+}
+.brief-btn:hover { filter:brightness(1.15); }
+#print-brief { display:none; }
+@media print {
+  body * { visibility:hidden; }
+  #print-brief, #print-brief * { visibility:visible; }
+  #print-brief {
+    display:block !important; position:absolute; left:0; top:0;
+    width:100%; padding:20px; font-family:Arial,sans-serif;
+    color:#000; background:#fff;
+  }
+  #print-brief h1 { font-size:18px; margin:0 0 4px; }
+  #print-brief .pb-sub { font-size:10px; color:#555; margin-bottom:10px; }
+  #print-brief h2 {
+    font-size:13px; margin:14px 0 6px; padding:5px 9px;
+    background:#f0f0f0; border-left:4px solid #3B6D11;
+  }
+  #print-brief h2.watch-h { border-left-color:#C78A1B; }
+  #print-brief h2.avoid-h { border-left-color:#A32D2D; }
+  #print-brief table { width:100%; border-collapse:collapse; font-size:10.5px; }
+  #print-brief th, #print-brief td { border:1px solid #ccc; padding:3px 6px; text-align:left; }
+  #print-brief th { background:#fafafa; font-weight:700; }
+  #print-brief .empty { font-style:italic; color:#888; padding:6px 0; font-size:11px; }
+  #print-brief .pb-foot { margin-top:14px; font-size:9px; color:#777; border-top:1px solid #ddd; padding-top:6px; }
+}
+</style>
+
+<!-- MORNING BRIEF PRINT VIEW (SARv1.7) -->
+<div id="print-brief"></div>
 
 </body>
 </html>

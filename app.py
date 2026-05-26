@@ -291,9 +291,82 @@ def fetch_tasi_index(for_date: str = None):
     return {"today": today, "prev": prev, "source": "bloomberg_xlsx"}
 
 
+def _homepage_live_stats():
+    """Build the small dataset the new landing page needs:
+      - latest_brief: most recent /brief/<date>.json (close, top mover, etc.)
+      - scan: scan_total / stage2 / score10 / potential from chartedge_sa.csv
+      - us_rows: current /api/us/push payload size (0 when feed asleep)
+
+    All optional — the template safely renders fallbacks if any of these
+    are missing (e.g. on first deploy before any brief exists)."""
+    out = {"latest_brief": None, "scan": None, "us_rows": 0, "sa_have_data": False}
+
+    # Most recent archived brief
+    dates = _list_briefs()
+    if dates:
+        b = _load_brief(dates[0])
+        if b:
+            idx = b.get("index") or b.get("yahoo") or {}
+            today = idx.get("today") or {}
+            prev = idx.get("prev") or {}
+            close = today.get("close")
+            prev_close = prev.get("close")
+            chg_pts = (close - prev_close) if (close and prev_close) else None
+            chg_pct = ((chg_pts / prev_close) * 100) if (chg_pts and prev_close) else None
+            tg = (b.get("top_gainers") or [{}])[0]
+            tl = (b.get("top_losers") or [{}])[0]
+            sec_top = (b.get("sectors_leading") or [{}])[0]
+            breadth = b.get("breadth") or {}
+            out["latest_brief"] = {
+                "date": dates[0],
+                "close": close,
+                "chg_pts": chg_pts,
+                "chg_pct": chg_pct,
+                "top_gainer_ticker": (tg.get("Ticker") or "").split(".")[0],
+                "top_gainer_pct": tg.get("%1D"),
+                "top_loser_ticker": (tl.get("Ticker") or "").split(".")[0],
+                "top_loser_pct": tl.get("%1D"),
+                "sector_top_name": sec_top.get("name") if sec_top else None,
+                "sector_top_pct": sec_top.get("avg_pct") if sec_top else None,
+                "sector_top_adv": sec_top.get("advancers") if sec_top else None,
+                "sector_top_dec": sec_top.get("decliners") if sec_top else None,
+                "ad_ratio": breadth.get("ad_ratio"),
+                "advancers": breadth.get("advancers"),
+                "decliners": breadth.get("decliners"),
+                "stage2": b.get("stage2_count"),
+                "score10": b.get("score10_count"),
+                "potential": b.get("potential_count"),
+                "scan_total": b.get("scan_total"),
+                "volume_m": (today.get("volume") / 1e6) if today.get("volume") else None,
+            }
+
+    # Live scan stats (from disk CSV — same one /report reads)
+    import csv as _csv
+    csv_path = DATA_DIR / "chartedge_sa.csv"
+    if csv_path.exists():
+        try:
+            with open(csv_path, encoding="utf-8-sig") as f:
+                rows = list(_csv.DictReader(f))
+            stage2 = sum(1 for r in rows if "stage2" in (r.get("Stage", "") or "").lower())
+            score10 = sum(1 for r in rows if (r.get("Score", "") or "").isdigit() and int(r["Score"]) == 10)
+            potential = sum(1 for r in rows if (r.get("Stage", "") or "").lower() == "potential")
+            out["scan"] = {
+                "total": len(rows),
+                "stage2": stage2,
+                "score10": score10,
+                "potential": potential,
+            }
+        except Exception:
+            pass
+
+    out["us_rows"] = _US_STATE.get("rows", 0) or 0
+    out["sa_have_data"] = bool(_SA_STATE.get("xlsx"))
+    return out
+
+
 @app.route("/")
 def index():
-    return render_template("index.html", products=PRODUCTS)
+    return render_template("index.html", products=PRODUCTS, live=_homepage_live_stats())
 
 
 @app.route("/contact")

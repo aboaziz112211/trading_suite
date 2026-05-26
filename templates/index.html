@@ -1,32 +1,204 @@
 {% extends "base.html" %}
-{% block title %}Trading Suite — Products{% endblock %}
+{% block title %}ChartEdge — Trader's Edge for #TASI{% endblock %}
 {% block body %}
-<section class="hero hero-branded">
-  <img src="{{ url_for('static', filename='chartedge_logo.svg') }}" alt="ChartEdge Analytics" class="hero-logo" onerror="this.style.display='none'">
-  <h1>Trading Suite</h1>
-  <div class="hero-ar" dir="rtl" lang="ar">منصة التداول</div>
-  <p>Live dashboards & analyzers — pick a product.</p>
-  <p class="hero-tagline-ar" dir="rtl" lang="ar">لوحات مباشرة وأدوات تحليل — اختر المنتج</p>
+
+{% set b = live.latest_brief %}
+{% set scan = live.scan %}
+
+{# ── HERO ──────────────────────────────────────────────────────── #}
+<section class="hero-v2">
+  <div class="hero-left">
+    <span class="hero-kicker">⚡ AI-powered · for the Saudi trader</span>
+    <h1>The trader's edge for <span class="grad">#TASI</span> &amp; beyond.</h1>
+    <div class="h1-ar" dir="rtl" lang="ar">حافتك في سوق الأسهم السعودي والأمريكي</div>
+    <p class="lede">Live TASI scanner, Minervini-grade SEPA scoring, daily closing briefs, and an X content engine — built on a real-time feed that refreshes every 30 seconds.</p>
+    <p class="lede-ar" dir="rtl" lang="ar">ماسح حي للسوق السعودي، تقييم SEPA بنمط مينيرفيني، تقارير إغلاق يومية، ومحرك محتوى لتغريداتك — تدفق بيانات يُحدَّث كل 30 ثانية.</p>
+    <div class="cta-row">
+      <a href="{{ url_for('product_page', key='tradepulse_sar') }}" class="btn btn-primary">▶ Open TASI dashboard</a>
+      <a href="{{ url_for('market_report') }}" class="btn btn-ghost">📅 See latest brief</a>
+    </div>
+    <div class="hero-stats">
+      <div><span class="n">{{ scan.total if scan else 269 }}</span><span class="l">SA stocks scored</span></div>
+      <div><span class="n">{{ scan.stage2 if scan else 36 }}</span><span class="l">Stage 2 today</span></div>
+      <div><span class="n">{{ scan.score10 if scan else 16 }}</span><span class="l">Score 10/10</span></div>
+      <div><span class="n">{{ live.us_rows if live.us_rows else 556 }}</span><span class="l">US tickers live</span></div>
+    </div>
+  </div>
+
+  {# Right card — Live TASI snapshot #}
+  <div class="hero-viz">
+    <div class="hv-head">
+      <span class="hv-title">TASI {% if b %}· {{ b.date }}{% endif %}</span>
+      <span class="market-pill is-closed" id="pill-tasi-mirror"><span class="dot" aria-hidden="true"></span><span class="lbl">…</span></span>
+    </div>
+    {% if b and b.close %}
+    <div class="hv-tasi-big">{{ '{:,.0f}'.format(b.close) }}<span style="color:var(--muted);font-weight:500">.{{ '{:02d}'.format(((b.close - b.close|int) * 100)|round|int) }}</span></div>
+    {% if b.chg_pts is not none %}
+    <div class="hv-chg {{ 'up' if b.chg_pts >= 0 else 'dn' }}">
+      {{ '▲' if b.chg_pts >= 0 else '▼' }} {{ '{:+,.2f}'.format(b.chg_pts) }}
+      &nbsp;{{ '{:+.2f}'.format(b.chg_pct) }}%
+    </div>
+    {% endif %}
+    {% else %}
+    <div class="hv-tasi-big">—</div>
+    <div class="hv-chg">first brief publishes today at 15:30 AST</div>
+    {% endif %}
+
+    {# Sparkline (static representative — real one would need session series) #}
+    <div class="hv-sparkline" aria-hidden="true">
+      <svg viewBox="0 0 400 56" preserveAspectRatio="none">
+        <defs>
+          <linearGradient id="spkG" x1="0" x2="0" y1="0" y2="1">
+            <stop offset="0%" stop-color="#22c55e" stop-opacity="0.5"/>
+            <stop offset="100%" stop-color="#22c55e" stop-opacity="0"/>
+          </linearGradient>
+        </defs>
+        <path d="M0,42 L40,40 L80,44 L120,32 L160,36 L200,28 L240,30 L280,22 L320,18 L360,20 L400,12 L400,56 L0,56 Z" fill="url(#spkG)"/>
+        <path d="M0,42 L40,40 L80,44 L120,32 L160,36 L200,28 L240,30 L280,22 L320,18 L360,20 L400,12" stroke="#22c55e" stroke-width="2" fill="none"/>
+      </svg>
+    </div>
+
+    {% if b %}
+    <div class="hv-grid">
+      <div class="hv-cell up"><div class="lbl">TOP GAINER</div><div class="val">#{{ b.top_gainer_ticker }} {{ '{:+.2f}'.format(b.top_gainer_pct) }}%</div></div>
+      <div class="hv-cell"><div class="lbl">VOLUME</div><div class="val">{% if b.volume_m %}{{ '{:.1f}M'.format(b.volume_m) }}{% else %}—{% endif %}</div></div>
+      <div class="hv-cell {{ 'up' if (b.ad_ratio or 0) >= 1 else 'dn' }}"><div class="lbl">A/D RATIO</div><div class="val">{{ '{:.2f}'.format(b.ad_ratio) if b.ad_ratio else '—' }}</div></div>
+    </div>
+    {% endif %}
+  </div>
 </section>
-<section class="cards">
-  {% for key, p in products.items() %}
-  <a class="card" href="{{ url_for('product_page', key=key) }}">
-    {% if key.startswith('tradepulse') %}
-      <img src="{{ url_for('static', filename='tradepulse_logo.svg') }}" alt="" class="card-logo card-logo-wide" onerror="this.style.display='none'">
-    {% elif key == 'chartedge' %}
-      <img src="{{ url_for('static', filename='chartedge_logo.svg') }}" alt="" class="card-logo" onerror="this.style.display='none'">
-    {% endif %}
-    <div class="card-tag">{{ key.replace('_', ' ').upper() }}</div>
-    <h2>{{ p.title }}</h2>
-    {% if p.title_ar and p.title_ar != p.title %}
-    <div class="card-title-ar" dir="rtl" lang="ar">{{ p.title_ar }}</div>
-    {% endif %}
-    <p>{{ p.tagline }}</p>
-    {% if p.tagline_ar %}
-    <p class="card-tagline-ar" dir="rtl" lang="ar">{{ p.tagline_ar }}</p>
-    {% endif %}
-    <span class="open">Open →</span>
-  </a>
-  {% endfor %}
+
+{# Mirror live state into the right-card pill #}
+<script>
+(function(){
+  // Mirror the topbar TASI pill state into the hero card pill
+  function syncMirror(){
+    var src = document.getElementById('pill-tasi');
+    var dst = document.getElementById('pill-tasi-mirror');
+    if (!src || !dst) return;
+    dst.classList.remove('is-live','is-pre','is-closed');
+    ['is-live','is-pre','is-closed'].forEach(function(c){
+      if (src.classList.contains(c)) dst.classList.add(c);
+    });
+    var srcLbl = src.querySelector('.lbl');
+    var dstLbl = dst.querySelector('.lbl');
+    if (srcLbl && dstLbl) {
+      var t = srcLbl.textContent || '';
+      dstLbl.textContent = t.indexOf('LIVE') >= 0 ? 'OPEN' :
+                          t.indexOf('PRE')  >= 0 ? 'PRE' : 'CLOSED';
+    }
+  }
+  syncMirror();
+  setInterval(syncMirror, 30000);
+})();
+</script>
+
+
+{# ── PRODUCTS ──────────────────────────────────────────────────── #}
+<section class="sec">
+  <div class="sec-head">
+    <h2>What's inside <span class="ar" dir="rtl" lang="ar">ماذا تجد بالداخل</span></h2>
+  </div>
+  <div class="tiles-v2">
+    {# Featured: ChartEdge #}
+    <a class="tile-v2 featured" href="{{ url_for('product_page', key='chartedge') }}">
+      <span class="tile-v2-tag">⭐ Flagship · for serious traders</span>
+      <h3 class="tile-v2-title">ChartEdge</h3>
+      <div class="tile-v2-title-ar" dir="rtl" lang="ar">شارت إدج</div>
+      <p class="tile-v2-desc">Find stage-2 breakouts <b>before</b> they happen. Minervini SEPA model scored across {{ scan.total if scan else 269 }} SA stocks, refreshed daily.</p>
+      <p class="tile-v2-desc-ar" dir="rtl" lang="ar">اكتشف أسهم المرحلة الثانية قبل اختراقها — نموذج SEPA الكامل لـ {{ scan.total if scan else 269 }} سهماً سعودياً</p>
+      <div class="tile-v2-meta">
+        <div><span class="n">{{ scan.stage2 if scan else 36 }}</span><span class="l">STAGE 2 NOW</span></div>
+        <div><span class="n">{{ scan.score10 if scan else 16 }}</span><span class="l">SCORE 10/10</span></div>
+        <div><span class="n">{{ scan.potential if scan else 21 }}</span><span class="l">POTENTIAL</span></div>
+      </div>
+      <span class="tile-v2-cta">Scan stocks →</span>
+    </a>
+
+    {# TradePulse TASI #}
+    <a class="tile-v2" href="{{ url_for('product_page', key='tradepulse_sar') }}">
+      <span class="tile-v2-tag">🇸🇦 Real-time</span>
+      <h3 class="tile-v2-title">TradePulse TASI</h3>
+      <div class="tile-v2-title-ar" dir="rtl" lang="ar">السوق السعودي</div>
+      <p class="tile-v2-desc">Live TASI watchlist · sector rotation alerts · breakout signals · A/D breadth.</p>
+      <p class="tile-v2-desc-ar" dir="rtl" lang="ar">قائمة مراقبة حية، إشارات اختراق، تنبيهات دوران القطاعات</p>
+      <div class="tile-v2-meta">
+        <div><span class="n">{{ scan.total if scan else 269 }}</span><span class="l">TICKERS</span></div>
+        <div><span class="n">22</span><span class="l">SECTORS</span></div>
+      </div>
+      <span class="tile-v2-cta">Open dashboard →</span>
+    </a>
+
+    {# TradePulse US #}
+    <a class="tile-v2" href="{{ url_for('product_page', key='tradepulse_us') }}">
+      <span class="tile-v2-tag">🇺🇸 Polygon.io powered</span>
+      <h3 class="tile-v2-title">TradePulse US</h3>
+      <div class="tile-v2-title-ar" dir="rtl" lang="ar">السوق الأمريكي</div>
+      <p class="tile-v2-desc">Live NYSE/NASDAQ scanner with SEPA scoring, sector heatmap, and SPY/QQQ/IWM macro bar.</p>
+      <p class="tile-v2-desc-ar" dir="rtl" lang="ar">ماسح حي لأسواق نيويورك وناسداك، خريطة قطاعات، شريط مؤشرات كلي</p>
+      <div class="tile-v2-meta">
+        <div><span class="n">{{ live.us_rows if live.us_rows else 556 }}</span><span class="l">TICKERS</span></div>
+        <div><span class="n">11</span><span class="l">SECTORS</span></div>
+      </div>
+      <span class="tile-v2-cta">Open dashboard →</span>
+    </a>
+  </div>
 </section>
+
+
+{# ── TODAY'S MARKET ───────────────────────────────────────────── #}
+{% if b %}
+<section class="sec">
+  <div class="sec-head">
+    <h2>Today's market <span class="ar" dir="rtl" lang="ar">السوق اليوم</span></h2>
+    <a href="{{ url_for('brief_archived', date_str=b.date) }}">Read full brief →</a>
+  </div>
+  <div class="market-card">
+    <div class="mc-left">
+      <div class="lbl">TASI · CLOSING BRIEF · {{ b.date }}</div>
+      <div class="price">{{ '{:,.2f}'.format(b.close) }}</div>
+      {% if b.chg_pts is not none %}
+      <div class="chg {{ 'up' if b.chg_pts >= 0 else 'dn' }}">{{ '▲' if b.chg_pts >= 0 else '▼' }} {{ '{:+,.2f}'.format(b.chg_pts) }} &nbsp; ({{ '{:+.2f}'.format(b.chg_pct) }}%)</div>
+      {% endif %}
+      <div class="when">Auto-published at 15:30 AST · Sun–Thu</div>
+    </div>
+    <div class="mc-right">
+      <div class="mc-stat">
+        <div class="l">TOP GAINER</div>
+        <div class="v up">{{ b.top_gainer_ticker or '—' }}</div>
+        <div class="sub">{% if b.top_gainer_pct %}{{ '{:+.2f}'.format(b.top_gainer_pct) }}%{% endif %}</div>
+      </div>
+      <div class="mc-stat">
+        <div class="l">TOP LOSER</div>
+        <div class="v dn">{{ b.top_loser_ticker or '—' }}</div>
+        <div class="sub">{% if b.top_loser_pct %}{{ '{:+.2f}'.format(b.top_loser_pct) }}%{% endif %}</div>
+      </div>
+      <div class="mc-stat">
+        <div class="l">SECTOR HOT</div>
+        <div class="v">{{ b.sector_top_name or '—' }}</div>
+        <div class="sub">{% if b.sector_top_pct is not none %}{{ '{:+.2f}'.format(b.sector_top_pct) }}% · {{ b.sector_top_adv or 0 }} ▲ / {{ b.sector_top_dec or 0 }} ▼{% endif %}</div>
+      </div>
+      <div class="mc-stat">
+        <div class="l">BREADTH A/D</div>
+        <div class="v {{ 'up' if (b.ad_ratio or 0) >= 1 else 'dn' }}">{% if b.ad_ratio %}{{ '{:.2f}'.format(b.ad_ratio) }}{% else %}—{% endif %}</div>
+        <div class="sub">{{ b.advancers or 0 }} ▲ / {{ b.decliners or 0 }} ▼</div>
+      </div>
+    </div>
+  </div>
+</section>
+{% endif %}
+
+
+{# ── TELEGRAM CTA ─────────────────────────────────────────────── #}
+<section class="sec">
+  <div class="tg-cta">
+    <div class="tg-cta-text">
+      <h3>Get tomorrow's brief on Telegram 📢</h3>
+      <p>Closing summary + top setups + sector rotation alert — delivered every trading day at 15:30 AST.</p>
+      <p class="ar" dir="rtl" lang="ar">ملخص الإغلاق + أعلى الترشيحات + تنبيهات دوران القطاعات — يومياً عند 15:30</p>
+    </div>
+    <a href="https://t.me/+R_m5lVLFnBJhYWJk" target="_blank" rel="noopener" class="tg-btn">📱 Join @chartedgeai →</a>
+  </div>
+</section>
+
 {% endblock %}
