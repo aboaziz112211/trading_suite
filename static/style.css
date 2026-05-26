@@ -1578,3 +1578,127 @@ h1, h2, h3, .brand, .hero-v2 h1, .tile-v2-title, .sec-head h2,
   box-shadow: 0 8px 24px rgba(42,171,238,0.32);
 }
 .tg-btn:hover { background: #229ED9; }
+
+/* ── Hero "Markets at a glance" grid ──────────────────── */
+.hv-time {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  color: var(--muted);
+  letter-spacing: 0.5px;
+}
+.markets-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin: 6px 0 10px;
+}
+.market-cell {
+  background: rgba(255,255,255,0.025);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 14px 14px 12px;
+  text-decoration: none;
+  color: inherit;
+  display: flex;
+  flex-direction: column;
+  transition: border-color .12s, background .12s, transform .12s;
+}
+.market-cell:hover {
+  border-color: var(--accent);
+  background: rgba(78,161,255,0.07);
+  transform: translateY(-1px);
+}
+.market-cell-lg {
+  grid-column: 1 / -1;
+  background: linear-gradient(135deg, rgba(78,161,255,0.10), rgba(255,255,255,0.025));
+  border-color: rgba(78,161,255,0.30);
+  padding: 16px 16px 14px;
+}
+.mc-flag {
+  display: flex; align-items: center; gap: 6px;
+  font-size: 14px;
+  margin-bottom: 8px;
+}
+.mc-sym {
+  font-family: 'Manrope', sans-serif;
+  font-weight: 800;
+  font-size: 13px;
+  letter-spacing: 0.5px;
+  color: var(--text);
+}
+.market-cell-lg .mc-sym { font-size: 15px; }
+.mc-price {
+  font-family: 'Manrope', sans-serif;
+  font-weight: 800;
+  font-size: 24px;
+  letter-spacing: -0.5px;
+  font-variant-numeric: tabular-nums;
+  color: var(--text);
+  line-height: 1.05;
+}
+.market-cell-lg .mc-price { font-size: 30px; }
+.mc-chg {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px;
+  font-weight: 600;
+  margin-top: 4px;
+  color: var(--muted);
+}
+.mc-chg.up { color: #22c55e; }
+.mc-chg.dn { color: var(--err); }
+.mc-asof {
+  font-size: 10px;
+  color: var(--muted);
+  margin-top: 6px;
+  opacity: 0.75;
+}
+.markets-foot {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9px;
+  color: var(--muted);
+  letter-spacing: 0.5px;
+  text-align: center;
+  margin-top: 6px;
+  opacity: 0.6;
+}
+
+/* ── Today's market — brief-drilldown variant (no price duplicate) ─ */
+.brief-summary {
+  font-family: 'Manrope', sans-serif;
+  font-weight: 700;
+  font-size: 22px;
+  line-height: 1.25;
+  letter-spacing: -0.3px;
+  color: var(--text);
+  margin: 8px 0 4px;
+}
+.brief-summary-ar {
+  font-family: 'IBM Plex Sans Arabic', sans-serif;
+  font-size: 14px;
+  color: var(--muted);
+  margin-bottom: 18px;
+}
+.brief-scan {
+  display: flex; gap: 18px; flex-wrap: wrap;
+  margin: 14px 0 14px;
+  padding: 10px 0;
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+}
+.brief-scan > div { display: flex; flex-direction: column; }
+.brief-scan .bn {
+  font-family: 'Manrope', sans-serif;
+  font-weight: 800;
+  font-size: 22px;
+  color: var(--text);
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+}
+.brief-scan .bl {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9px;
+  color: var(--muted);
+  letter-spacing: 0.8px;
+  margin-top: 4px;
+  text-transform: uppercase;
+}

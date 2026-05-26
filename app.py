@@ -361,6 +361,7 @@ def _homepage_live_stats():
 
     out["us_rows"] = _US_STATE.get("rows", 0) or 0
     out["sa_have_data"] = bool(_SA_STATE.get("xlsx"))
+    out["us_indices"] = _US_STATE.get("indices") or {}
     return out
 
 
@@ -1415,6 +1416,19 @@ def api_us_push():
     _US_STATE["xlsx"] = xlsx_bytes
     _US_STATE["updated"] = datetime.now().isoformat(timespec="seconds")
     _US_STATE["rows"] = len(rows)
+    # Cache the major-index ETFs so the homepage can render them without
+    # re-parsing the xlsx on every visit.
+    INDEX_TICKERS = {"SPY", "QQQ", "IWM", "DIA"}
+    idx = {}
+    for r in rows:
+        t = (r.get("ticker") or "").upper().strip()
+        if t in INDEX_TICKERS:
+            idx[t] = {
+                "price": r.get("price"),
+                "chg":   r.get("chg"),
+                "vol":   r.get("vol"),
+            }
+    _US_STATE["indices"] = idx
     return {"ok": True, "rows": len(rows), "xlsx_bytes": len(xlsx_bytes),
             "updated": _US_STATE["updated"]}
 
