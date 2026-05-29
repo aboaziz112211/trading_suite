@@ -383,6 +383,63 @@ body.dark-mode .tp-cm-tk{color:#6BB6FF;}
 
 /* Score badges keep their hue but darken */
 body.dark-mode .agg-score{box-shadow:0 0 0 1px rgba(255,255,255,0.06);}
+
+/* === DARK-MODE TEXT BLEED-THROUGH FIX (2026-05-28) ===
+   These classes hardcode dark text (#1a1a18 / #3a3a35 / #222 / #444) at the class
+   level and were winning over the body.dark-mode color rule. Override them so
+   text stays readable in dark mode. CSS-only, no logic touched. */
+body.dark-mode .sec-title,
+body.dark-mode .sec-name,
+body.dark-mode .sec-detail,
+body.dark-mode .sec-sub,
+body.dark-mode .bw-nm,
+body.dark-mode .bw-count,
+body.dark-mode .bw-m,
+body.dark-mode .pb-nm,
+body.dark-mode .pb-count,
+body.dark-mode .pb-m,
+body.dark-mode .sc-tk,
+body.dark-mode .sc-price,
+body.dark-mode .sc-comp b,
+body.dark-mode .tp-cm-nm,
+body.dark-mode .tp-cm-k,
+body.dark-mode .tp-cm-btn-sec,
+body.dark-mode .agg-nm,
+body.dark-mode .agg-row b,
+body.dark-mode .pk-nm,
+body.dark-mode .ab-val,
+body.dark-mode .be-val,
+body.dark-mode .bc-lbl,
+body.dark-mode .bc-sub,
+body.dark-mode .tn,
+body.dark-mode .srch,
+body.dark-mode .fbtn,
+body.dark-mode .tab,
+body.dark-mode .tp-filter-bar .tp-fb-label,
+body.dark-mode .load-title,
+body.dark-mode thead th:hover,
+body.dark-mode .tab:hover,
+body.dark-mode .tab.on{
+  color:#e8e8e8 !important;
+}
+
+/* Buttons / pill controls — preserve dark fill on "on" state */
+body.dark-mode .fbtn:hover,
+body.dark-mode .fbtn.on{
+  background:#3a3a45 !important;color:#fff !important;border-color:#3a3a45 !important;
+}
+body.dark-mode .tab.on{
+  border-bottom-color:#e8e8e8 !important;
+}
+body.dark-mode .srch{
+  background:#25252e !important;border-color:#3a3a45 !important;
+}
+body.dark-mode .bw-m,
+body.dark-mode .pb-m{
+  background:#25252e !important;
+}
+/* === END DARK-MODE TEXT BLEED-THROUGH FIX === */
+
 .agg-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;cursor:pointer;user-select:none;}
 .agg-hdr:hover .agg-title{color:#B8841F;}
 .agg-wrap.collapsed .agg-body{display:none!important;}
@@ -1186,7 +1243,7 @@ body.dark-mode .tp-filter-bar .tp-fb-label{color:#fff;}
 // ══════════════════════════════════════════════
 // VERSION — used to verify which build is running
 // ══════════════════════════════════════════════
-const TP_VERSION = 'USv2.2.10-2026-05-14';
+const TP_VERSION = 'USv2.4.1-2026-05-28';
 console.log('%c[TradePulse] ' + TP_VERSION + ' loaded', 'color:#3B6D11;font-weight:bold;font-size:13px');
 
 // ══════════════════════════════════════════════
@@ -2253,6 +2310,11 @@ function parseBloomberg(text, filename) {
   // Prefer GICS Industry Group (21 TASI groups) over GICS Sector (11 broad sectors)
   const I_INDGRP  = fi('industry group','industry_group','gics industry group','indgrp','bics_level_2');
   const I_GICS    = I_INDGRP >= 0 ? I_INDGRP : fi('gics','sector name','industry');
+  // v2.3.5 hotfix — granular Industry column (separate from Sector) so the
+  // "Industries" tab can group stocks. Without this row.industry stays empty
+  // and renderIndustries() shows "waiting for Polygon feed" even though the
+  // xlsx (Render push) already carries an Industry column per ticker.
+  const I_INDUSTRY = fe('industry'); // exact match to avoid clashing with I_INDGRP
   const I_AVGVOL  = fi('avg vol','avgvol','volume_avg');
   const I_BID     = fe('bid');
   const I_ASK     = fe('ask');
@@ -2321,6 +2383,8 @@ function parseBloomberg(text, filename) {
       ask    : I_ASK>=0 ? parseFloat(c[I_ASK])||null : null,
       saId   : c[I_SAID] ? c[I_SAID].replace(/\.0$/,'').trim() : '',
       sector : (I_GICS>=0 && c[I_GICS] && !c[I_GICS].startsWith('#')) ? c[I_GICS].trim() : curSector,
+      // v2.3.5 hotfix — populate granular Industry from its own column
+      industry: (I_INDUSTRY>=0 && c[I_INDUSTRY] && !c[I_INDUSTRY].startsWith('#')) ? c[I_INDUSTRY].trim() : '',
       // v4 — new Bloomberg fields for SEPA#4 and VCP pivot
       ma200ChgPct: I_MA200CHG>=0 ? (parseFloat(c[I_MA200CHG])||null) : null,
       hi30d      : I_HI30D>=0    ? (parseFloat(c[I_HI30D])||null)    : null,
