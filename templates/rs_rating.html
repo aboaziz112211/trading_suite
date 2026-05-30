@@ -1,0 +1,220 @@
+{% extends "base.html" %}
+{% block title %}RS Rating · TASI · ChartEdge{% endblock %}
+{% block body %}
+
+{% if not data %}
+<section class="hero-v2">
+  <div class="hero-left">
+    <span class="hero-kicker">🔥 Minervini RPR System · Daily</span>
+    <h1>RS Rating <span class="grad">— TASI</span></h1>
+    <div class="h1-ar" dir="rtl" lang="ar">تقييم القوة النسبية — السوق السعودي</div>
+    <p class="lede">No RS Rating report has been uploaded yet. The first one will appear here as soon as an admin uploads today's ChartEdge_RS_Rating HTML report via <code>/admin</code>.</p>
+    <p class="lede-ar" dir="rtl" lang="ar">لم يُرفع أيّ تقرير لتقييم القوة النسبية بعد. سيظهر هنا بمجرد رفع أحدث تقرير عبر صفحة الإدارة.</p>
+  </div>
+</section>
+{% else %}
+
+<section class="rs-hero">
+  <div>
+    <span class="hero-kicker">🔥 Minervini RPR System · Daily</span>
+    <h1>RS Rating <span class="grad">— TASI</span></h1>
+    <div class="h1-ar" dir="rtl" lang="ar">تقييم القوة النسبية — السوق السعودي</div>
+    <p class="lede">Three momentum percentiles (M1 · M2 · M3) ranked across all {{ data.universe }} TASI tickers. Top scores find leaders; gap-up tickers (M2 ≫ M1) flag pre-breakout setups.</p>
+    <p class="lede-ar" dir="rtl" lang="ar">ثلاث نسب زخم (M1 · M2 · M3) مرتّبة على {{ data.universe }} سهم في السوق السعودي. أعلى الدرجات تكشف القادة، والقفزة الأخيرة (M2 يفوق M1) تُشير إلى ما قبل الاختراق.</p>
+  </div>
+  <div class="rs-info">
+    <div class="rs-stat"><div class="l">Date</div><div class="v">{{ data.date }}</div></div>
+    <div class="rs-stat"><div class="l">Universe</div><div class="v">{{ data.universe or '?' }}</div><div class="sub">TASI tickers</div></div>
+    <div class="rs-stat"><div class="l">Top M2 Score</div><div class="v gold">{{ data.stats.top_m2 or '—' }}</div></div>
+    <div class="rs-stat"><div class="l">Pre-Breakout</div><div class="v gold">{{ data.stats.pre_breakout_count or 0 }}</div><div class="sub">M2 − M1 ≥ +15</div></div>
+  </div>
+</section>
+
+{# Archive navigation strip #}
+{% if archive_dates and archive_dates|length > 1 %}
+<div class="rs-arch-nav">
+  <span class="lbl">📅 Archive:</span>
+  {% set cur_idx = archive_dates.index(date) if date in archive_dates else 0 %}
+  {% if cur_idx < archive_dates|length - 1 %}
+    <a class="btn ghost" href="{{ url_for('rs_rating_archived', date_str=archive_dates[cur_idx + 1]) }}">← {{ archive_dates[cur_idx + 1] }}</a>
+  {% endif %}
+  {% if cur_idx > 0 %}
+    <a class="btn ghost" href="{{ url_for('rs_rating_archived', date_str=archive_dates[cur_idx - 1]) }}">{{ archive_dates[cur_idx - 1] }} →</a>
+  {% endif %}
+  <a class="btn" href="{{ url_for('rs_rating_index') }}">All archives ({{ archive_dates|length }}) →</a>
+</div>
+{% endif %}
+
+{# ── Methodology ── #}
+<section class="sec">
+  <div class="sec-head">
+    <h2>How to read it <span class="ar" dir="rtl" lang="ar">كيف تقرأ التقييمات</span></h2>
+  </div>
+  <div class="methodology">
+    <div class="m-col">
+      <span class="m-key">M1</span>
+      <div class="m-title">12-month performance</div>
+      <div class="m-desc">Full-year return percentile vs the universe. Stable, slow-moving signal.</div>
+      <div class="m-desc-ar" dir="rtl" lang="ar">أداء الـ12 شهراً (بالنسبة المئوية)</div>
+    </div>
+    <div class="m-col">
+      <span class="m-key">M2</span>
+      <div class="m-title">Minervini RPR (weighted)</div>
+      <div class="m-desc">Double-weights the most recent quarter. <b>Default sort</b> — the headline rating.</div>
+      <div class="m-desc-ar" dir="rtl" lang="ar">قوة الزخم الموزّنة (ربع أخير مضاعف)</div>
+    </div>
+    <div class="m-col">
+      <span class="m-key">M3</span>
+      <div class="m-title">Long horizon (3yr blend)</div>
+      <div class="m-desc">Multi-year persistence — separates real leaders from short-term spikes.</div>
+      <div class="m-desc-ar" dir="rtl" lang="ar">مزيج الأداء على 3 سنوات</div>
+    </div>
+  </div>
+</section>
+
+{# ── Top 10 leader cards ── #}
+{% if data.top_leaders %}
+<section class="sec">
+  <div class="sec-head">
+    <h2>🏆 Top 10 · M2 leaders <span class="ar" dir="rtl" lang="ar">أعلى عشرة بقوة الزخم</span></h2>
+    <span class="sub">Current leaders · sorted by M2</span>
+  </div>
+  <div class="leaders">
+    {% for s in data.top_leaders %}
+    <div class="leader-card{% if loop.index == 1 %} top1{% endif %}">
+      <div class="leader-rank">
+        {% if loop.index == 1 %}<span class="medal">🥇</span> Rank 1
+        {% elif loop.index == 2 %}<span class="medal">🥈</span> Rank 2
+        {% elif loop.index == 3 %}<span class="medal">🥉</span> Rank 3
+        {% else %}#{{ loop.index }}
+        {% endif %}
+      </div>
+      <div class="leader-tk">#{{ s.ticker }}</div>
+      <div class="leader-px">{% if s.price %}SAR {{ '{:,.2f}'.format(s.price) }}{% endif %}</div>
+      <div class="leader-m">
+        <div><div class="label">M1</div><div class="score {% if s.m1 >= 75 %}hot{% elif s.m1 < 30 %}cool{% endif %}">{{ s.m1 if s.m1 is not none else '—' }}</div></div>
+        <div><div class="label">M2</div><div class="score {% if s.m2 >= 75 %}hot{% elif s.m2 < 30 %}cool{% endif %}">{{ s.m2 if s.m2 is not none else '—' }}</div></div>
+        <div><div class="label">M3</div><div class="score {% if s.m3 >= 75 %}hot{% elif s.m3 < 30 %}cool{% endif %}">{{ s.m3 if s.m3 is not none else '—' }}</div></div>
+      </div>
+      <div class="leader-perf">
+        <span class="perf-l">12m</span>
+        <span class="perf-v {% if (s.pct12m or 0) >= 0 %}up{% else %}dn{% endif %}">{% if s.pct12m is not none %}{{ '{:+.1f}'.format(s.pct12m) }}%{% else %}—{% endif %}</span>
+        <span class="perf-l">Q4</span>
+        <span class="perf-v {% if (s.pctQ4 or 0) >= 0 %}up{% else %}dn{% endif %}">{% if s.pctQ4 is not none %}{{ '{:+.1f}'.format(s.pctQ4) }}%{% else %}—{% endif %}</span>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+</section>
+{% endif %}
+
+{# ── Pre-breakout alerts ── #}
+{% if data.pre_breakout %}
+<section class="sec">
+  <div class="sec-head">
+    <h2>⚡ Pre-breakout candidates <span class="ar" dir="rtl" lang="ar">مرشحات قبل الاختراق</span></h2>
+    <span class="sub">M2 − M1 ≥ +15 · acceleration signal</span>
+  </div>
+  <div class="alerts">
+    {% for r in data.pre_breakout %}
+    <div class="alert-card{% if (r.gap or 0) >= 50 %} strong{% endif %}">
+      <div class="alert-head">
+        <div class="alert-tk">#{{ r.ticker }}</div>
+        <div class="alert-gap" {% if (r.gap or 0) < 50 %}style="color:#f59e0b"{% endif %}>M2 − M1 = +{{ r.gap }}</div>
+      </div>
+      <div class="alert-detail">{{ r.justification }}</div>
+      <div class="alert-meta"><span>M1: <b>{{ r.m1 if r.m1 is not none else '—' }}</b></span> <span>M2: <b>{{ r.m2 if r.m2 is not none else '—' }}</b></span></div>
+    </div>
+    {% endfor %}
+  </div>
+</section>
+{% endif %}
+
+{# ── Full table ── #}
+{% if data.full_rankings %}
+<section class="sec">
+  <div class="sec-head">
+    <h2>📋 Full rankings <span class="ar" dir="rtl" lang="ar">الترتيب الكامل</span></h2>
+    <span class="sub">{{ data.full_rankings|length }} tickers · search to filter</span>
+  </div>
+  <div class="rs-table-wrap">
+    <div class="rs-search">
+      <input type="text" id="rs-search" placeholder="Search ticker (e.g. 2380, 4337)…">
+      <a class="btn active" data-sort="m2">M2 ↓</a>
+      <a class="btn" data-sort="m1">M1</a>
+      <a class="btn" data-sort="m3">M3</a>
+      <a class="btn" data-sort="pct12m">12m</a>
+    </div>
+    <div class="rs-table-scroll">
+    <table class="rs-tbl" id="rs-tbl">
+      <thead><tr>
+        <th>#</th><th>Ticker</th><th class="r">M1</th><th class="r">M2</th><th class="r">M3</th><th class="r">12m</th><th class="r">Q4</th><th class="r">Price</th>
+      </tr></thead>
+      <tbody>
+        {% for r in data.full_rankings %}
+        <tr data-tk="{{ r.ticker }}" data-m1="{{ r.m1 or 0 }}" data-m2="{{ r.m2 or 0 }}" data-m3="{{ r.m3 or 0 }}" data-12m="{{ r.pct12m or 0 }}">
+          <td>{{ loop.index }}</td>
+          <td class="tk">#{{ r.ticker }}</td>
+          <td class="r m {% if r.m1 and r.m1 >= 75 %}hot{% elif r.m1 and r.m1 >= 40 %}mid{% else %}cool{% endif %}">{{ r.m1 if r.m1 is not none else '—' }}</td>
+          <td class="r m {% if r.m2 and r.m2 >= 75 %}hot{% elif r.m2 and r.m2 >= 40 %}mid{% else %}cool{% endif %}">{{ r.m2 if r.m2 is not none else '—' }}</td>
+          <td class="r m {% if r.m3 and r.m3 >= 75 %}hot{% elif r.m3 and r.m3 >= 40 %}mid{% else %}cool{% endif %}">{{ r.m3 if r.m3 is not none else '—' }}</td>
+          <td class="r" style="color:{% if (r.pct12m or 0) >= 0 %}#22c55e{% else %}#ef4444{% endif %}">{% if r.pct12m is not none %}{{ '{:+.1f}'.format(r.pct12m) }}%{% else %}—{% endif %}</td>
+          <td class="r" style="color:{% if (r.pctQ4 or 0) >= 0 %}#22c55e{% else %}#ef4444{% endif %}">{% if r.pctQ4 is not none %}{{ '{:+.1f}'.format(r.pctQ4) }}%{% else %}—{% endif %}</td>
+          <td class="r">{% if r.price %}{{ '{:,.2f}'.format(r.price) }}{% else %}—{% endif %}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    </div>
+    <div class="tbl-foot" id="tbl-foot">Showing {{ data.full_rankings|length }} of {{ data.full_rankings|length }} tickers · published {{ data.generated_at }}</div>
+  </div>
+</section>
+{% endif %}
+
+<script>
+// Search + sort
+(function(){
+  var input = document.getElementById('rs-search');
+  var tbl   = document.getElementById('rs-tbl');
+  if (!input || !tbl) return;
+  var tbody = tbl.querySelector('tbody');
+  var rows  = Array.prototype.slice.call(tbody.querySelectorAll('tr'));
+  var foot  = document.getElementById('tbl-foot');
+  var totalCount = rows.length;
+
+  function applyFilter(){
+    var q = (input.value || '').trim();
+    var shown = 0;
+    rows.forEach(function(r){
+      var match = !q || (r.dataset.tk || '').indexOf(q) >= 0;
+      r.style.display = match ? '' : 'none';
+      if (match) shown++;
+    });
+    if (foot) foot.textContent = 'Showing ' + shown + ' of ' + totalCount + ' tickers';
+  }
+  input.addEventListener('input', applyFilter);
+
+  document.querySelectorAll('.rs-search [data-sort]').forEach(function(btn){
+    btn.addEventListener('click', function(){
+      document.querySelectorAll('.rs-search [data-sort]').forEach(function(b){
+        b.classList.remove('active');
+        b.textContent = b.textContent.replace(' ↓','').replace(' ↑','');
+      });
+      btn.classList.add('active');
+      btn.textContent += ' ↓';
+      var key = btn.dataset.sort;
+      rows.sort(function(a,b){
+        return parseFloat(b.dataset[key] || 0) - parseFloat(a.dataset[key] || 0);
+      });
+      // Re-rank visible column
+      rows.forEach(function(r, i){
+        r.querySelector('td:first-child').textContent = (i+1);
+        tbody.appendChild(r);
+      });
+    });
+  });
+})();
+</script>
+
+{% endif %}{# end if data #}
+{% endblock %}

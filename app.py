@@ -976,6 +976,192 @@ def brief_archived(date_str):
     return render_template("brief_view.html", date=date_str, brief=data)
 
 
+# ── RS Rating archive (Minervini RPR — M1/M2/M3 percentiles) ───────────
+RS_DIR = DATA_DIR / "rs_archive"
+RS_DIR.mkdir(parents=True, exist_ok=True)
+
+
+def _parse_rs_html(html_text: str, date_hint: str = None) -> dict:
+    """Parse a ChartEdge_RS_Rating_<date>.html report into a structured dict.
+
+    The report has the following tables:
+      1. Top 10 by M2 (cols: #, Ticker, M1, M2, M3, 12m %, Q4 %, Price)
+      2. Improved Tickers / Pre-Breakout (cols: Ticker, M1, M2, Gap, Justification)
+      3. Full RS Rating Rankings (same shape as table 1, all tickers)
+      4. Gap Analysis (M2 - M1)
+
+    Returns a payload with: date, universe, top_leaders[], pre_breakout[],
+    full_rankings[], stats. Safe with partial data — fields missing → None.
+    """
+    import re as _re
+    h = html_text
+
+    # Date — prefer info-bar span; fall back to date_hint
+    date = date_hint
+    m = _re.search(r'<label>\s*Date\s*</label>\s*<span>([^<]+)</span>', h)
+    if m:
+        raw = m.group(1).strip()
+        # Try "May 30, 2026" → "2026-05-30"
+        try:
+            from datetime import datetime as _dt
+            date = _dt.strptime(raw, "%b %d, %Y").strftime("%Y-%m-%d")
+        except Exception:
+            try:
+                date = _dt.strptime(raw, "%B %d, %Y").strftime("%Y-%m-%d")
+            except Exception:
+                pass
+
+    # Universe count
+    universe = None
+    m = _re.search(r'<label>\s*Universe\s*</label>\s*<span>([^<]+)</span>', h)
+    if m:
+        try:
+            universe = int(_re.search(r'\d+', m.group(1)).group())
+        except Exception:
+            pass
+
+    # Pull all tables
+    tables = _re.findall(r'<table[^>]*>(.*?)</table>', h, _re.S)
+
+    def parse_table(t):
+        rows = _re.findall(r'<tr[^>]*>(.*?)</tr>', t, _re.S)
+        return [
+            [_re.sub(r'<[^>]+>', '', c).strip()
+             for c in _re.findall(r'<t[hd][^>]*>(.*?)</t[hd]>', r, _re.S)]
+            for r in rows
+        ]
+
+    leaders = parse_table(tables[0]) if tables else []
+    improved = parse_table(tables[1]) if len(tables) >= 2 else []
+    full = parse_table(tables[2]) if len(tables) >= 3 else []
+    gaps = parse_table(tables[3]) if len(tables) >= 4 else []
+
+    def _i(v):
+        try: return int(v)
+        except Exception: return None
+    def _f(v):
+        try: return float(v.replace(",", "").replace("%", "").replace("+", "").replace("SAR", "").strip())
+        except Exception: return None
+    def _tk(v):
+        # "2380.SR" → "2380"
+        return (v or "").split(".")[0].strip()
+
+    # Leader rows: [#, Ticker, M1, M2, M3, 12m, Q4, Price]
+    def parse_leader(r):
+        if len(r) < 8: return None
+        return {
+            "rank":   _i(r[0]),
+            "ticker": _tk(r[1]),
+            "m1":     _i(r[2]),
+            "m2":     _i(r[3]),
+            "m3":     _i(r[4]),
+            "pct12m": _f(r[5]),
+            "pctQ4":  _f(r[6]),
+            "price":  _f(r[7]),
+        }
+    # Improved rows: [Ticker, M1, M2, Gap, Justification]
+    def parse_improved(r):
+        if len(r) < 5: return None
+        return {
+            "ticker":       _tk(r[0]),
+            "m1":           _i(r[1]),
+            "m2":           _i(r[2]),
+            "gap":          _i(r[3].replace("+", "")),
+            "justification":r[4],
+        }
+
+    leader_rows = [parse_leader(r) for r in leaders[1:]] if leaders else []
+    leader_rows = [r for r in leader_rows if r]
+    improved_rows = [parse_improved(r) for r in improved[1:]] if improved else []
+    improved_rows = [r for r in improved_rows if r]
+    full_rows = [parse_leader(r) for r in full[1:]] if full else []
+    full_rows = [r for r in full_rows if r]
+
+    # Headline stats
+    top_m2 = leader_rows[0]["m2"] if leader_rows else None
+    pre_breakout_count = sum(1 for r in improved_rows if (r.get("gap") or 0) >= 15)
+
+    return {
+        "date": date,
+        "universe": universe or len(full_rows) or None,
+        "top_leaders":   leader_rows[:10],   # only the top 10 cards
+        "pre_breakout":  improved_rows[:12], # cap UI density
+        "full_rankings": full_rows or leader_rows,  # fall back if no separate full
+        "stats": {
+            "top_m2": top_m2,
+            "pre_breakout_count": pre_breakout_count or len(improved_rows),
+        },
+        "generated_at": datetime.now().isoformat(timespec="seconds"),
+    }
+
+
+def _save_rs(date_str: str, payload: dict) -> tuple[bool, str]:
+    """Save the parsed RS Rating payload to disk + commit to GitHub for persistence."""
+    import json as _json
+    raw = _json.dumps(payload, indent=2, ensure_ascii=False).encode("utf-8")
+    path = RS_DIR / f"{date_str}.json"
+    try:
+        path.write_bytes(raw)
+    except Exception as e:
+        return False, f"local write failed: {e}"
+    ok, msg = _commit_bytes_to_github(
+        f"data/rs_archive/{date_str}.json",
+        raw,
+        f"RS Rating archive {date_str}",
+    )
+    return True, f"saved ({msg})"
+
+
+def _load_rs(date_str: str) -> dict:
+    """Load an RS Rating JSON archive from disk."""
+    p = RS_DIR / f"{date_str}.json"
+    if not p.exists():
+        return None
+    try:
+        import json as _json
+        return _json.loads(p.read_text(encoding="utf-8"))
+    except Exception:
+        return None
+
+
+def _list_rs() -> list:
+    """List available RS Rating archive dates (newest first)."""
+    if not RS_DIR.exists():
+        return []
+    files = sorted(
+        [p for p in RS_DIR.glob("*.json") if len(p.stem) == 10],
+        key=lambda p: p.stem, reverse=True,
+    )
+    return [p.stem for p in files]
+
+
+@app.route("/rs-rating")
+def rs_rating_latest():
+    """Public — latest RS Rating report."""
+    dates = _list_rs()
+    if not dates:
+        return render_template("rs_rating.html", data=None, date=None, archive_dates=[])
+    return rs_rating_archived(dates[0])
+
+
+@app.route("/rs-rating/<date_str>")
+def rs_rating_archived(date_str):
+    """Public view of an archived RS Rating report by date."""
+    if not (len(date_str) == 10 and date_str.count("-") == 2):
+        abort(404)
+    data = _load_rs(date_str)
+    if not data:
+        abort(404)
+    return render_template("rs_rating.html",
+                           data=data, date=date_str, archive_dates=_list_rs())
+
+
+@app.route("/rs-rating/index")
+def rs_rating_index():
+    """Public archive index of all saved RS Rating reports."""
+    return render_template("rs_rating_index.html", dates=_list_rs())
+
+
 def _tk(t):
     """Clean a ticker for display in tweets: drop '.SR' suffix."""
     if not t: return ""
@@ -1854,6 +2040,42 @@ def admin_upload():
     if len(raw) > 25 * 1024 * 1024:
         return render_template("admin.html", success=False,
             error="File too large (>25 MB)."), 400
+
+    # Special case: ChartEdge RS Rating HTML report → parse + archive as JSON
+    fname_lower = (f.filename or "").lower()
+    is_rs_report = (
+        fname_lower.endswith(".html")
+        and ("rs_rating" in fname_lower or "rs-rating" in fname_lower
+             or b"RS Rating" in raw[:4096] or b"M2 (Minervini RPR)" in raw[:8192])
+    )
+    if is_rs_report:
+        try:
+            # Try to pull date from filename: ChartEdge_RS_Rating_2026-05-30.html
+            import re as _re_fn
+            dm = _re_fn.search(r"(\d{4}-\d{2}-\d{2})", f.filename or "")
+            date_hint = dm.group(1) if dm else None
+            payload = _parse_rs_html(raw.decode("utf-8", errors="ignore"),
+                                      date_hint=date_hint)
+            if not payload.get("date"):
+                payload["date"] = date_hint or datetime.now().strftime("%Y-%m-%d")
+            if not payload.get("top_leaders"):
+                return render_template("admin.html", success=False,
+                    error="Could not parse RS Rating report — no leader rows found. "
+                          "Make sure it's the ChartEdge HTML report (not the PDF)."), 400
+            ok, msg = _save_rs(payload["date"], payload)
+            if not ok:
+                return render_template("admin.html", success=False,
+                    error=f"RS Rating save failed: {msg}"), 500
+            return render_template("admin.html", success=True,
+                error=f"RS Rating archived for {payload['date']} "
+                      f"({len(payload['top_leaders'])} leaders · "
+                      f"{len(payload['pre_breakout'])} pre-breakout · "
+                      f"{payload.get('universe','?')} universe). "
+                      f"Live at /rs-rating")
+        except Exception as e:
+            return render_template("admin.html", success=False,
+                error=f"RS Rating parse exception: {e}"), 500
+
     market_form = request.form.get("market", "auto")
     pdf_target = request.form.get("pdf_target", "")
     target_path, why = _resolve_upload_target(f.filename, market_form, raw, pdf_target)

@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+{% block title %}RS Rating Archive · ChartEdge{% endblock %}
+{% block body %}
+<section class="hero-v2">
+  <div class="hero-left">
+    <span class="hero-kicker">🔥 RS Rating · Archive</span>
+    <h1>RS Rating <span class="grad">Archive</span></h1>
+    <div class="h1-ar" dir="rtl" lang="ar">أرشيف تقييم القوة النسبية</div>
+    <p class="lede">Every published RS Rating report. Click any date to view its leaders, pre-breakout candidates, and full rankings.</p>
+    <p class="lede-ar" dir="rtl" lang="ar">جميع تقارير تقييم القوة النسبية المنشورة — اضغط على أيّ تاريخ لعرض القادة ومرشحات الاختراق والترتيب الكامل.</p>
+  </div>
+</section>
+
+{% if not dates %}
+<section class="sec">
+  <div class="market-card" style="text-align:center;padding:48px 28px">
+    <div style="font-size:14px;color:var(--muted);">No reports archived yet. The first one will appear after admin upload.</div>
+  </div>
+</section>
+{% else %}
+<section class="sec">
+  <div class="sec-head">
+    <h2>📅 Reports <span class="ar" dir="rtl" lang="ar">التقارير</span></h2>
+    <span class="sub">{{ dates|length }} total · newest first</span>
+  </div>
+  <div class="leaders">
+    {% for d in dates %}
+    <a class="leader-card" href="{{ url_for('rs_rating_archived', date_str=d) }}" style="text-decoration:none">
+      <div class="leader-rank">📅 {{ loop.index }}</div>
+      <div class="leader-tk" style="font-size:20px;">{{ d }}</div>
+      <div class="leader-px">RS Rating report</div>
+      <div style="margin-top:14px;color:var(--accent);font-weight:600;font-size:13px;">Open report →</div>
+    </a>
+    {% endfor %}
+  </div>
+</section>
+{% endif %}
+{% endblock %}
