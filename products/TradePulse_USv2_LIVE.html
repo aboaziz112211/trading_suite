@@ -1180,6 +1180,7 @@ body.dark-mode .tp-filter-bar .tp-fb-label{color:#fff;}
     <button class="fbtn" id="f-nr" onclick="togF('near')">🔥 Near Pivot</button>
     <button class="fbtn" id="f-lq" onclick="togF('liq')" title="Show only stocks with Liquidity score ≥ 75">💧 Liquid ≥75</button>
     <button class="fbtn" id="f-lqp" onclick="togF('liqP')" title="Show only stocks with Liquidity score ≥ 85 (premium)">🔥 Premium ≥85</button>
+    <button class="fbtn" id="f-liqf" onclick="togF('liqFloor')" title="Hide names below $5 OR avg vol < 250k. Click to toggle.">💧 Liq Floor</button>
     <button class="fbtn" id="f-ai" onclick="togAI()" title="Show AI & Semiconductor stocks">🤖 AI</button>
     <button class="fbtn" onclick="exportReportHtml()" title="Export current report as standalone HTML">📤 Share HTML</button>
     <span class="cnt" id="cnt"></span>
@@ -1243,7 +1244,7 @@ body.dark-mode .tp-filter-bar .tp-fb-label{color:#fff;}
 // ══════════════════════════════════════════════
 // VERSION — used to verify which build is running
 // ══════════════════════════════════════════════
-const TP_VERSION = 'USv2.4.1-2026-05-28';
+const TP_VERSION = 'USv2.4.3-2026-05-29';
 console.log('%c[TradePulse] ' + TP_VERSION + ' loaded', 'color:#3B6D11;font-weight:bold;font-size:13px');
 
 // ══════════════════════════════════════════════
@@ -1283,6 +1284,11 @@ let BBG_TASI = null; // persists TASI data
 let BBG_SECTORS = {}; // sector → [stocks] for rotation analysis
 let BBG_NAMES = {};  // saId → Bloomberg mnemonic (e.g. '2370' → 'MESC')
 let tab='all', filters=new Set(), nearF=false, liqF=false, liqPF=false, sectorF=null, aiF=false;
+// USv2.4.2 — Liquidity Floor (price >= $5 AND avgVol30 >= 250k); default ON, persisted.
+let liqFloorF = (localStorage.getItem('tp_us_liq_floor_v1') !== '0');
+const LIQ_FLOOR_MIN_PRICE = 5;
+const LIQ_FLOOR_MIN_AVGVOL = 250000;
+let _liqFloorHidden = 0;  // updated each render() for status display
 let sCol='total', sDir=-1, openR=null;
 // v1.1 — alertsFired persisted daily so 52W High / breakout fires only once per trading day
 const _AF_KEY = 'tp_alerts_fired_us';
@@ -1386,41 +1392,57 @@ const nowDate= () => new Date().toLocaleDateString('en-US',{day:'2-digit',month:
 // AGENT 5: LIQUIDITY SCORING
 // ══════════════════════════════════════════════
 function calcLiq(s) {
-  let score = 0;
-  let maxScore = 100;
-  const price = s.livePrice || s.price;
+  // USv2.4.3 — tiered liquidity scoring. Always scores from whatever data
+  // is present; never returns 0 when ANY of avgVol/avgVol30 exists.
+  // Tier A: Static baseline (50 pts) always evaluated.
+  // Tiers B/C/D: live ratio / VWAP / bid-ask, each evaluated only when present.
+  // Final score = (earned / maxPossibleAcrossActiveTiers) * 100.
+  let score = 0, maxScore = 0;
+  const price = s.livePrice || s.price || 0;
+  const avg   = s.avgVol30  || s.avgVol  || 0;
+  const lv    = s.liveVol   || 0;
 
-  // ── Volume Ratio (40 pts) — live vol vs 30D avg ──
-  if (s.liveVol && s.liveVol > 0 && s.avgVol30 && s.avgVol30 > 0) {
-    const vr = s.liveVol / s.avgVol30;
-    if (vr >= 3)       score += 40;
-    else if (vr >= 2)  score += 35;
-    else if (vr >= 1.5)score += 30;
-    else if (vr >= 1)  score += 15;
-    else if (vr >= 0.5)score += 5;
+  // ── Tier A: Static Baseline (50 pts) — avgVol + price quality ──
+  // Always runs so the agent has SOMETHING to score from on cold start.
+  maxScore += 50;
+  if      (avg >= 5_000_000) score += 50;
+  else if (avg >= 2_000_000) score += 42;
+  else if (avg >= 1_000_000) score += 35;
+  else if (avg >= 500_000)   score += 28;
+  else if (avg >= 250_000)   score += 20;
+  else if (avg >= 100_000)   score += 12;
+  else if (avg > 0)          score += 5;
+
+  // ── Tier B: Live Volume Ratio (20 pts) — when liveVol arrives ──
+  if (lv > 0 && avg > 0) {
+    maxScore += 20;
+    const vr = lv / avg;
+    if      (vr >= 3)   score += 20;
+    else if (vr >= 2)   score += 17;
+    else if (vr >= 1.5) score += 14;
+    else if (vr >= 1)   score += 10;
+    else if (vr >= 0.5) score += 5;
   }
 
-  // ── VWAP Position (30 pts) — above = buyers aggressive ──
+  // ── Tier C: VWAP Position (15 pts) — when VWAP arrives ──
   if (s.vwap && s.vwap > 0 && price > 0) {
-    const vwapPct = (price - s.vwap) / s.vwap * 100;
-    if (vwapPct > 0.5)      score += 30;
-    else if (vwapPct > -0.1) score += 15;
-    // below VWAP = 0
+    maxScore += 15;
+    const vp = (price - s.vwap) / s.vwap * 100;
+    if      (vp > 0.5)  score += 15;
+    else if (vp > -0.1) score += 8;
   }
 
-  // ── Bid-Ask Spread (30 pts) — tight = institutional ──
-  // Polygon Developer tier does NOT supply bid/ask; rescale max to 70.
+  // ── Tier D: Bid-Ask Spread (15 pts) — when bid/ask present ──
   if (s.bid && s.ask && s.bid > 0 && s.ask > 0 && price > 0) {
-    const spread = (s.ask - s.bid) / price * 100;
-    if (spread <= 0.15)     score += 30;
-    else if (spread <= 0.3) score += 25;
-    else if (spread <= 0.5) score += 15;
-    else if (spread <= 1)   score += 5;
-  } else {
-    maxScore = 70;  // bid/ask unavailable — only 70 pts possible from vol+vwap
+    maxScore += 15;
+    const spd = (s.ask - s.bid) / price * 100;
+    if      (spd <= 0.15) score += 15;
+    else if (spd <= 0.30) score += 12;
+    else if (spd <= 0.50) score += 8;
+    else if (spd <= 1.00) score += 3;
   }
 
-  // Rescale to 0-100 so missing-spread tickers aren't capped at 70
+  if (maxScore === 0) return 0;
   return Math.min(100, Math.round(score * 100 / maxScore));
 }
 
@@ -3128,6 +3150,11 @@ function render() {
     if(filters.has('potential')&&s.stage!=='potential') return false;
     if(nearF){const g=s.liveGap??s.dist_to_breakout??99;if(g>3)return false;}
     if(liqPF){if((s.liq||0)<85)return false;} else if(liqF){if((s.liq||0)<75)return false;}
+    if(liqFloorF){
+      var _p = s.livePrice||s.price||0;
+      var _v = s.avgVol30||0;
+      if(_p < LIQ_FLOOR_MIN_PRICE || _v < LIQ_FLOOR_MIN_AVGVOL) return false;
+    }
     if(aiF&&!isAiStock(s)) return false;
     if(sectorF){
       const stockSec = (BBG_MAP[s.ticker.replace('.SR','')]?.sector) || s.gics_ig || '';
@@ -3146,7 +3173,14 @@ function render() {
     if(typeof av==='string'){av=av.toLowerCase();bv=bv.toLowerCase();}
     return av<bv?-sDir:av>bv?sDir:0;
   });
-  el('cnt').textContent=rows.length+' stocks';
+  // USv2.4.2 — compute liq-floor hidden count for status
+  if(liqFloorF){
+    _liqFloorHidden = STOCKS.filter(function(s){
+      var _p=s.livePrice||s.price||0, _v=s.avgVol30||0;
+      return (_p < LIQ_FLOOR_MIN_PRICE || _v < LIQ_FLOOR_MIN_AVGVOL);
+    }).length;
+  } else { _liqFloorHidden = 0; }
+  el('cnt').textContent = rows.length+' stocks'+(liqFloorF&&_liqFloorHidden?' · 💧 '+_liqFloorHidden+' hidden by liq floor':'');
   const sl={stage2:'Stage 2',potential:'Potential',stage1:'Stage 1',stage4:'Stage 4',stage3:'Stage 3'};
   el('tbody').innerHTML=rows.map(s=>{
     const gi=STOCKS.indexOf(s);
@@ -3276,6 +3310,11 @@ function togF(f){
   if(f==='near'){nearF=!nearF;el('f-nr').classList.toggle('on',nearF);}
   else if(f==='liq'){liqF=!liqF;el('f-lq').classList.toggle('on',liqF);}
   else if(f==='liqP'){liqPF=!liqPF;el('f-lqp').classList.toggle('on',liqPF);}
+  else if(f==='liqFloor'){
+    liqFloorF=!liqFloorF;
+    localStorage.setItem('tp_us_liq_floor_v1', liqFloorF?'1':'0');
+    el('f-liqf').classList.toggle('on',liqFloorF);
+  }
   else{if(filters.has(f))filters.delete(f);else filters.add(f);
     el('f-'+{stage2:'s2',potential:'pt'}[f]).classList.toggle('on',filters.has(f));}
   render();
@@ -4336,6 +4375,8 @@ function openTVChart(ticker) {
 
 try { renderFbPanel(); } catch(e) { console.error('[TradePulse] renderFbPanel init:', e); }
 try { el('tp-ver').textContent = TP_VERSION; } catch(e) {}
+// USv2.4.2 — sync liq-floor pill visual state with persisted setting
+try { var _lfBtn = document.getElementById('f-liqf'); if(_lfBtn) _lfBtn.classList.toggle('on', liqFloorF); } catch(e) {}
 
 // ── USv2.2+ — Auto-restore last-loaded CSV on page load ──
 (function autoRestoreStocks(){

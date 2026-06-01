@@ -168,7 +168,7 @@ h1{font-size:18px;font-weight:700;}
 .bw-tag-brk{background:#E6F1FB;color:#185FA5;border:0.5px solid #B5D4F4;}
 .bw-tag-hot{background:#EAF3DE;color:#3B6D11;border:0.5px solid #C0DD97;}
 .bw-tag-near{background:#FAEEDA;color:#BA7517;border:0.5px solid #FAC775;}
-.bw-nm{font-size:13px;font-weight:700;color:#3a3a35;margin-bottom:6px;}
+.bw-nm{font-size:13px;font-weight:800;color:#000;margin-bottom:6px;}
 .bw-row{display:flex;align-items:baseline;gap:6px;margin-bottom:4px;}
 .bw-price{font-size:16px;font-weight:800;direction:ltr;}
 .bw-chg{font-size:10px;font-weight:700;direction:ltr;}
@@ -195,7 +195,7 @@ h1{font-size:18px;font-weight:700;}
 .pb-tag-reclaim{background:#EAF3DE;color:#3B6D11;border:0.5px solid #C0DD97;}
 .pb-tag-test{background:#FAEEDA;color:#BA7517;border:0.5px solid #FAC775;}
 .pb-tag-below{background:#FDE8E8;color:#A32D2D;border:0.5px solid #F4B8B8;}
-.pb-nm{font-size:13px;font-weight:700;color:#3a3a35;margin-bottom:5px;}
+.pb-nm{font-size:13px;font-weight:800;color:#000;margin-bottom:5px;}
 .pb-row{display:flex;align-items:baseline;gap:6px;margin-bottom:4px;}
 .pb-price{font-size:16px;font-weight:800;direction:ltr;}
 .pb-chg{font-size:10px;font-weight:700;direction:ltr;}
@@ -261,7 +261,7 @@ h1{font-size:18px;font-weight:700;}
 .tp-cm-close:hover{color:#333;}
 .tp-cm-head{margin-bottom:10px;padding-bottom:8px;border-bottom:1px solid #eee;}
 .tp-cm-tk{font-size:34px;font-weight:800;color:#185FA5;letter-spacing:.01em;line-height:1;}
-.tp-cm-nm{font-size:16px;font-weight:700;color:#1a1a18;margin-top:3px;direction:rtl;text-align:left;}
+.tp-cm-nm{font-size:16px;font-weight:800;color:#000;margin-top:3px;direction:rtl;text-align:left;}
 .tp-cm-sector{font-size:11px;color:#854F0B;background:#FAEEDA;padding:2px 9px;border-radius:6px;display:inline-block;margin-top:8px;font-weight:600;}
 .tp-cm-price-row{display:flex;align-items:baseline;justify-content:space-between;margin:8px 0 4px;}
 .tp-cm-price{font-size:30px;font-weight:800;color:#185FA5;font-variant-numeric:tabular-nums;}
@@ -502,6 +502,63 @@ body.dark-mode .tp-cm-tk{color:#6BB6FF;}
 /* Score badges keep their hue but darken */
 body.dark-mode .agg-score{box-shadow:0 0 0 1px rgba(255,255,255,0.06);}
 
+/* === DARK-MODE TEXT BLEED-THROUGH FIX (2026-05-28) ===
+   These classes hardcode dark text (#1a1a18 / #3a3a35 / #222 / #444) at the class
+   level and were winning over the body.dark-mode color rule. Override them so
+   text stays readable in dark mode. CSS-only, no logic touched. */
+body.dark-mode .sec-title,
+body.dark-mode .sec-name,
+body.dark-mode .sec-detail,
+body.dark-mode .sec-sub,
+body.dark-mode .bw-nm,
+body.dark-mode .bw-count,
+body.dark-mode .bw-m,
+body.dark-mode .pb-nm,
+body.dark-mode .pb-count,
+body.dark-mode .pb-m,
+body.dark-mode .sc-tk,
+body.dark-mode .sc-price,
+body.dark-mode .sc-comp b,
+body.dark-mode .tp-cm-nm,
+body.dark-mode .tp-cm-k,
+body.dark-mode .tp-cm-btn-sec,
+body.dark-mode .agg-nm,
+body.dark-mode .agg-row b,
+body.dark-mode .pk-nm,
+body.dark-mode .ab-val,
+body.dark-mode .be-val,
+body.dark-mode .bc-lbl,
+body.dark-mode .bc-sub,
+body.dark-mode .tn,
+body.dark-mode .srch,
+body.dark-mode .fbtn,
+body.dark-mode .tab,
+body.dark-mode .tp-filter-bar .tp-fb-label,
+body.dark-mode .load-title,
+body.dark-mode thead th:hover,
+body.dark-mode .tab:hover,
+body.dark-mode .tab.on{
+  color:#e8e8e8 !important;
+}
+
+/* Buttons / pill controls — preserve dark fill on "on" state */
+body.dark-mode .fbtn:hover,
+body.dark-mode .fbtn.on{
+  background:#3a3a45 !important;color:#fff !important;border-color:#3a3a45 !important;
+}
+body.dark-mode .tab.on{
+  border-bottom-color:#e8e8e8 !important;
+}
+body.dark-mode .srch{
+  background:#25252e !important;border-color:#3a3a45 !important;
+}
+body.dark-mode .bw-m,
+body.dark-mode .pb-m{
+  background:#25252e !important;
+}
+/* === END DARK-MODE TEXT BLEED-THROUGH FIX === */
+
+
 /* NEAR-MISS sub-section */
 .agg-nm-wrap{margin-top:14px;border-top:1px dashed #E0DCD2;padding-top:12px;}
 .agg-nm-hdr{font-size:11px;font-weight:800;color:#854F0B;margin-bottom:8px;display:flex;justify-content:space-between;align-items:center;}
@@ -520,7 +577,7 @@ body.dark-mode .agg-score{box-shadow:0 0 0 1px rgba(255,255,255,0.06);}
 .pick::before{content:'';position:absolute;top:0;left:0;width:3px;height:100%;background:#3B6D11;}
 .pk-rank{font-size:9px;font-weight:700;color:#888;text-transform:uppercase;letter-spacing:.07em;margin-bottom:2px;}
 .pk-tk{font-size:15px;font-weight:800;color:#185FA5;direction:ltr;}
-.pk-nm{font-size:13px;font-weight:700;color:#3a3a35;margin-bottom:7px;}
+.pk-nm{font-size:13px;font-weight:800;color:#000;margin-bottom:7px;}
 .pk-price{font-size:17px;font-weight:800;direction:ltr;margin-bottom:2px;}
 .pk-live  {color:#3B6D11;}.pk-ce{color:#aaa;}
 .pk-chg{font-size:11px;font-weight:600;direction:ltr;margin-bottom:7px;}
@@ -578,7 +635,7 @@ tbody tr.flash{animation:fl .7s;}
 @keyframes fl{0%,100%{background:transparent}35%{background:#E8E6DF}}
 td{padding:7px 8px;vertical-align:middle;}
 .tk{font-weight:700;color:#185FA5;direction:ltr;}
-.nm{font-size:11px;font-weight:500;}
+.nm{font-size:11px;font-weight:800;color:#000;}
 .pv-bbg{font-weight:800;font-size:13px;direction:ltr;color:#3B6D11;}
 .pv-ce {font-weight:800;font-size:13px;direction:ltr;color:#aaa;}
 .piv{font-weight:700;color:#BA7517;direction:ltr;}
@@ -1165,6 +1222,7 @@ document.addEventListener('drop',      function(e){
     <button class="fbtn" id="f-nr" onclick="togF('near')" title="قريب من نقطة الاختراق — المسافة أقل من 5%">🔥 Near Pivot</button>
     <button class="fbtn" id="f-bo" onclick="togF('breakout')" title="عند نقطة الاختراق أو فوقها مباشرةً (مباشر)">💥 Breakout</button>
     <button class="fbtn" id="f-lq" onclick="togF('liq')" title="سيولة عالية — درجة السيولة ≥ 50">💧 Liquid</button>
+    <button class="fbtn" id="f-liqf" onclick="togF('liqFloor')" title="إخفاء الأسهم أقل من 5 ريال أو متوسط حجم < 50 ألف">💧 Liq Floor</button>
     <button class="fbtn" onclick="exportReportHtml()" title="تصدير التقرير الحالي كملف HTML مستقل">📤 Share HTML</button>
     <span class="cnt" id="cnt"></span>
   </div>
@@ -1215,7 +1273,7 @@ document.addEventListener('drop',      function(e){
 // ══════════════════════════════════════════════
 // VERSION — used to verify which build is running
 // ══════════════════════════════════════════════
-const TP_VERSION = 'SARv1.5.20-2026-05-14';// ── TASI Regime Gate (Scout discipline control) ──
+const TP_VERSION = 'SARv1.7.3-2026-05-29';// ── TASI Regime Gate (Scout discipline control) ──
 // Manually-set Wyckoff stage classification of TASI itself.
 // Stage 1 = Accumulation, Stage 2 = Markup, Stage 3 = Distribution, Stage 4 = Markdown
 // Stage 4 = Scout in observation mode only; warning banner shown, no new entries.
@@ -1298,6 +1356,11 @@ let BBG_TASI = null; // persists TASI data
 let BBG_SECTORS = {}; // sector → [stocks] for rotation analysis
 let BBG_NAMES = {};  // saId → Bloomberg mnemonic (e.g. '2370' → 'MESC')
 let tab='all', filters=new Set(), nearF=false, liqF=false, sectorF=null;
+// SARv1.7.2 — Liquidity Floor (price >= 5 SAR AND avgVol30 >= 50k); default ON, persisted.
+let liqFloorF = (localStorage.getItem('tp_sar_liq_floor_v1') !== '0');
+const LIQ_FLOOR_MIN_PRICE = 5;
+const LIQ_FLOOR_MIN_AVGVOL = 50000;
+let _liqFloorHidden = 0;
 let sCol='total', sDir=-1, openR=null;
 let alertsFired=new Set();
 // v6.2 — breakout sound alert (two-tone chime via Web Audio API, no external file)
@@ -1396,37 +1459,54 @@ const nowDate= () => new Date().toLocaleDateString('en-SA',{day:'2-digit',month:
 // AGENT 5: LIQUIDITY SCORING
 // ══════════════════════════════════════════════
 function calcLiq(s) {
-  let score = 0;
-  const price = s.livePrice || s.price;
+  // SARv1.7.3 — tiered liquidity scoring (Saudi vol tiers ~10× smaller than US).
+  // Always scores from whatever data exists; never 0 when avgVol is known.
+  let score = 0, maxScore = 0;
+  const price = s.livePrice || s.price || 0;
+  const avg   = s.avgVol30  || s.avgVol  || 0;
+  const lv    = s.liveVol   || 0;
 
-  // ── Volume Ratio (40 pts) — live vol vs 30D avg ──
-  if (s.liveVol && s.avgVol30 && s.avgVol30 > 0) {
-    const vr = s.liveVol / s.avgVol30;
-    if (vr >= 3)       score += 40;
-    else if (vr >= 2)  score += 35;
-    else if (vr >= 1.5)score += 30;
-    else if (vr >= 1)  score += 15;
-    else if (vr >= 0.5)score += 5;
+  // ── Tier A: Static Baseline (50 pts) — Saudi avgVol tiers ──
+  maxScore += 50;
+  if      (avg >= 1_000_000) score += 50;
+  else if (avg >= 500_000)   score += 42;
+  else if (avg >= 200_000)   score += 35;
+  else if (avg >= 100_000)   score += 28;
+  else if (avg >= 50_000)    score += 20;
+  else if (avg >= 20_000)    score += 12;
+  else if (avg > 0)          score += 5;
+
+  // ── Tier B: Live Volume Ratio (20 pts) — when liveVol arrives ──
+  if (lv > 0 && avg > 0) {
+    maxScore += 20;
+    const vr = lv / avg;
+    if      (vr >= 3)   score += 20;
+    else if (vr >= 2)   score += 17;
+    else if (vr >= 1.5) score += 14;
+    else if (vr >= 1)   score += 10;
+    else if (vr >= 0.5) score += 5;
   }
 
-  // ── VWAP Position (30 pts) — above = buyers aggressive ──
+  // ── Tier C: VWAP Position (15 pts) — when VWAP arrives ──
   if (s.vwap && s.vwap > 0 && price > 0) {
-    const vwapPct = (price - s.vwap) / s.vwap * 100;
-    if (vwapPct > 0.5)      score += 30;
-    else if (vwapPct > -0.1) score += 15;
-    // below VWAP = 0
+    maxScore += 15;
+    const vp = (price - s.vwap) / s.vwap * 100;
+    if      (vp > 0.5)  score += 15;
+    else if (vp > -0.1) score += 8;
   }
 
-  // ── Bid-Ask Spread (30 pts) — tight = institutional ──
+  // ── Tier D: Bid-Ask Spread (15 pts) — when bid/ask present ──
   if (s.bid && s.ask && s.bid > 0 && s.ask > 0 && price > 0) {
-    const spread = (s.ask - s.bid) / price * 100;
-    if (spread <= 0.15)     score += 30;
-    else if (spread <= 0.3) score += 25;
-    else if (spread <= 0.5) score += 15;
-    else if (spread <= 1)   score += 5;
+    maxScore += 15;
+    const spd = (s.ask - s.bid) / price * 100;
+    if      (spd <= 0.15) score += 15;
+    else if (spd <= 0.30) score += 12;
+    else if (spd <= 0.50) score += 8;
+    else if (spd <= 1.00) score += 3;
   }
 
-  return Math.min(100, score);
+  if (maxScore === 0) return 0;
+  return Math.min(100, Math.round(score * 100 / maxScore));
 }
 
 // ══════════════════════════════════════════════
@@ -3463,6 +3543,11 @@ function render() {
     if(nearF){const g=s.liveGap??s.dist_to_breakout??99;if(g>3)return false;}
     if(filters.has('breakout')){const g=s.liveGap??s.dist_to_breakout??99;if(g>0)return false;}
     if(liqF){if((s.liq||0)<50)return false;}
+    if(liqFloorF){
+      var _p = s.livePrice||s.price||0;
+      var _v = s.avgVol30||0;
+      if(_p < LIQ_FLOOR_MIN_PRICE || _v < LIQ_FLOOR_MIN_AVGVOL) return false;
+    }
     if(sectorF){
       const stockSec = (BBG_MAP[s.ticker.replace('.SR','')]?.sector) || '';
       if(stockSec !== sectorF) return false;
@@ -3477,7 +3562,14 @@ function render() {
     if(typeof av==='string'){av=av.toLowerCase();bv=bv.toLowerCase();}
     return av<bv?-sDir:av>bv?sDir:0;
   });
-  el('cnt').textContent=rows.length+' stocks';
+  // SARv1.7.2 — compute liq-floor hidden count for status
+  if(liqFloorF){
+    _liqFloorHidden = STOCKS.filter(function(s){
+      var _p=s.livePrice||s.price||0, _v=s.avgVol30||0;
+      return (_p < LIQ_FLOOR_MIN_PRICE || _v < LIQ_FLOOR_MIN_AVGVOL);
+    }).length;
+  } else { _liqFloorHidden = 0; }
+  el('cnt').textContent = rows.length+' stocks'+(liqFloorF&&_liqFloorHidden?' · 💧 '+_liqFloorHidden+' hidden by liq floor':'');
   const sl={stage2:'Stage 2',potential:'Potential',stage1:'Stage 1',stage4:'Stage 4',stage3:'Stage 3'};
   el('tbody').innerHTML=rows.map(s=>{
     const gi=STOCKS.indexOf(s);
@@ -3633,6 +3725,11 @@ function togLoadArea(){
 function togF(f){
   if(f==='near'){nearF=!nearF;el('f-nr').classList.toggle('on',nearF);}
   else if(f==='liq'){liqF=!liqF;el('f-lq').classList.toggle('on',liqF);}
+  else if(f==='liqFloor'){
+    liqFloorF=!liqFloorF;
+    localStorage.setItem('tp_sar_liq_floor_v1', liqFloorF?'1':'0');
+    el('f-liqf').classList.toggle('on',liqFloorF);
+  }
   else{if(filters.has(f))filters.delete(f);else filters.add(f);
     el('f-'+{stage2:'s2',potential:'pt',breakout:'bo'}[f]).classList.toggle('on',filters.has(f));}
   render();
@@ -4127,6 +4224,8 @@ function showBreakoutPopup(s, badge) {
 }
 
 try { el('tp-ver').textContent = TP_VERSION; } catch(e) {}
+// SARv1.7.2 — sync liq-floor pill visual state with persisted setting
+try { var _lfBtn = document.getElementById('f-liqf'); if(_lfBtn) _lfBtn.classList.toggle('on', liqFloorF); } catch(e) {}
 try {
   var bt = '';
   try {
