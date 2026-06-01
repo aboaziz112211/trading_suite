@@ -74,8 +74,8 @@
 
 {% if key == 'chartedge' %}
 <div class="ce-demo-notice" role="alert">
-  <div class="ce-demo-en"><b>⚠ FOR DISPLAY ONLY</b> · This web view is a preview. The full ChartEdge app is a separate desktop application — <a href="{{ url_for('contact') }}">contact the admin</a> to download it.</div>
-  <div class="ce-demo-ar" dir="rtl" lang="ar"><b>⚠ للعرض فقط</b> · هذه نسخة عرض على الويب. تطبيق ChartEdge الكامل برنامج مستقل لسطح المكتب — <a href="{{ url_for('contact') }}">تواصل مع الإدارة</a> لتحميله.</div>
+  <div class="ce-demo-en"><b>⚠ FOR DISPLAY ONLY</b> · This web view is a preview. The full ChartEdge app is a separate desktop application. <a class="ce-dl" href="https://drive.google.com/drive/folders/1FiRXYRO-rrrlVlMBc3ly-fsPPwYmM4FA?usp=drive_link" target="_blank" rel="noopener">📥 Download ChartEdge</a> or <a href="{{ url_for('contact') }}">contact the admin</a>.</div>
+  <div class="ce-demo-ar" dir="rtl" lang="ar"><b>⚠ للعرض فقط</b> · هذه نسخة عرض على الويب. تطبيق ChartEdge الكامل برنامج مستقل لسطح المكتب. <a class="ce-dl" href="https://drive.google.com/drive/folders/1FiRXYRO-rrrlVlMBc3ly-fsPPwYmM4FA?usp=drive_link" target="_blank" rel="noopener">📥 تحميل ChartEdge</a> أو <a href="{{ url_for('contact') }}">تواصل مع الإدارة</a>.</div>
 </div>
 <div class="ce-frame-wrap">
   <iframe id="productFrame" class="product-frame ce-demo-frame" src="{{ url_for('product_file', key=key) }}" title="{{ product.title }}"></iframe>
