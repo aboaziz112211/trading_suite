@@ -878,29 +878,29 @@ document.addEventListener('drop',      function(e){
 </div>
 <div class="hdr">
   <div>
-    <h1>TradePulse SAR</h1>
-    <div class="sub">Minervini SEPA 10-Criteria · VCP Pivot · 22 GICS Sectors · ChartEdge + Bloomberg XLSX</div>
+    <h1>TradePulse SAR · تريد بَلْس السعودية</h1>
+    <div class="sub">Minervini SEPA 10-Criteria · VCP Pivot · 22 GICS Sectors · ChartEdge + Bloomberg XLSX · معايير مينيرفيني · نقطة اختراق VCP · 22 قطاع</div>
   </div>
   <div style="display:flex;flex-direction:column;align-items:flex-end;gap:3px;">
-    <button id="theme-toggle" onclick="toggleTheme()" title="Toggle dark mode">🌙</button>
+    <button id="theme-toggle" onclick="toggleTheme()" title="Toggle dark mode · تبديل الوضع الليلي">🌙</button>
     <div id="tp-ver-hdr" class="ver-pill" style="margin-bottom:4px;"></div>
-    <div class="badge b-none" id="main-badge">⚪ No data loaded</div>
-    <div class="upd" id="upd">Drop ChartEdge CSV to begin</div>
-    <button id="tp-brief-btn" onclick="openMorningBrief()" class="brief-btn" title="Morning Brief print view">🖨️ Morning Brief</button>
+    <div class="badge b-none" id="main-badge">⚪ No data loaded · لا توجد بيانات</div>
+    <div class="upd" id="upd">Drop ChartEdge CSV to begin · أسقط ملف ChartEdge للبدء</div>
+    <button id="tp-brief-btn" onclick="openMorningBrief()" class="brief-btn" title="Morning Brief print view · الموجز الصباحي">🖨️ Morning Brief · الموجز الصباحي</button>
     <button id="tp-sound-btn" onclick="toggleBreakoutSound()"
             title="تشغيل / كتم صوت تنبيهات الاختراق"
             style="margin-top:4px;padding:4px 10px;font-size:11px;background:#1f2937;color:#e5e7eb;border:1px solid #374151;border-radius:4px;cursor:pointer;">
-      🔔 Sound On
+      🔔 Sound On · الصوت يعمل
     </button>
     <!-- v1.4: TASI Regime selector (Wyckoff stage gate for Scout discipline) -->
     <div id="tasi-stage-wrap" style="margin-top:6px;display:flex;align-items:center;gap:6px;font-size:11px;font-weight:600;color:#444;">
-      <span title="Wyckoff stage of TASI — set manually after weekly review">TASI Stage</span>
+      <span title="Wyckoff stage of TASI — set manually after weekly review · مرحلة وايكوف لتاسي">TASI Stage · مرحلة تاسي</span>
       <select id="tasi-stage-sel" onchange="setTasiRegime(this.value)"
               style="padding:3px 8px;font-size:11px;font-weight:700;border-radius:5px;border:1px solid #ccc;background:#fff;cursor:pointer;">
-        <option value="1">1 · Accumulation</option>
-        <option value="2">2 · Markup</option>
-        <option value="3">3 · Distribution</option>
-        <option value="4" selected>4 · Markdown</option>
+        <option value="1">1 · Accumulation · تجميع</option>
+        <option value="2">2 · Markup · صعود</option>
+        <option value="3">3 · Distribution · توزيع</option>
+        <option value="4" selected>4 · Markdown · هبوط</option>
       </select>
       <span id="tasi-stage-badge"
             style="padding:2px 8px;border-radius:10px;font-size:10px;font-weight:700;background:#FCEBEB;color:#A32D2D;border:1px solid #F3C2C2;">S4</span>
@@ -911,9 +911,9 @@ document.addEventListener('drop',      function(e){
 <div id="tasi-stage4-banner"
      style="display:none;background:linear-gradient(90deg,#FCEBEB 0%,#FEE2E2 100%);border:1.5px solid #E5A0A0;border-left:5px solid #A32D2D;color:#7A1F1F;padding:10px 16px;border-radius:10px;margin-bottom:12px;font-size:12px;font-weight:600;display:flex;align-items:center;gap:10px;">
   <span style="font-size:18px;">🔻</span>
-  <span><b>TASI Stage 4 — Observation Mode.</b> Index is in markdown. Treat all setups as scout-only. No new entries until TASI returns to Stage 1 (accumulation) or Stage 2 (markup).</span>
+  <span><b>TASI Stage 4 — Observation Mode · تاسي في المرحلة 4 — وضع المراقبة.</b> Index is in markdown. Treat all setups as scout-only. No new entries until TASI returns to Stage 1 (accumulation) or Stage 2 (markup). · المؤشر في هبوط. الإعدادات استكشاف فقط، لا دخول جديد حتى تعود تاسي للمرحلة 1 أو 2.</span>
   <span style="flex:1;"></span>
-  <span style="font-size:10px;font-weight:400;opacity:.7;">Wyckoff discipline · manual override</span>
+  <span style="font-size:10px;font-weight:400;opacity:.7;">Wyckoff discipline · manual override · انضباط وايكوف</span>
 </div>
 <script>
   // v6.2 — init sound button label from localStorage (runs before main script)
@@ -926,58 +926,58 @@ document.addEventListener('drop',      function(e){
 <!-- LOAD AREA — collapsible like sectors -->
 <div class="load-wrap" id="load-wrap">
   <div class="load-hdr" onclick="togLoadArea()" title="فتح / إغلاق منطقة تحميل البيانات">
-    <span class="load-title">📂 Data Loaders</span>
-    <span class="load-sub" id="load-sub">Drop ChartEdge CSV · then Market Feed XLSX</span>
+    <span class="load-title">📂 Data Loaders · محمّلات البيانات</span>
+    <span class="load-sub" id="load-sub">Drop ChartEdge CSV · then Market Feed XLSX · أسقط ملف ChartEdge ثم ملف السوق</span>
     <span id="load-chevron">▲</span>
   </div>
   <div class="load-body">
     <!-- WORKFLOW -->
     <div class="wf" id="wf">
-      <div class="wn">1</div><span>Export ChartEdge scan → drop below</span>
+      <div class="wn">1</div><span>Export ChartEdge scan → drop below · صدّر فحص ChartEdge وأسقطه أدناه</span>
       <div class="wa">→</div>
-      <div class="wn">2</div><span>Agents run · watchlist appears</span>
+      <div class="wn">2</div><span>Agents run · watchlist appears · الوكلاء تعمل وتظهر القائمة</span>
       <div class="wa">→</div>
-      <div class="wn">3</div><span>Market Feed Excel: File → Save As CSV → drop below</span>
+      <div class="wn">3</div><span>Market Feed Excel: File → Save As CSV → drop below · احفظ Market Feed كـ CSV ثم أسقطه</span>
       <div class="wa">→</div>
-      <div class="wn">4</div><span>Live prices + TASI bar populated instantly</span>
+      <div class="wn">4</div><span>Live prices + TASI bar populated instantly · الأسعار وشريط تاسي تتعبأ فوراً</span>
     </div>
     <!-- DROP CARDS -->
     <div class="cards">
       <div class="card" id="card-ce">
-        <div class="ch"><span class="ci">📊</span><span class="ct">ChartEdge Scanner</span><span class="ctg tg-daily">DAILY</span></div>
-        <div class="cd">Upload your daily SEPA screen. TradePulse scores all stocks through 4 agents instantly.</div>
+        <div class="ch"><span class="ci">📊</span><span class="ct">ChartEdge Scanner · ماسح ChartEdge</span><span class="ctg tg-daily">DAILY · يومي</span></div>
+        <div class="cd">Upload your daily SEPA screen. TradePulse scores all stocks through 4 agents instantly. · حمّل فحص SEPA اليومي، والوكلاء الأربعة يقيّمون فوراً.</div>
         <div class="drop" id="ce-drop"
              ondragover="event.preventDefault();this.classList.add('over')"
              ondragleave="this.classList.remove('over')"
              ondrop="onDrop(event,'ce')" onclick="el('ce-in').click()">
           <input type="file" id="ce-in" accept=".csv,.xlsx,.xls,.xlsm,.xlsb" onchange="onFile(event,'ce')">
           <div class="di">📁</div>
-          <div class="dm">Drop ChartEdge_Screen_YYYY-MM-DD.csv</div>
-          <div class="ds">or click to browse</div>
+          <div class="dm">Drop ChartEdge_Screen_YYYY-MM-DD.csv · أسقط ملف ChartEdge</div>
+          <div class="ds">or click to browse · أو انقر للتصفّح</div>
         </div>
         <div class="cok cok-ce" id="ce-ok"></div>
       </div>
       <div class="card" id="card-bbg">
-        <div class="ch"><span class="ci">⚡</span><span class="ct">Market Feed</span><span class="ctg tg-rt">REAL-TIME</span></div>
-        <div class="cd">Drop your Market Feed Excel file (.xlsx) directly. Populates TASI bar + live prices on all stocks.</div>
+        <div class="ch"><span class="ci">⚡</span><span class="ct">Market Feed · تغذية السوق</span><span class="ctg tg-rt">REAL-TIME · مباشر</span></div>
+        <div class="cd">Drop your Market Feed Excel file (.xlsx) directly. Populates TASI bar + live prices on all stocks. · أسقط ملف Excel للسوق — يعبئ شريط تاسي والأسعار المباشرة.</div>
         <div class="drop d-bbg" id="bbg-drop"
              ondragover="event.preventDefault();this.classList.add('over')"
              ondragleave="this.classList.remove('over')"
              ondrop="onDrop(event,'bbg')" onclick="el('bbg-in').click()">
           <input type="file" id="bbg-in" accept=".xlsx,.xls,.xlsm,.xlsb,.csv" onchange="onFile(event,'bbg')">
           <div class="di">📂</div>
-          <div class="dm">Drop Market Feed .xlsx file</div>
-          <div class="ds">Or use Auto-Refresh below for real-time updates</div>
+          <div class="dm">Drop Market Feed .xlsx file · أسقط ملف Excel للسوق</div>
+          <div class="ds">Or use Auto-Refresh below for real-time updates · أو استخدم التحديث التلقائي أدناه</div>
         </div>
         <div style="text-align:center;margin:8px 0 4px;">
-          <button onclick="event.stopPropagation();pickBbgFile()" title="اختيار ملف Market Feed للتحديث التلقائي كل 30 ثانية" style="background:#185FA5;color:#fff;border:none;border-radius:8px;padding:8px 22px;font-size:13px;font-weight:600;cursor:pointer;letter-spacing:0.3px;">🔄 Auto-Refresh — Pick Market Feed File</button>
-          <button id="bbg-reload-btn" onclick="event.stopPropagation();el('bbg-in').click()" title="إعادة تحميل ملف Market Feed يدوياً" style="display:none;background:#3B6D11;color:#fff;border:none;border-radius:8px;padding:8px 22px;font-size:13px;font-weight:600;cursor:pointer;letter-spacing:0.3px;margin-top:6px;">↺ Update Prices — Re-load Market Feed</button>
-          <div style="font-size:10px;color:#888;margin-top:4px;">Picks your file once, then re-reads it every 30s automatically</div>
+          <button onclick="event.stopPropagation();pickBbgFile()" title="اختيار ملف Market Feed للتحديث التلقائي كل 30 ثانية" style="background:#185FA5;color:#fff;border:none;border-radius:8px;padding:8px 22px;font-size:13px;font-weight:600;cursor:pointer;letter-spacing:0.3px;">🔄 Auto-Refresh — Pick Market Feed File · تحديث تلقائي — اختر ملف السوق</button>
+          <button id="bbg-reload-btn" onclick="event.stopPropagation();el('bbg-in').click()" title="إعادة تحميل ملف Market Feed يدوياً" style="display:none;background:#3B6D11;color:#fff;border:none;border-radius:8px;padding:8px 22px;font-size:13px;font-weight:600;cursor:pointer;letter-spacing:0.3px;margin-top:6px;">↺ Update Prices — Re-load Market Feed · تحديث الأسعار — أعد تحميل الملف</button>
+          <div style="font-size:10px;color:#888;margin-top:4px;">Picks your file once, then re-reads it every 30s automatically · يختار الملف مرة، ثم يقرأه كل 30 ثانية تلقائياً</div>
         </div>
         <div class="cok cok-bbg" id="bbg-ok"></div>
         <div class="how">
-          <b>How it works:</b> Market Feed Excel updates prices via BDP/RTD &nbsp;→&nbsp;
-          <b>Save in Excel (Ctrl+S)</b> &nbsp;→&nbsp; TradePulse auto-reads every 30s
+          <b>How it works · كيف يعمل:</b> Market Feed Excel updates prices via BDP/RTD &nbsp;→&nbsp;
+          <b>Save in Excel (Ctrl+S) · احفظ في Excel</b> &nbsp;→&nbsp; TradePulse auto-reads every 30s · TradePulse يقرأ كل 30 ثانية
         </div>
       </div>
     </div>
@@ -986,7 +986,7 @@ document.addEventListener('drop',      function(e){
 
 <!-- AUTO-REFRESH BAR -->
 <div id="refresh-bar" style="display:none;align-items:center;justify-content:space-between;background:#EAF3DE;border:1px solid #C0DD97;border-radius:10px;padding:8px 16px;margin:8px 0;font-size:12px;">
-  <span id="refresh-status" style="color:#3B6D11;font-weight:600;">● Live</span>
+  <span id="refresh-status" style="color:#3B6D11;font-weight:600;">● Live · مباشر</span>
   <span style="display:flex;gap:6px;align-items:center;">
     <select onchange="setRefreshInterval(+this.value)" style="font-size:11px;border:1px solid #C0DD97;border-radius:5px;padding:2px 6px;background:#fff;">
       <option value="10">10s</option>
@@ -994,8 +994,8 @@ document.addEventListener('drop',      function(e){
       <option value="30" selected>30s</option>
       <option value="60">60s</option>
     </select>
-    <button onclick="refreshBbgFromHandle()" title="تحديث الأسعار الآن فوراً" style="font-size:11px;background:#3B6D11;color:#fff;border:none;border-radius:5px;padding:3px 10px;cursor:pointer;">⟳ Now</button>
-    <button onclick="stopAutoRefresh()" title="إيقاف التحديث التلقائي" style="font-size:11px;background:#c0392b;color:#fff;border:none;border-radius:5px;padding:3px 10px;cursor:pointer;">⏹ Stop</button>
+    <button onclick="refreshBbgFromHandle()" title="تحديث الأسعار الآن فوراً" style="font-size:11px;background:#3B6D11;color:#fff;border:none;border-radius:5px;padding:3px 10px;cursor:pointer;">⟳ Now · الآن</button>
+    <button onclick="stopAutoRefresh()" title="إيقاف التحديث التلقائي" style="font-size:11px;background:#c0392b;color:#fff;border:none;border-radius:5px;padding:3px 10px;cursor:pointer;">⏹ Stop · إيقاف</button>
   </span>
 </div>
 
@@ -1009,46 +1009,46 @@ document.addEventListener('drop',      function(e){
 <!-- GLOBAL ALERT BAR (moved 2026-05-23) -->
 <div class="alert-bar" id="alert-bar"><span style="font-size:15px">🔔</span><span id="alert-txt"></span></div>
 <div class="tp-tabbar" id="tp-tabbar">
-  <button class="tp-tab-on" data-tab="pulse" onclick="showTpTab('pulse')">📊 Pulse<span class="tcount">market overview</span></button>
-  <button data-tab="sectors" onclick="showTpTab('sectors')">🏭 Sectors<span class="tcount">rotation grid</span></button>
-  <button data-tab="setups" onclick="showTpTab('setups')">🎯 Setups<span class="tcount">agg · focus · top 3</span></button>
-  <button data-tab="movers" onclick="showTpTab('movers')">📈 Movers<span class="tcount">agents · leaderboard</span></button>
-  <button data-tab="watchlist" onclick="showTpTab('watchlist')">📋 Watchlist<span class="tcount">scan · breakouts</span></button>
+  <button class="tp-tab-on" data-tab="pulse" onclick="showTpTab('pulse')">📊 Pulse · النبض<span class="tcount">market overview · نظرة عامة</span></button>
+  <button data-tab="sectors" onclick="showTpTab('sectors')">🏭 Sectors · القطاعات<span class="tcount">rotation grid · شبكة الدوران</span></button>
+  <button data-tab="setups" onclick="showTpTab('setups')">🎯 Setups · الإعدادات<span class="tcount">agg · focus · top 3 · هجومي · مفضّل · أفضل 3</span></button>
+  <button data-tab="movers" onclick="showTpTab('movers')">📈 Movers · المحرّكون<span class="tcount">agents · leaderboard · الوكلاء · المتصدّرون</span></button>
+  <button data-tab="watchlist" onclick="showTpTab('watchlist')">📋 Watchlist · قائمة المراقبة<span class="tcount">scan · breakouts · الفحص · الاختراقات</span></button>
 </div>
 
 <div class="tp-tab tp-tab-on" id="tab-pulse">
 <div class="tbar">
-  <div class="tc main"><div class="tl">📈 TASI Index</div><div class="tv tn" id="t-idx">—</div><div class="ts" id="t-sub">Load Market Feed CSV</div></div>
-  <div class="tc"><div class="tl">Change</div><div class="tv tn" id="t-chg">—</div><div class="ts" id="t-pts">—</div></div>
-  <div class="tc"><div class="tl">📊 Day Range</div><div class="tv tn" id="t-range" style="font-size:11px">—</div><div class="ts">Low – High today</div></div>
-  <div class="tc"><div class="tl">📅 52W Range</div><div class="tv tn" id="t-52w" style="font-size:11px">—</div><div class="ts">52W Low – High</div></div>
-  <div class="tc"><div class="tl">💹 Volume · AVAT</div><div class="tv tn" id="t-vol">—</div><div class="ts" id="t-avat">vs 20-day avg</div></div>
-  <div class="tc"><div class="tl">🔥 Near / 💥 Broken</div>
+  <div class="tc main"><div class="tl">📈 TASI Index · مؤشر تاسي</div><div class="tv tn" id="t-idx">—</div><div class="ts" id="t-sub">Load Market Feed CSV · حمّل ملف السوق</div></div>
+  <div class="tc"><div class="tl">Change · التغيّر</div><div class="tv tn" id="t-chg">—</div><div class="ts" id="t-pts">—</div></div>
+  <div class="tc"><div class="tl">📊 Day Range · نطاق اليوم</div><div class="tv tn" id="t-range" style="font-size:11px">—</div><div class="ts">Low – High today · الأدنى – الأعلى</div></div>
+  <div class="tc"><div class="tl">📅 52W Range · نطاق 52 أسبوع</div><div class="tv tn" id="t-52w" style="font-size:11px">—</div><div class="ts">52W Low – High · الأدنى – الأعلى</div></div>
+  <div class="tc"><div class="tl">💹 Volume · AVAT · الحجم</div><div class="tv tn" id="t-vol">—</div><div class="ts" id="t-avat">vs 20-day avg · مقابل متوسط 20 يوم</div></div>
+  <div class="tc"><div class="tl">🔥 Near / 💥 Broken · قريب / مخترق</div>
     <div class="tv"><span class="tu" id="t-near">—</span><span style="color:#ccc"> / </span><span style="color:#185FA5;font-weight:800" id="t-brk">—</span></div>
-    <div class="ts">within 3% / above pivot</div>
+    <div class="ts">within 3% / above pivot · ضمن 3% / فوق الاختراق</div>
   </div>
 </div>
 
 <!-- MARKET BREADTH -->
 <div class="bbar" id="breadth-bar">
-  <div class="bc"><div class="bc-lbl">📊 Above 200MA</div><div class="bc-val tu" id="b-200">—</div><div class="bc-sub" id="b-200s">Load Market Feed</div><div class="bc-bar"><div class="bc-fill" id="b-200f" style="width:0;background:#3B6D11"></div></div></div>
-  <div class="bc"><div class="bc-lbl">📈 Above 50MA</div><div class="bc-val tu" id="b-50">—</div><div class="bc-sub" id="b-50s">Load Market Feed</div><div class="bc-bar"><div class="bc-fill" id="b-50f" style="width:0;background:#185FA5"></div></div></div>
-  <div class="bc"><div class="bc-lbl">🔺 New 52W Highs</div><div class="bc-val tu" id="b-hi">—</div><div class="bc-sub" id="b-his">—</div></div>
-  <div class="bc"><div class="bc-lbl">🔻 New 52W Lows</div><div class="bc-val td" id="b-lo">—</div><div class="bc-sub" id="b-los">—</div></div>
-  <div class="bc"><div class="bc-lbl">⬆ Advancing</div><div class="bc-val tu" id="b-adv">—</div><div class="bc-sub" id="b-advs">—</div></div>
-  <div class="bc"><div class="bc-lbl">⬇ Declining</div><div class="bc-val td" id="b-dec">—</div><div class="bc-sub" id="b-decs">—</div></div>
+  <div class="bc"><div class="bc-lbl">📊 Above 200MA · فوق متوسط 200</div><div class="bc-val tu" id="b-200">—</div><div class="bc-sub" id="b-200s">Load Market Feed · حمّل بيانات السوق</div><div class="bc-bar"><div class="bc-fill" id="b-200f" style="width:0;background:#3B6D11"></div></div></div>
+  <div class="bc"><div class="bc-lbl">📈 Above 50MA · فوق متوسط 50</div><div class="bc-val tu" id="b-50">—</div><div class="bc-sub" id="b-50s">Load Market Feed · حمّل بيانات السوق</div><div class="bc-bar"><div class="bc-fill" id="b-50f" style="width:0;background:#185FA5"></div></div></div>
+  <div class="bc"><div class="bc-lbl">🔺 New 52W Highs · قمم 52 أسبوع</div><div class="bc-val tu" id="b-hi">—</div><div class="bc-sub" id="b-his">—</div></div>
+  <div class="bc"><div class="bc-lbl">🔻 New 52W Lows · قيعان 52 أسبوع</div><div class="bc-val td" id="b-lo">—</div><div class="bc-sub" id="b-los">—</div></div>
+  <div class="bc"><div class="bc-lbl">⬆ Advancing · صاعد</div><div class="bc-val tu" id="b-adv">—</div><div class="bc-sub" id="b-advs">—</div></div>
+  <div class="bc"><div class="bc-lbl">⬇ Declining · هابط</div><div class="bc-val td" id="b-dec">—</div><div class="bc-sub" id="b-decs">—</div></div>
 </div>
 
 <!-- MARKET TAKE (rule-based commentary) -->
 <div id="mkt-take" style="display:none;margin:10px 16px 4px;padding:12px 14px;background:linear-gradient(135deg,#FEF9EE 0%,#F5E7C1 100%);border:1px solid #E8D89E;border-radius:10px;box-shadow:0 1px 3px rgba(99,56,6,.06)">
   <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px">
     <span style="font-size:16px">🎯</span>
-    <span style="font-weight:800;color:#633806;font-size:13px;letter-spacing:.3px">MARKET TAKE</span>
+    <span style="font-weight:800;color:#633806;font-size:13px;letter-spacing:.3px">MARKET TAKE · قراءة السوق</span>
     <span id="mkt-take-regime" style="font-size:10px;font-weight:700;padding:2px 7px;border-radius:10px;background:#633806;color:#FEF9EE">—</span>
     <span style="flex:1"></span>
-    <span style="font-size:9px;color:#7a6b3f">rule-based · offline</span>
+    <span style="font-size:9px;color:#7a6b3f">rule-based · offline · قائمة على القواعد</span>
   </div>
-  <div id="mkt-take-body" style="color:#3a2a12;font-size:12.5px;line-height:1.55">Load data to generate commentary…</div>
+  <div id="mkt-take-body" style="color:#3a2a12;font-size:12.5px;line-height:1.55">Load data to generate commentary… · حمّل البيانات لإنشاء التحليل</div>
 </div>
 
 <!-- SECTOR PULSE — leading-indicator rotation engine -->
@@ -1057,7 +1057,7 @@ document.addEventListener('drop',      function(e){
 <div class="tp-tab" id="tab-sectors">
 <div class="sec-wrap" id="sec-wrap">
   <div class="sec-hdr" onclick="togSectors()" title="إظهار / إخفاء نبض القطاعات ودوران السوق">
-    <span class="sec-title">🏭 Sector Pulse — Rotation Radar</span>
+    <span class="sec-title">🏭 Sector Pulse — Rotation Radar · نبض القطاعات — رادار الدوران</span>
     <span class="sec-sub" id="sec-sub">—</span>
     <span id="sec-chevron">▲</span>
   </div>
@@ -1066,20 +1066,20 @@ document.addEventListener('drop',      function(e){
   <div id="rot-alerts" style="display:none;margin:8px 0 10px;padding:10px 12px;background:linear-gradient(135deg,#F9F4E7 0%,#F5E7C1 100%);border:1px solid #E8D89E;border-radius:8px">
     <div style="display:flex;align-items:center;gap:6px;margin-bottom:6px">
       <span style="font-size:14px">🎯</span>
-      <span style="font-weight:800;color:#633806;font-size:11.5px;letter-spacing:.3px">ROTATION ALERTS</span>
+      <span style="font-weight:800;color:#633806;font-size:11.5px;letter-spacing:.3px">ROTATION ALERTS · تنبيهات الدوران</span>
       <span style="flex:1"></span>
-      <span style="font-size:9px;color:#7a6b3f">leading indicators · sorted by pulse score</span>
+      <span style="font-size:9px;color:#7a6b3f">leading indicators · sorted by pulse score · مؤشرات قيادية · مرتّبة حسب النبض</span>
     </div>
     <div id="rot-alerts-body" style="display:flex;flex-wrap:wrap;gap:6px"></div>
   </div>
   <!-- Legend for signals (hover for explanation) -->
   <div style="display:flex;flex-wrap:wrap;gap:10px;font-size:10px;color:#6b6b65;margin-bottom:6px;padding:0 4px">
-    <span class="sig-tip sig-legend">🚨 Rotating In<span class="sig-tiptext"><b>🚨 Rotating In</b>Short-term breadth (% above MA50) is improving while long-term trend (% above MA200) is still weak. Institutions are entering early — the sector hasn't turned yet on the surface, but money is flowing in underneath.<div class="tip-action">Action: Build watchlist. Look for stocks breaking above MA50 with volume. Don't go all-in — wait for confirmation via Leading signal.</div></span></span>
-    <span class="sig-tip sig-legend">🔥 Leading<span class="sig-tiptext"><b>🔥 Leading</b>Sector is outperforming TASI with positive RS, high setup density, volume surge, and new 52-week highs. The strongest bullish signal — multiple stocks are breaking out simultaneously.<div class="tip-action">Action: This is your GO zone. Scan for breakouts and VCP setups in this sector. Ride the trend with trailing stops.</div></span></span>
-    <span class="sig-tip sig-legend">⏳ Accumulation<span class="sig-tiptext"><b>⏳ Under Accumulation (Wyckoff Phase)</b>Price is flat/sideways but volume is surging (1.4x+ average) and breadth is improving. Smart money is quietly building positions at low prices before a markup move. The sector RS vs TASI may still look weak.<div class="tip-action">Action: Get ready but don't chase. Build your list of the strongest names. The entry signal comes when this transitions to Markup/Leading.</div></span></span>
-    <span class="sig-tip sig-legend">🎯 Setup Dense<span class="sig-tiptext"><b>🎯 Setup Dense</b>30%+ of stocks in this sector are forming tradeable chart patterns at the same time — VCP contractions, flat bases, HTF patterns, or cup formations. This clustering signals broad institutional accumulation creating orderly bases across the sector.<div class="tip-action">Action: Scan this sector NOW. High probability of finding quality low-risk entries. Multiple stocks are coiling for potential breakouts.</div></span></span>
-    <span class="sig-tip sig-legend">❄️ Rolling Over<span class="sig-tiptext"><b>❄️ Rolling Over</b>Sector was previously leading but breadth is deteriorating. RS vs TASI is turning negative, new 52-week lows are appearing. Distribution phase — smart money is exiting.<div class="tip-action">Action: Tighten stops on existing positions. Avoid new entries. If you're flat, stay away until the sector stabilizes.</div></span></span>
-    <span class="sig-tip sig-legend">— Neutral<span class="sig-tiptext"><b>— Neutral</b>No strong signal in either direction. Sector is trading roughly in line with TASI. No unusual volume, breadth divergence, or setup concentration detected.<div class="tip-action">Action: No edge here. Focus your attention on sectors showing active signals instead.</div></span></span>
+    <span class="sig-tip sig-legend">🚨 Rotating In · دخول دوران<span class="sig-tiptext"><b>🚨 Rotating In</b>Short-term breadth (% above MA50) is improving while long-term trend (% above MA200) is still weak. Institutions are entering early — the sector hasn't turned yet on the surface, but money is flowing in underneath.<div class="tip-action">Action: Build watchlist. Look for stocks breaking above MA50 with volume. Don't go all-in — wait for confirmation via Leading signal.</div></span></span>
+    <span class="sig-tip sig-legend">🔥 Leading · قائد<span class="sig-tiptext"><b>🔥 Leading</b>Sector is outperforming TASI with positive RS, high setup density, volume surge, and new 52-week highs. The strongest bullish signal — multiple stocks are breaking out simultaneously.<div class="tip-action">Action: This is your GO zone. Scan for breakouts and VCP setups in this sector. Ride the trend with trailing stops.</div></span></span>
+    <span class="sig-tip sig-legend">⏳ Accumulation · تجميع<span class="sig-tiptext"><b>⏳ Under Accumulation (Wyckoff Phase)</b>Price is flat/sideways but volume is surging (1.4x+ average) and breadth is improving. Smart money is quietly building positions at low prices before a markup move. The sector RS vs TASI may still look weak.<div class="tip-action">Action: Get ready but don't chase. Build your list of the strongest names. The entry signal comes when this transitions to Markup/Leading.</div></span></span>
+    <span class="sig-tip sig-legend">🎯 Setup Dense · كثافة إعدادات<span class="sig-tiptext"><b>🎯 Setup Dense</b>30%+ of stocks in this sector are forming tradeable chart patterns at the same time — VCP contractions, flat bases, HTF patterns, or cup formations. This clustering signals broad institutional accumulation creating orderly bases across the sector.<div class="tip-action">Action: Scan this sector NOW. High probability of finding quality low-risk entries. Multiple stocks are coiling for potential breakouts.</div></span></span>
+    <span class="sig-tip sig-legend">❄️ Rolling Over · انعكاس هابط<span class="sig-tiptext"><b>❄️ Rolling Over</b>Sector was previously leading but breadth is deteriorating. RS vs TASI is turning negative, new 52-week lows are appearing. Distribution phase — smart money is exiting.<div class="tip-action">Action: Tighten stops on existing positions. Avoid new entries. If you're flat, stay away until the sector stabilizes.</div></span></span>
+    <span class="sig-tip sig-legend">— Neutral · محايد<span class="sig-tiptext"><b>— Neutral</b>No strong signal in either direction. Sector is trading roughly in line with TASI. No unusual volume, breadth divergence, or setup concentration detected.<div class="tip-action">Action: No edge here. Focus your attention on sectors showing active signals instead.</div></span></span>
   </div>
   <div class="sec-grid" id="sec-grid"></div>
   </div><!-- /sec-body -->
@@ -1093,8 +1093,8 @@ document.addEventListener('drop',      function(e){
 <div class="agg-wrap" id="agg-wrap">
   <div class="agg-hdr" onclick="togAggArea()">
     <div>
-      <span class="agg-title">🔥 Aggressive Entry</span>
-      <span class="agg-sub" id="agg-sub">- candidates near pivot - high-risk / high-reward</span>
+      <span class="agg-title">🔥 Aggressive Entry · دخول هجومي</span>
+      <span class="agg-sub" id="agg-sub">- candidates near pivot - high-risk / high-reward · مرشحون قرب الاختراق · مخاطرة/عائد عالٍ</span>
     </div>
     <span id="agg-chevron">▲</span>
   </div>
@@ -1108,15 +1108,15 @@ document.addEventListener('drop',      function(e){
 <div class="focus-wrap" id="focus-wrap">
   <div class="focus-hdr" onclick="togFocusArea()">
     <div>
-      <span class="focus-title">⭐ Focus List</span>
-      <span class="focus-sub" id="focus-sub">your personal watchlist</span>
+      <span class="focus-title">⭐ Focus List · قائمة التركيز</span>
+      <span class="focus-sub" id="focus-sub">your personal watchlist · قائمتك الشخصية</span>
     </div>
     <span id="focus-chevron">▲</span>
   </div>
   <div class="focus-body">
     <div class="focus-input-row">
-      <input id="focus-input" type="text" placeholder="Ticker + Enter (e.g. 2222)" maxlength="20" autocomplete="off">
-      <button onclick="addFocusFromInput()" title="Add to Focus List">+</button>
+      <input id="focus-input" type="text" placeholder="Ticker + Enter (e.g. 2222) · رمز السهم + Enter" maxlength="20" autocomplete="off">
+      <button onclick="addFocusFromInput()" title="Add to Focus List · أضف إلى قائمة التركيز">+</button>
     </div>
     <div class="focus-grid" id="focus-grid"></div>
   </div>
@@ -1135,27 +1135,27 @@ document.addEventListener('drop',      function(e){
 
 <div class="tp-tab" id="tab-movers">
 <div class="abar" id="abar" style="display:none">
-  <div class="ab am"><div class="ab-lbl">📈 Momentum Agent</div><div class="ab-val" id="a-mom">—</div><div class="ab-sub">Stage 2 · RS · 12m% · Score</div></div>
-  <div class="ab ab2"><div class="ab-lbl">🚀 Breakout Agent</div><div class="ab-val" id="a-brk">—</div><div class="ab-sub">Near pivot · NEAR HIGH</div></div>
-  <div class="ab ar"><div class="ab-lbl">🔄 Reversion Agent</div><div class="ab-val" id="a-rev">—</div><div class="ab-sub">Potential · Stage 1</div></div>
-  <div class="ab as"><div class="ab-lbl">🏭 Sector Agent</div><div class="ab-val" id="a-sec">—</div><div class="ab-sub">12m% sector proxy</div></div>
-  <div class="ab al"><div class="ab-lbl">💧 Liquidity Agent</div><div class="ab-val" id="a-liq">—</div><div class="ab-sub">Vol ratio · VWAP · Spread</div></div>
+  <div class="ab am"><div class="ab-lbl">📈 Momentum Agent · وكيل الزخم</div><div class="ab-val" id="a-mom">—</div><div class="ab-sub">Stage 2 · RS · 12m% · Score · المرحلة 2</div></div>
+  <div class="ab ab2"><div class="ab-lbl">🚀 Breakout Agent · وكيل الاختراق</div><div class="ab-val" id="a-brk">—</div><div class="ab-sub">Near pivot · NEAR HIGH · قرب الاختراق</div></div>
+  <div class="ab ar"><div class="ab-lbl">🔄 Reversion Agent · وكيل الارتداد</div><div class="ab-val" id="a-rev">—</div><div class="ab-sub">Potential · Stage 1 · محتمل · المرحلة 1</div></div>
+  <div class="ab as"><div class="ab-lbl">🏭 Sector Agent · وكيل القطاع</div><div class="ab-val" id="a-sec">—</div><div class="ab-sub">12m% sector proxy · أداء القطاع</div></div>
+  <div class="ab al"><div class="ab-lbl">💧 Liquidity Agent · وكيل السيولة</div><div class="ab-val" id="a-liq">—</div><div class="ab-sub">Vol ratio · VWAP · Spread · نسبة الحجم</div></div>
 </div>
 
 <!-- METRICS -->
 <div class="mrow">
-  <div class="mc"><div class="ml">🏆 Top Gainer</div><div class="mv tu" id="s-tg">—</div><div class="ms" id="s-tgn">—</div></div>
-  <div class="mc"><div class="ml">📉 Top Loser</div><div class="mv td" id="s-tl">—</div><div class="ms" id="s-tln">—</div></div>
-  <div class="mc"><div class="ml">🎯 Closest Pivot</div><div class="mv" style="color:#BA7517" id="s-cp">—</div><div class="ms" id="s-cpn">—</div></div>
-  <div class="mc"><div class="ml">📊 Highest Volume</div><div class="mv" style="color:#185FA5" id="s-hv">—</div><div class="ms" id="s-hvn">—</div></div>
-  <div class="mc"><div class="ml">📋 Scan</div><div class="mv tn" id="s-scan">—</div><div class="ms" id="s-scann">—</div></div>
+  <div class="mc"><div class="ml">🏆 Top Gainer · الأعلى ربحاً</div><div class="mv tu" id="s-tg">—</div><div class="ms" id="s-tgn">—</div></div>
+  <div class="mc"><div class="ml">📉 Top Loser · الأعلى خسارة</div><div class="mv td" id="s-tl">—</div><div class="ms" id="s-tln">—</div></div>
+  <div class="mc"><div class="ml">🎯 Closest Pivot · أقرب اختراق</div><div class="mv" style="color:#BA7517" id="s-cp">—</div><div class="ms" id="s-cpn">—</div></div>
+  <div class="mc"><div class="ml">📊 Highest Volume · أعلى حجم</div><div class="mv" style="color:#185FA5" id="s-hv">—</div><div class="ms" id="s-hvn">—</div></div>
+  <div class="mc"><div class="ml">📋 Scan · الفحص</div><div class="mv tn" id="s-scan">—</div><div class="ms" id="s-scann">—</div></div>
 </div>
 
 <!-- ALERTS -->
 
-  <button id="share-top3-btn" onclick="shareTop3()" title="نسخ أفضل 3 أسهم وإرسالها عبر واتساب">📋 Copy Top 3 Picks for WhatsApp</button>
-  
-  <div id="mom-board"><h4>⚡ Momentum Leaderboard<span style="font-size:10px;font-weight:500;color:#888">updates on Bloomberg refresh</span></h4><div class="mom-cols"><div><div class="mom-col-title">🚀 Top Movers (% chg)</div><div id="mom-movers"></div></div><div><div class="mom-col-title">📊 Volume Leaders (vs 30D avg)</div><div id="mom-vol"></div></div></div></div>
+  <button id="share-top3-btn" onclick="shareTop3()" title="نسخ أفضل 3 أسهم وإرسالها عبر واتساب">📋 Copy Top 3 Picks for WhatsApp · نسخ أفضل 3 للواتساب</button>
+
+  <div id="mom-board"><h4>⚡ Momentum Leaderboard · متصدّرو الزخم<span style="font-size:10px;font-weight:500;color:#888">updates on Bloomberg refresh · يتحدّث مع بيانات Bloomberg</span></h4><div class="mom-cols"><div><div class="mom-col-title">🚀 Top Movers (% chg) · أكثر تحركاً</div><div id="mom-movers"></div></div><div><div class="mom-col-title">📊 Volume Leaders (vs 30D avg) · قادة الحجم</div><div id="mom-vol"></div></div></div></div>
 
 <!-- BREAKOUT WATCH -->
 </div> <!-- end tab-movers -->
@@ -1163,7 +1163,7 @@ document.addEventListener('drop',      function(e){
 <div class="tp-tab" id="tab-watchlist">
 <div class="bw-wrap" id="bw-wrap">
   <div class="bw-hdr">
-    <span class="bw-title">🎯 Breakout Watch — Momentum Stocks Near Pivot</span>
+    <span class="bw-title">🎯 Breakout Watch — Momentum Stocks Near Pivot · مراقبة الاختراقات — أسهم زخم قرب الاختراق</span>
     <span class="bw-count" id="bw-count">0</span>
   </div>
   <div class="bw-grid" id="bw-grid"></div>
@@ -1174,7 +1174,7 @@ document.addEventListener('drop',      function(e){
 <!-- PULLBACK WATCH -->
 <div class="pb-wrap" id="pb-wrap">
   <div class="pb-hdr">
-    <span class="pb-title">📉 Pullback Watch — Leaders Retesting 50MA</span>
+    <span class="pb-title">📉 Pullback Watch — Leaders Retesting 50MA · مراقبة التراجع — قادة يعيدون اختبار 50</span>
     <span class="pb-count" id="pb-count">0</span>
   </div>
   <div class="pb-grid" id="pb-grid"></div>
@@ -1182,18 +1182,18 @@ document.addEventListener('drop',      function(e){
 <!-- SCOUT — Stage 4 VCP Phase-C Watch -->
 <div class="sc-wrap" id="sc-wrap">
   <div class="sc-hdr" onclick="togScoutArea()" title="Click to show/hide">
-    <span class="sc-title">🌱 Scout — Stage 4 Phase-C Watch <span id="sc-chevron-sc">▲</span></span>
+    <span class="sc-title">🌱 Scout — Stage 4 Phase-C Watch · الكشّاف — مراقبة المرحلة 4-C <span id="sc-chevron-sc">▲</span></span>
     <span class="sc-tasi-pill" id="sc-tasi-pill">TASI —</span>
   </div>
   <div class="sc-stats">
-    <div class="sc-stat"><div class="sc-stat-lbl">Stage 4 universe</div><div class="sc-stat-val" id="sc-stage4">0</div></div>
-    <div class="sc-stat"><div class="sc-stat-lbl">Imminent (≥70)</div><div class="sc-stat-val" id="sc-imm">0</div></div>
-    <div class="sc-stat"><div class="sc-stat-lbl">Watch+ (55–69)</div><div class="sc-stat-val" id="sc-wp">0</div></div>
-    <div class="sc-stat"><div class="sc-stat-lbl">Watch (40–54)</div><div class="sc-stat-val" id="sc-w">0</div></div>
+    <div class="sc-stat"><div class="sc-stat-lbl">Stage 4 universe · كون المرحلة 4</div><div class="sc-stat-val" id="sc-stage4">0</div></div>
+    <div class="sc-stat"><div class="sc-stat-lbl">Imminent (≥70) · وشيك</div><div class="sc-stat-val" id="sc-imm">0</div></div>
+    <div class="sc-stat"><div class="sc-stat-lbl">Watch+ (55–69) · مراقبة+</div><div class="sc-stat-val" id="sc-wp">0</div></div>
+    <div class="sc-stat"><div class="sc-stat-lbl">Watch (40–54) · مراقبة</div><div class="sc-stat-val" id="sc-w">0</div></div>
   </div>
   <div class="sc-grid" id="sc-grid"></div>
   <div class="sc-footer">
-    <b>Discipline gate:</b> Status with <b>(OBS)</b> = TASI not in Stage 2 — observation only. No promotion to active pipeline.
+    <b>Discipline gate · بوابة الانضباط:</b> Status with <b>(OBS)</b> = TASI not in Stage 2 — observation only. No promotion to active pipeline. · حالة (OBS) = تاسي خارج المرحلة 2 — مراقبة فقط، لا دخول.
   </div>
 </div>
 <!-- PARSE DIAGNOSTIC (shown when unexpected results) -->
@@ -1201,61 +1201,61 @@ document.addEventListener('drop',      function(e){
 
 <!-- TABLE -->
 <div id="tasi-clock"><span class="tc-phase" id="tc-phase">—</span><span class="tc-time" id="tc-time">--:--:--</span><div class="tc-bar-wrap"><div class="tc-bar-fill" id="tc-bar-fill" style="width:0%"></div></div><span id="tc-countdown" class="tc-countdown"></span></div>
-  <div id="alert-log"><div id="alert-log-header" onclick="toggleAlertLog()" title="سجل التنبيهات — انقر للعرض أو الإخفاء">🔔 Alert History <span class="al-count" id="al-count">0</span><span id="al-last-time" style="font-size:10px;color:#185FA5;font-weight:700;margin-left:6px;"></span><span style="margin-left:auto;font-size:10px" id="al-toggle-lbl">▼ Show</span></div><div id="alert-log-body" style="display:none"></div></div>
-  <div id="sec-filter-bar"><span>🏭 </span><span id="sec-filter-label">Sector filter active</span><button onclick="clearSectorFilter()" title="إلغاء فلتر القطاع وعرض جميع الأسهم">✕ Show All Stocks</button></div>
+  <div id="alert-log"><div id="alert-log-header" onclick="toggleAlertLog()" title="سجل التنبيهات — انقر للعرض أو الإخفاء">🔔 Alert History · سجل التنبيهات <span class="al-count" id="al-count">0</span><span id="al-last-time" style="font-size:10px;color:#185FA5;font-weight:700;margin-left:6px;"></span><span style="margin-left:auto;font-size:10px" id="al-toggle-lbl">▼ Show · عرض</span></div><div id="alert-log-body" style="display:none"></div></div>
+  <div id="sec-filter-bar"><span>🏭 </span><span id="sec-filter-label">Sector filter active · فلتر القطاع مُفعّل</span><button onclick="clearSectorFilter()" title="إلغاء فلتر القطاع وعرض جميع الأسهم">✕ Show All Stocks · عرض الكل</button></div>
   <div class="twrap">
   <!-- v2.3.6 / SARv1.7 — clear-filter status bar (above pills) -->
 <div class="tp-filter-bar" id="tp-filter-bar">
   <div>
-    <span class="tp-fb-label">🔍 Filtered:</span>
+    <span class="tp-fb-label">🔍 Filtered · مُصفّى:</span>
     <span class="tp-fb-chip sec" id="tp-fb-sec" style="display:none;"></span>
     <span class="tp-fb-chip ind" id="tp-fb-ind" style="display:none;"></span>
     <span class="tp-fb-count" id="tp-fb-count"></span>
   </div>
-  <button class="tp-fb-clear" onclick="clearAllFilters()">✕ Clear all</button>
+  <button class="tp-fb-clear" onclick="clearAllFilters()">✕ Clear all · مسح الكل</button>
 </div>
 <div class="tbar2">
-    <span class="t2t" id="tbl-title">📋 Watchlist</span>
-    <input class="srch" id="srch" placeholder="Search…" oninput="render()" title="ابحث برمز السهم أو اسم الشركة">
-    <button class="fbtn" id="f-s2" onclick="togF('stage2')" title="المرحلة الثانية — أسهم في اتجاه صاعد ناضج">Stage 2</button>
-    <button class="fbtn" id="f-pt" onclick="togF('potential')" title="محتمل — أسهم في طور التكوين والتجميع">Potential</button>
-    <button class="fbtn" id="f-nr" onclick="togF('near')" title="قريب من نقطة الاختراق — المسافة أقل من 5%">🔥 Near Pivot</button>
-    <button class="fbtn" id="f-bo" onclick="togF('breakout')" title="عند نقطة الاختراق أو فوقها مباشرةً (مباشر)">💥 Breakout</button>
-    <button class="fbtn" id="f-lq" onclick="togF('liq')" title="سيولة عالية — درجة السيولة ≥ 50">💧 Liquid</button>
-    <button class="fbtn" id="f-liqf" onclick="togF('liqFloor')" title="إخفاء الأسهم أقل من 5 ريال أو متوسط حجم < 50 ألف">💧 Liq Floor</button>
-    <button class="fbtn" onclick="exportReportHtml()" title="تصدير التقرير الحالي كملف HTML مستقل">📤 Share HTML</button>
+    <span class="t2t" id="tbl-title">📋 Watchlist · قائمة المراقبة</span>
+    <input class="srch" id="srch" placeholder="Search… · بحث" oninput="render()" title="ابحث برمز السهم أو اسم الشركة">
+    <button class="fbtn" id="f-s2" onclick="togF('stage2')" title="المرحلة الثانية — أسهم في اتجاه صاعد ناضج">Stage 2 · المرحلة 2</button>
+    <button class="fbtn" id="f-pt" onclick="togF('potential')" title="محتمل — أسهم في طور التكوين والتجميع">Potential · محتمل</button>
+    <button class="fbtn" id="f-nr" onclick="togF('near')" title="قريب من نقطة الاختراق — المسافة أقل من 5%">🔥 Near Pivot · قرب الاختراق</button>
+    <button class="fbtn" id="f-bo" onclick="togF('breakout')" title="عند نقطة الاختراق أو فوقها مباشرةً (مباشر)">💥 Breakout · اختراق</button>
+    <button class="fbtn" id="f-lq" onclick="togF('liq')" title="سيولة عالية — درجة السيولة ≥ 50">💧 Liquid · سائل</button>
+    <button class="fbtn" id="f-liqf" onclick="togF('liqFloor')" title="إخفاء الأسهم أقل من 5 ريال أو متوسط حجم < 50 ألف">💧 Liq Floor · حد السيولة</button>
+    <button class="fbtn" onclick="exportReportHtml()" title="تصدير التقرير الحالي كملف HTML مستقل">📤 Share HTML · مشاركة</button>
     <span class="cnt" id="cnt"></span>
   </div>
   <div class="tabs-row">
-    <div class="tab on" onclick="setTab('all')" title="عرض جميع الأسهم">All</div>
-    <div class="tab" onclick="setTab('BUY')" title="شراء — أفضل إعداد وأعلى درجة Boss">Buy</div>
-    <div class="tab" onclick="setTab('ON RADAR')" title="على الرادار — إعداد جيد يستحق المتابعة">On Radar</div>
-    <div class="tab" onclick="setTab('WATCH')" title="مراقبة — في طور التكوين">Watch</div>
-    <div class="tab" onclick="setTab('AVOID')" title="تجنب — ضعيف الزخم أو خارج المرحلة الثانية">Avoid</div>
+    <div class="tab on" onclick="setTab('all')" title="عرض جميع الأسهم">All · الكل</div>
+    <div class="tab" onclick="setTab('BUY')" title="شراء — أفضل إعداد وأعلى درجة Boss">Buy · شراء</div>
+    <div class="tab" onclick="setTab('ON RADAR')" title="على الرادار — إعداد جيد يستحق المتابعة">On Radar · على الرادار</div>
+    <div class="tab" onclick="setTab('WATCH')" title="مراقبة — في طور التكوين">Watch · مراقبة</div>
+    <div class="tab" onclick="setTab('AVOID')" title="تجنب — ضعيف الزخم أو خارج المرحلة الثانية">Avoid · تجنّب</div>
   </div>
   <div style="overflow-x:auto">
     <table>
       <thead><tr>
-        <th onclick="so('ticker')" title="رمز السهم — انقر للترتيب">⬍ Ticker</th>
-        <th onclick="so('company')" title="اسم الشركة — انقر للترتيب">⬍ Company</th>
-        <th onclick="so('stage')" title="مرحلة السهم (مرحلة 2 = اتجاه صاعد)">Stage</th>
-        <th onclick="so('livePrice')" title="السعر الحالي — انقر للترتيب">⬍ Price</th>
-        <th onclick="so('liveChg')" title="نسبة التغيير اليومي — انقر للترتيب">⬍ Chg%</th>
+        <th onclick="so('ticker')" title="رمز السهم — انقر للترتيب">⬍ Ticker · الرمز</th>
+        <th onclick="so('company')" title="اسم الشركة — انقر للترتيب">⬍ Company · الشركة</th>
+        <th onclick="so('stage')" title="مرحلة السهم (مرحلة 2 = اتجاه صاعد)">Stage · المرحلة</th>
+        <th onclick="so('livePrice')" title="السعر الحالي — انقر للترتيب">⬍ Price · السعر</th>
+        <th onclick="so('liveChg')" title="نسبة التغيير اليومي — انقر للترتيب">⬍ Chg% · التغيّر%</th>
         <th onclick="so('rs')" title="القوة النسبية مقارنة بالتاسي — انقر للترتيب">⬍ RS</th>
         <th onclick="so('score')" title="درجة ChartEdge الخام — انقر للترتيب">⬍ CE</th>
         <th onclick="so('total')" title="درجة Boss المركّبة من 5 وكلاء — انقر للترتيب">⬍ Boss ▼</th>
-        <th onclick="so('breakout_level')" title="نقطة الاختراق (المقاومة الرئيسية) — انقر للترتيب">🚀 Pivot</th>
-        <th title="منطقة الشراء المثلى بالقرب من نقطة الاختراق">Buy Zone</th>
-        <th title="سعر وقف الخسارة المقترح">Stop</th>
-        <th onclick="so('liveGap')" title="المسافة المتبقية لنقطة الاختراق — انقر للترتيب">📏 Gap%</th>
-        <th onclick="so('liveVol')" title="حجم التداول اليومي — انقر للترتيب">Volume</th>
-        <th title="التوصية بناءً على درجة Boss والسعر">Action</th>
+        <th onclick="so('breakout_level')" title="نقطة الاختراق (المقاومة الرئيسية) — انقر للترتيب">🚀 Pivot · الاختراق</th>
+        <th title="منطقة الشراء المثلى بالقرب من نقطة الاختراق">Buy Zone · منطقة الشراء</th>
+        <th title="سعر وقف الخسارة المقترح">Stop · وقف</th>
+        <th onclick="so('liveGap')" title="المسافة المتبقية لنقطة الاختراق — انقر للترتيب">📏 Gap% · الفجوة%</th>
+        <th onclick="so('liveVol')" title="حجم التداول اليومي — انقر للترتيب">Volume · الحجم</th>
+        <th title="التوصية بناءً على درجة Boss والسعر">Action · الإجراء</th>
       </tr></thead>
       <tbody id="tbody">
         <tr><td colspan="14"><div class="empty">
           <div class="ei">📁</div>
-          <div class="et">No scan loaded</div>
-          <div class="es">Drop your ChartEdge CSV above.<br>Agents run instantly.</div>
+          <div class="et">No scan loaded · لا يوجد فحص</div>
+          <div class="es">Drop your ChartEdge CSV above.<br>Agents run instantly. · أسقط ملف ChartEdge أعلاه<br>الوكلاء يعملون فوراً.</div>
         </div></td></tr>
       </tbody>
     </table>
@@ -1273,7 +1273,7 @@ document.addEventListener('drop',      function(e){
 // ══════════════════════════════════════════════
 // VERSION — used to verify which build is running
 // ══════════════════════════════════════════════
-const TP_VERSION = 'SARv1.7.3-2026-05-29';// ── TASI Regime Gate (Scout discipline control) ──
+const TP_VERSION = 'SARv1.7.4-2026-06-01';// ── TASI Regime Gate (Scout discipline control) ──
 // Manually-set Wyckoff stage classification of TASI itself.
 // Stage 1 = Accumulation, Stage 2 = Markup, Stage 3 = Distribution, Stage 4 = Markdown
 // Stage 4 = Scout in observation mode only; warning banner shown, no new entries.
@@ -2387,7 +2387,7 @@ function parseChartEdge(text, filename) {
 
   el('s-scan').textContent=stocks.length;
   el('s-scann').textContent=`${buys} Buy · ${onr} Radar · ${wat} Watch`;
-  el('tbl-title').textContent=`📋 Watchlist — ${stocks.length} stocks · ${scanDate}`;
+  el('tbl-title').textContent=`📋 Watchlist · قائمة المراقبة — ${stocks.length} stocks · ${scanDate}`;
 
   el('card-ce').classList.add('ok-ce');
   el('ce-ok').textContent=`✅ ${stocks.length} stocks · ${buys} BUY · ${onr} On Radar · ${wat} Watch · ${scanDate}`;

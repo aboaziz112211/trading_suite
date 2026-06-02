@@ -838,70 +838,70 @@ body.dark-mode .tp-filter-bar .tp-fb-label{color:#fff;}
 
 <!-- HEADER -->
 <div style="background:#0C3060;color:#fff;padding:8px 18px;border-radius:10px;margin-bottom:12px;display:flex;align-items:center;justify-content:space-between;font-size:13px;font-weight:700;letter-spacing:.3px;">
-  <span>🇺🇸 &nbsp;US MARKET &nbsp;·&nbsp; NYSE / NASDAQ &nbsp;·&nbsp; USD &nbsp;·&nbsp; Mon–Fri 9:30–16:00 ET</span>
-  <span style="font-size:11px;font-weight:400;opacity:.85">Data: Polygon.io Live (polygon_feed.py) &nbsp;|&nbsp; USv2.4</span>
+  <span>🇺🇸 &nbsp;US MARKET · السوق الأمريكي &nbsp;·&nbsp; NYSE / NASDAQ &nbsp;·&nbsp; USD &nbsp;·&nbsp; Mon–Fri 9:30–16:00 ET · إثنين–جمعة</span>
+  <span style="font-size:11px;font-weight:400;opacity:.85">Data: Polygon.io Live (polygon_feed.py) · بث Polygon المباشر &nbsp;|&nbsp; USv2.4</span>
 </div>
 <div class="hdr">
   <div>
-    <h1>TradePulse US</h1>
-    <div class="sub">Minervini SEPA 10-Criteria · VCP Pivot · 11 US GICS Sectors · ChartEdge + Polygon.io Live</div>
+    <h1>TradePulse US · تريد بَلْس الأمريكي</h1>
+    <div class="sub">Minervini SEPA 10-Criteria · VCP Pivot · 11 US GICS Sectors · ChartEdge + Polygon.io Live · معايير مينيرفيني · نقطة اختراق VCP · 11 قطاع</div>
   </div>
   <div style="display:flex;flex-direction:column;align-items:flex-end;gap:3px;">
-    <button id="theme-toggle" onclick="toggleTheme()" title="Toggle dark mode">🌙</button>
+    <button id="theme-toggle" onclick="toggleTheme()" title="Toggle dark mode · تبديل الوضع الليلي">🌙</button>
     <div id="tp-ver-hdr" class="ver-pill" style="margin-bottom:4px;"></div>
-    <div class="badge b-none" id="main-badge">⚪ No data loaded</div>
-    <div class="upd" id="upd">Drop ChartEdge CSV to begin</div>
-    <button id="tp-brief-btn" onclick="openMorningBrief()" class="brief-btn" title="Morning Brief print view">🖨️ Morning Brief</button>
+    <div class="badge b-none" id="main-badge">⚪ No data loaded · لا توجد بيانات</div>
+    <div class="upd" id="upd">Drop ChartEdge CSV to begin · أسقط ملف ChartEdge للبدء</div>
+    <button id="tp-brief-btn" onclick="openMorningBrief()" class="brief-btn" title="Morning Brief print view · الموجز الصباحي">🖨️ Morning Brief · الموجز الصباحي</button>
   </div>
 </div>
 
 <!-- WORKFLOW -->
 <div class="wf">
-  <div class="wn">1</div><span>Export ChartEdge scan → drop below</span>
+  <div class="wn">1</div><span>Export ChartEdge scan → drop below · صدّر فحص ChartEdge وأسقطه أدناه</span>
   <div class="wa">→</div>
-  <div class="wn">2</div><span>Agents run · watchlist appears</span>
+  <div class="wn">2</div><span>Agents run · watchlist appears · الوكلاء تعمل وتظهر القائمة</span>
   <div class="wa">→</div>
-  <div class="wn">3</div><span>Start Polygon bridge (polygon_feed.py) — API key in file header</span>
+  <div class="wn">3</div><span>Start Polygon bridge (polygon_feed.py) — API key in file header · شغّل جسر Polygon</span>
   <div class="wa">→</div>
-  <div class="wn">4</div><span>Live prices + SPY/QQQ/IWM tiles populated instantly</span>
+  <div class="wn">4</div><span>Live prices + SPY/QQQ/IWM tiles populated instantly · الأسعار والمؤشرات تتعبأ فوراً</span>
 </div>
 
 <!-- DROP CARDS — collapsible (USv2.3) -->
 <div class="load-wrap" id="load-wrap">
-  <div class="load-hdr" onclick="togLoadArea()" title="Click to collapse/expand data loaders">
-    <span class="load-title">📂 Data Loaders</span>
-    <span class="load-sub" id="load-sub">Drop ChartEdge CSV · then click Connect to Polygon Bridge</span>
+  <div class="load-hdr" onclick="togLoadArea()" title="Click to collapse/expand data loaders · انقر للطيّ/الإظهار">
+    <span class="load-title">📂 Data Loaders · محمّلات البيانات</span>
+    <span class="load-sub" id="load-sub">Drop ChartEdge CSV · then click Connect to Polygon Bridge · أسقط ChartEdge ثم اتصل بـ Polygon</span>
     <span id="load-chevron">▲</span>
   </div>
   <div class="load-body">
 <div class="cards">
   <div class="card" id="card-ce">
-    <div class="ch"><span class="ci">📊</span><span class="ct">ChartEdge Scanner</span><span class="ctg tg-daily">DAILY</span></div>
-    <div class="cd">Upload your daily SEPA screen. TradePulse scores all stocks through 4 agents instantly.</div>
+    <div class="ch"><span class="ci">📊</span><span class="ct">ChartEdge Scanner · ماسح ChartEdge</span><span class="ctg tg-daily">DAILY · يومي</span></div>
+    <div class="cd">Upload your daily SEPA screen. TradePulse scores all stocks through 4 agents instantly. · حمّل فحص SEPA اليومي، والوكلاء الأربعة يقيّمون فوراً.</div>
     <div class="drop" id="ce-drop"
          ondragover="event.preventDefault();this.classList.add('over')"
          ondragleave="this.classList.remove('over')"
          ondrop="onDrop(event,'ce')" onclick="el('ce-in').click()">
       <input type="file" id="ce-in" accept=".csv,.xlsx,.xls,.xlsm,.xlsb" onchange="onFile(event,'ce')">
       <div class="di">📁</div>
-      <div class="dm">Drop ChartEdge_Screen_YYYY-MM-DD.csv</div>
-      <div class="ds">or click to browse</div>
+      <div class="dm">Drop ChartEdge_Screen_YYYY-MM-DD.csv · أسقط ملف ChartEdge</div>
+      <div class="ds">or click to browse · أو انقر للتصفّح</div>
     </div>
     <div class="cok cok-ce" id="ce-ok"></div>
     <div id="us-clock" style="margin-top:8px;padding:10px 14px;border-radius:10px;background:#F0F4FF;border:1px solid #C5D5F0;text-align:center;">⏳ Loading…</div>
   </div>
 
   <div class="card" id="card-bbg">
-    <div class="ch"><span class="ci">⚡</span><span class="ct">Polygon.io Live Feed</span><span class="ctg tg-rt">REAL-TIME</span></div>
-    <div class="cd">Connect to the local Polygon bridge (polygon_feed.py) for live prices, breadth, and SPY/QQQ/IWM tiles. API key in polygon_feed.py.</div>
+    <div class="ch"><span class="ci">⚡</span><span class="ct">Polygon.io Live Feed · بث Polygon المباشر</span><span class="ctg tg-rt">REAL-TIME · مباشر</span></div>
+    <div class="cd">Connect to the local Polygon bridge (polygon_feed.py) for live prices, breadth, and SPY/QQQ/IWM tiles. API key in polygon_feed.py. · اتصل بجسر Polygon المحلي للأسعار والاتساع والمؤشرات.</div>
     <div class="drop d-bbg" id="bbg-drop" style="cursor:pointer" onclick="connectIbkr()">
       <div class="di">🔌</div>
-      <div class="dm" id="ibkr-conn-label">Click to connect: ws://127.0.0.1:8787</div>
-      <div class="ds" id="ibkr-conn-sub">Polygon.io SIP · WebSocket bridge · one-click</div>
+      <div class="dm" id="ibkr-conn-label">Click to connect: ws://127.0.0.1:8787 · انقر للاتصال</div>
+      <div class="ds" id="ibkr-conn-sub">Polygon.io SIP · WebSocket bridge · one-click · جسر WebSocket بنقرة</div>
     </div>
     <div style="text-align:center;margin:8px 0 4px;">
-      <button onclick="event.stopPropagation();connectIbkr()" style="background:#185FA5;color:#fff;border:none;border-radius:8px;padding:8px 22px;font-size:13px;font-weight:600;cursor:pointer;letter-spacing:0.3px;">🔌 Connect to Polygon Bridge</button>
-      <div style="font-size:10px;color:#888;margin-top:4px;">Stays connected · streams updates every tick · auto-reconnects</div>
+      <button onclick="event.stopPropagation();connectIbkr()" style="background:#185FA5;color:#fff;border:none;border-radius:8px;padding:8px 22px;font-size:13px;font-weight:600;cursor:pointer;letter-spacing:0.3px;">🔌 Connect to Polygon Bridge · الاتصال بجسر Polygon</button>
+      <div style="font-size:10px;color:#888;margin-top:4px;">Stays connected · streams updates every tick · auto-reconnects · اتصال دائم · إعادة اتصال تلقائية</div>
     </div>
     <div class="cok cok-bbg" id="bbg-ok"></div>
     <div class="how">
@@ -911,8 +911,8 @@ body.dark-mode .tp-filter-bar .tp-fb-label{color:#fff;}
       <br>① <code>python polygon_feed.py</code> running in terminal &nbsp; ② Terminal shows "WebSocket listening on ws://127.0.0.1:8787" &nbsp; ③ No firewall blocking localhost:8787 &nbsp; ④ POLYGON_API_KEY set in polygon_feed.py
     </div>
     <div style="background:#FFF8E1;border:1px solid #FFD700;border-radius:8px;padding:10px 14px;margin-top:8px;">
-      <div style="font-size:11px;font-weight:700;color:#7F6000;margin-bottom:4px;">📂 Manual Fallback — Drop XLSX or JSON</div>
-      <div style="font-size:10px;color:#7F6000;margin-bottom:6px;">Bridge offline? Drop any price file here (XLSX, CSV, or JSON snapshot).</div>
+      <div style="font-size:11px;font-weight:700;color:#7F6000;margin-bottom:4px;">📂 Manual Fallback — Drop XLSX or JSON · بديل يدوي — أسقط XLSX أو JSON</div>
+      <div style="font-size:10px;color:#7F6000;margin-bottom:6px;">Bridge offline? Drop any price file here (XLSX, CSV, or JSON snapshot). · الجسر مفصول؟ أسقط أي ملف أسعار هنا.</div>
       <div class="drop d-bbg" id="manual-drop"
            ondragover="event.preventDefault();this.classList.add('over')"
            ondragleave="this.classList.remove('over')"
@@ -920,7 +920,7 @@ body.dark-mode .tp-filter-bar .tp-fb-label{color:#fff;}
            style="padding:8px;min-height:40px">
         <input type="file" id="bbg-in" accept=".json,.xlsx,.xls,.xlsm,.xlsb,.csv" onchange="onFile(event,'bbg')" style="display:none">
         <div class="di" style="font-size:14px">📁</div>
-        <div class="dm" style="font-size:10px">Drop XLSX / CSV / JSON file here</div>
+        <div class="dm" style="font-size:10px">Drop XLSX / CSV / JSON file here · أسقط الملف هنا</div>
       </div>
     </div>
   </div>
@@ -931,7 +931,7 @@ body.dark-mode .tp-filter-bar .tp-fb-label{color:#fff;}
 
 <!-- AUTO-REFRESH BAR -->
 <div id="refresh-bar" style="display:none;align-items:center;justify-content:space-between;background:#EAF3DE;border:1px solid #C0DD97;border-radius:10px;padding:8px 16px;margin:8px 0;font-size:12px;">
-  <span id="refresh-status" style="color:#3B6D11;font-weight:600;">● Live</span>
+  <span id="refresh-status" style="color:#3B6D11;font-weight:600;">● Live · مباشر</span>
   <span style="display:flex;gap:6px;align-items:center;">
     <select onchange="setRefreshInterval(+this.value)" style="font-size:11px;border:1px solid #C0DD97;border-radius:5px;padding:2px 6px;background:#fff;">
       <option value="10">10s</option>
@@ -939,8 +939,8 @@ body.dark-mode .tp-filter-bar .tp-fb-label{color:#fff;}
       <option value="30" selected>30s</option>
       <option value="60">60s</option>
     </select>
-    <button onclick="refreshBbgFromHandle()" style="font-size:11px;background:#3B6D11;color:#fff;border:none;border-radius:5px;padding:3px 10px;cursor:pointer;">⟳ Now</button>
-    <button onclick="stopAutoRefresh()" style="font-size:11px;background:#c0392b;color:#fff;border:none;border-radius:5px;padding:3px 10px;cursor:pointer;">⏹ Stop</button>
+    <button onclick="refreshBbgFromHandle()" style="font-size:11px;background:#3B6D11;color:#fff;border:none;border-radius:5px;padding:3px 10px;cursor:pointer;">⟳ Now · الآن</button>
+    <button onclick="stopAutoRefresh()" style="font-size:11px;background:#c0392b;color:#fff;border:none;border-radius:5px;padding:3px 10px;cursor:pointer;">⏹ Stop · إيقاف</button>
   </span>
 </div>
 
@@ -954,46 +954,46 @@ body.dark-mode .tp-filter-bar .tp-fb-label{color:#fff;}
 <!-- GLOBAL ALERT BAR (moved 2026-05-23) -->
 <div class="alert-bar" id="alert-bar"><span style="font-size:15px">🔔</span><span id="alert-txt"></span></div>
 <div class="tp-tabbar" id="tp-tabbar">
-  <button class="tp-tab-on" data-tab="pulse" onclick="showTpTab('pulse')">📊 Pulse<span class="tcount">market overview</span></button>
-  <button data-tab="sectors" onclick="showTpTab('sectors')">🏭 Sectors<span class="tcount">rotation grid</span></button>
-  <button data-tab="setups" onclick="showTpTab('setups')">🎯 Setups<span class="tcount">agg · focus · top 3</span></button>
-  <button data-tab="movers" onclick="showTpTab('movers')">📈 Movers<span class="tcount">agents · leaderboard</span></button>
-  <button data-tab="watchlist" onclick="showTpTab('watchlist')">📋 Watchlist<span class="tcount">scan · breakouts</span></button>
+  <button class="tp-tab-on" data-tab="pulse" onclick="showTpTab('pulse')">📊 Pulse · النبض<span class="tcount">market overview · نظرة عامة</span></button>
+  <button data-tab="sectors" onclick="showTpTab('sectors')">🏭 Sectors · القطاعات<span class="tcount">rotation grid · شبكة الدوران</span></button>
+  <button data-tab="setups" onclick="showTpTab('setups')">🎯 Setups · الإعدادات<span class="tcount">agg · focus · top 3 · هجومي · مفضّل · أفضل 3</span></button>
+  <button data-tab="movers" onclick="showTpTab('movers')">📈 Movers · المحرّكون<span class="tcount">agents · leaderboard · الوكلاء · المتصدّرون</span></button>
+  <button data-tab="watchlist" onclick="showTpTab('watchlist')">📋 Watchlist · قائمة المراقبة<span class="tcount">scan · breakouts · الفحص · الاختراقات</span></button>
 </div>
 
 <div class="tp-tab tp-tab-on" id="tab-pulse">
 <div class="tbar" style="grid-template-columns:1.3fr 1.3fr 1.3fr 1fr 1.2fr 1fr">
-  <div class="tc main"><div class="tl">🕊️ SPY · S&amp;P 500</div><div class="tv tn" id="t-spy">—</div><div class="ts" id="t-spy-sub">Polygon offline</div></div>
-  <div class="tc main" style="background:#F1EAF8;border-color:#D2B8E8"><div class="tl">🚀 QQQ · Nasdaq 100</div><div class="tv tn" id="t-qqq">—</div><div class="ts" id="t-qqq-sub">Polygon offline</div></div>
-  <div class="tc main" style="background:#FFF4E1;border-color:#EECB8A"><div class="tl">🏛️ IWM · Russell 2000</div><div class="tv tn" id="t-iwm">—</div><div class="ts" id="t-iwm-sub">Polygon offline</div></div>
-  <div class="tc"><div class="tl">📊 VIX</div><div class="tv tn" id="t-vix">—</div><div class="ts" id="t-vix-sub">—</div></div>
-  <div class="tc"><div class="tl">💹 $ADV − $DEC</div><div class="tv tn" id="t-ad" style="font-size:12px">—</div><div class="ts" id="t-ad-sub">NYSE + Nasdaq</div></div>
-  <div class="tc"><div class="tl">🔥 Near / 💥 Broken</div>
+  <div class="tc main"><div class="tl">🕊️ SPY · S&amp;P 500</div><div class="tv tn" id="t-spy">—</div><div class="ts" id="t-spy-sub">Polygon offline · غير متصل</div></div>
+  <div class="tc main" style="background:#F1EAF8;border-color:#D2B8E8"><div class="tl">🚀 QQQ · Nasdaq 100</div><div class="tv tn" id="t-qqq">—</div><div class="ts" id="t-qqq-sub">Polygon offline · غير متصل</div></div>
+  <div class="tc main" style="background:#FFF4E1;border-color:#EECB8A"><div class="tl">🏛️ IWM · Russell 2000</div><div class="tv tn" id="t-iwm">—</div><div class="ts" id="t-iwm-sub">Polygon offline · غير متصل</div></div>
+  <div class="tc"><div class="tl">📊 VIX · مؤشر الخوف</div><div class="tv tn" id="t-vix">—</div><div class="ts" id="t-vix-sub">—</div></div>
+  <div class="tc"><div class="tl">💹 $ADV − $DEC · صاعد − هابط</div><div class="tv tn" id="t-ad" style="font-size:12px">—</div><div class="ts" id="t-ad-sub">NYSE + Nasdaq</div></div>
+  <div class="tc"><div class="tl">🔥 Near / 💥 Broken · قريب / مخترق</div>
     <div class="tv"><span class="tu" id="t-near">—</span><span style="color:#ccc"> / </span><span style="color:#185FA5;font-weight:800" id="t-brk">—</span></div>
-    <div class="ts">within 3% / above pivot</div>
+    <div class="ts">within 3% / above pivot · ضمن 3% / فوق الاختراق</div>
   </div>
 </div>
 
 <!-- MARKET BREADTH -->
 <div class="bbar" id="breadth-bar">
-  <div class="bc"><div class="bc-lbl">📊 Above 200MA</div><div class="bc-val tu" id="b-200">—</div><div class="bc-sub" id="b-200s">Load Market Feed</div><div class="bc-bar"><div class="bc-fill" id="b-200f" style="width:0;background:#3B6D11"></div></div></div>
-  <div class="bc"><div class="bc-lbl">📈 Above 50MA</div><div class="bc-val tu" id="b-50">—</div><div class="bc-sub" id="b-50s">Load Market Feed</div><div class="bc-bar"><div class="bc-fill" id="b-50f" style="width:0;background:#185FA5"></div></div></div>
-  <div class="bc"><div class="bc-lbl">🔺 New 52W Highs</div><div class="bc-val tu" id="b-hi">—</div><div class="bc-sub" id="b-his">—</div></div>
-  <div class="bc"><div class="bc-lbl">🔻 New 52W Lows</div><div class="bc-val td" id="b-lo">—</div><div class="bc-sub" id="b-los">—</div></div>
-  <div class="bc"><div class="bc-lbl">⬆ Advancing</div><div class="bc-val tu" id="b-adv">—</div><div class="bc-sub" id="b-advs">—</div></div>
-  <div class="bc"><div class="bc-lbl">⬇ Declining</div><div class="bc-val td" id="b-dec">—</div><div class="bc-sub" id="b-decs">—</div></div>
+  <div class="bc"><div class="bc-lbl">📊 Above 200MA · فوق متوسط 200</div><div class="bc-val tu" id="b-200">—</div><div class="bc-sub" id="b-200s">Load Market Feed · حمّل بيانات السوق</div><div class="bc-bar"><div class="bc-fill" id="b-200f" style="width:0;background:#3B6D11"></div></div></div>
+  <div class="bc"><div class="bc-lbl">📈 Above 50MA · فوق متوسط 50</div><div class="bc-val tu" id="b-50">—</div><div class="bc-sub" id="b-50s">Load Market Feed · حمّل بيانات السوق</div><div class="bc-bar"><div class="bc-fill" id="b-50f" style="width:0;background:#185FA5"></div></div></div>
+  <div class="bc"><div class="bc-lbl">🔺 New 52W Highs · قمم 52 أسبوع</div><div class="bc-val tu" id="b-hi">—</div><div class="bc-sub" id="b-his">—</div></div>
+  <div class="bc"><div class="bc-lbl">🔻 New 52W Lows · قيعان 52 أسبوع</div><div class="bc-val td" id="b-lo">—</div><div class="bc-sub" id="b-los">—</div></div>
+  <div class="bc"><div class="bc-lbl">⬆ Advancing · صاعد</div><div class="bc-val tu" id="b-adv">—</div><div class="bc-sub" id="b-advs">—</div></div>
+  <div class="bc"><div class="bc-lbl">⬇ Declining · هابط</div><div class="bc-val td" id="b-dec">—</div><div class="bc-sub" id="b-decs">—</div></div>
 </div>
 
 <!-- MARKET TAKE (rule-based commentary) -->
 <div id="mkt-take" style="display:none;margin:10px 16px 4px;padding:12px 14px;background:linear-gradient(135deg,#FEF9EE 0%,#F5E7C1 100%);border:1px solid #E8D89E;border-radius:10px;box-shadow:0 1px 3px rgba(99,56,6,.06)">
   <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px">
     <span style="font-size:16px">🎯</span>
-    <span style="font-weight:800;color:#633806;font-size:13px;letter-spacing:.3px">MARKET TAKE</span>
+    <span style="font-weight:800;color:#633806;font-size:13px;letter-spacing:.3px">MARKET TAKE · قراءة السوق</span>
     <span id="mkt-take-regime" style="font-size:10px;font-weight:700;padding:2px 7px;border-radius:10px;background:#633806;color:#FEF9EE">—</span>
     <span style="flex:1"></span>
-    <span style="font-size:9px;color:#7a6b3f">rule-based · offline</span>
+    <span style="font-size:9px;color:#7a6b3f">rule-based · offline · قائمة على القواعد</span>
   </div>
-  <div id="mkt-take-body" style="color:#3a2a12;font-size:12.5px;line-height:1.55">Load data to generate commentary…</div>
+  <div id="mkt-take-body" style="color:#3a2a12;font-size:12.5px;line-height:1.55">Load data to generate commentary… · حمّل البيانات لإنشاء التحليل</div>
 </div>
 
 <!-- SECTOR PULSE — leading-indicator rotation engine -->
@@ -1002,7 +1002,7 @@ body.dark-mode .tp-filter-bar .tp-fb-label{color:#fff;}
 <div class="tp-tab" id="tab-sectors">
 <div class="sec-wrap" id="sec-wrap">
   <div class="sec-hdr" onclick="togSectors()" title="Click to collapse/expand">
-    <span class="sec-title">🏭 Sector Pulse — Rotation Radar</span>
+    <span class="sec-title">🏭 Sector Pulse — Rotation Radar · نبض القطاعات — رادار الدوران</span>
     <span class="sec-sub" id="sec-sub">—</span>
     <span id="sec-chevron">▲</span>
   </div>
@@ -1010,15 +1010,15 @@ body.dark-mode .tp-filter-bar .tp-fb-label{color:#fff;}
   <div id="rot-alerts" style="display:none;margin:8px 0 10px;padding:10px 12px;background:linear-gradient(135deg,#F9F4E7 0%,#F5E7C1 100%);border:1px solid #E8D89E;border-radius:8px">
     <div style="display:flex;align-items:center;gap:6px;margin-bottom:6px">
       <span style="font-size:14px">🎯</span>
-      <span style="font-weight:800;color:#633806;font-size:11.5px;letter-spacing:.3px">ROTATION ALERTS</span>
+      <span style="font-weight:800;color:#633806;font-size:11.5px;letter-spacing:.3px">ROTATION ALERTS · تنبيهات الدوران</span>
       <span style="flex:1"></span>
-      <span style="font-size:9px;color:#7a6b3f">leading indicators · sorted by pulse score</span>
+      <span style="font-size:9px;color:#7a6b3f">leading indicators · sorted by pulse score · مؤشرات قيادية · مرتّبة حسب النبض</span>
     </div>
     <div id="rot-alerts-body" style="display:flex;flex-wrap:wrap;gap:6px"></div>
   </div>
   <!-- Legend for signals -->
   <div style="display:flex;flex-wrap:wrap;gap:10px;font-size:10px;color:#6b6b65;margin-bottom:6px;padding:0 4px">
-    <span>🚨 Rotating In</span><span>🔥 Leading</span><span>⏳ Accumulation</span><span>🎯 Setup Dense</span><span>❄️ Rolling Over</span><span>— Neutral</span>
+    <span>🚨 Rotating In · دخول دوران</span><span>🔥 Leading · قائد</span><span>⏳ Accumulation · تجميع</span><span>🎯 Setup Dense · كثافة إعدادات</span><span>❄️ Rolling Over · انعكاس هابط</span><span>— Neutral · محايد</span>
   </div>
   <div class="sec-grid" id="sec-grid"></div>
 </div>
@@ -1026,8 +1026,8 @@ body.dark-mode .tp-filter-bar .tp-fb-label{color:#fff;}
 <!-- v2.3.2 — Industry heat-map (granular GICS, populated from CSV + Polygon) -->
 <div class="ind-wrap" id="ind-wrap">
   <div class="ind-hdr">
-    <span>📂 Industries <span class="ind-sub" id="ind-sub">— upload a ChartEdge CSV to populate</span></span>
-    <span class="ind-sub">click any card to filter the watchlist</span>
+    <span>📂 Industries · الصناعات <span class="ind-sub" id="ind-sub">— upload a ChartEdge CSV to populate · حمّل ملف ChartEdge لتعبئتها</span></span>
+    <span class="ind-sub">click any card to filter the watchlist · انقر أي بطاقة لتصفية القائمة</span>
   </div>
   <div class="ind-grid" id="ind-grid"></div>
 </div>
@@ -1039,7 +1039,7 @@ body.dark-mode .tp-filter-bar .tp-fb-label{color:#fff;}
 <!-- AGGRESSIVE ENTRY (USv2.1) -->
 <div class="agg-wrap" id="agg-wrap">
   <div class="agg-hdr" onclick="togAggArea()" title="Show/hide aggressive entry candidates">
-    <span class="agg-title">⚡ Aggressive Entry — High Risk / High Reward</span>
+    <span class="agg-title">⚡ Aggressive Entry — High Risk / High Reward · دخول هجومي — مخاطرة/عائد عالٍ</span>
     <span class="agg-sub" id="agg-sub">—</span>
     <span id="agg-chevron">▲</span>
   </div>
@@ -1053,15 +1053,15 @@ body.dark-mode .tp-filter-bar .tp-fb-label{color:#fff;}
 <div class="focus-wrap" id="focus-wrap">
   <div class="focus-hdr" onclick="togFocusArea()">
     <div>
-      <span class="focus-title">⭐ Focus List</span>
-      <span class="focus-sub" id="focus-sub">your personal watchlist</span>
+      <span class="focus-title">⭐ Focus List · قائمة التركيز</span>
+      <span class="focus-sub" id="focus-sub">your personal watchlist · قائمتك الشخصية</span>
     </div>
     <span id="focus-chevron">▲</span>
   </div>
   <div class="focus-body">
     <div class="focus-input-row">
-      <input id="focus-input" type="text" placeholder="Ticker + Enter (e.g. AAPL)" maxlength="20" autocomplete="off">
-      <button onclick="addFocusFromInput()" title="Add to Focus List">+</button>
+      <input id="focus-input" type="text" placeholder="Ticker + Enter (e.g. AAPL) · رمز السهم + Enter" maxlength="20" autocomplete="off">
+      <button onclick="addFocusFromInput()" title="Add to Focus List · أضف إلى قائمة التركيز">+</button>
     </div>
     <div class="focus-grid" id="focus-grid"></div>
   </div>
@@ -1080,34 +1080,34 @@ body.dark-mode .tp-filter-bar .tp-fb-label{color:#fff;}
 
 <div class="tp-tab" id="tab-movers">
 <div class="abar" id="abar" style="display:none">
-  <div class="ab am"><div class="ab-lbl">📈 Momentum Agent</div><div class="ab-val" id="a-mom">—</div><div class="ab-sub">Stage 2 · RS · 12m% · Score</div></div>
-  <div class="ab ab2"><div class="ab-lbl">🚀 Breakout Agent</div><div class="ab-val" id="a-brk">—</div><div class="ab-sub">Near pivot · NEAR HIGH</div></div>
-  <div class="ab ar"><div class="ab-lbl">🔄 Reversion Agent</div><div class="ab-val" id="a-rev">—</div><div class="ab-sub">Potential · Stage 1</div></div>
-  <div class="ab as"><div class="ab-lbl">🏭 Sector Agent</div><div class="ab-val" id="a-sec">—</div><div class="ab-sub">12m% sector proxy</div></div>
-  <div class="ab al"><div class="ab-lbl">💧 Liquidity Agent</div><div class="ab-val" id="a-liq">—</div><div class="ab-sub">Vol ratio · VWAP · Spread</div></div>
+  <div class="ab am"><div class="ab-lbl">📈 Momentum Agent · وكيل الزخم</div><div class="ab-val" id="a-mom">—</div><div class="ab-sub">Stage 2 · RS · 12m% · Score · المرحلة 2</div></div>
+  <div class="ab ab2"><div class="ab-lbl">🚀 Breakout Agent · وكيل الاختراق</div><div class="ab-val" id="a-brk">—</div><div class="ab-sub">Near pivot · NEAR HIGH · قرب الاختراق</div></div>
+  <div class="ab ar"><div class="ab-lbl">🔄 Reversion Agent · وكيل الارتداد</div><div class="ab-val" id="a-rev">—</div><div class="ab-sub">Potential · Stage 1 · محتمل · المرحلة 1</div></div>
+  <div class="ab as"><div class="ab-lbl">🏭 Sector Agent · وكيل القطاع</div><div class="ab-val" id="a-sec">—</div><div class="ab-sub">12m% sector proxy · أداء القطاع</div></div>
+  <div class="ab al"><div class="ab-lbl">💧 Liquidity Agent · وكيل السيولة</div><div class="ab-val" id="a-liq">—</div><div class="ab-sub">Vol ratio · VWAP · Spread · نسبة الحجم</div></div>
 </div>
 
 <!-- METRICS -->
 <div class="mrow">
-  <div class="mc"><div class="ml">🏆 Top Gainer</div><div class="mv tu" id="s-tg">—</div><div class="ms" id="s-tgn">—</div></div>
-  <div class="mc"><div class="ml">📉 Top Loser</div><div class="mv td" id="s-tl">—</div><div class="ms" id="s-tln">—</div></div>
-  <div class="mc"><div class="ml">🎯 Closest Pivot</div><div class="mv" style="color:#BA7517" id="s-cp">—</div><div class="ms" id="s-cpn">—</div></div>
-  <div class="mc"><div class="ml">📊 Highest Volume</div><div class="mv" style="color:#185FA5" id="s-hv">—</div><div class="ms" id="s-hvn">—</div></div>
-  <div class="mc"><div class="ml">📋 Scan</div><div class="mv tn" id="s-scan">—</div><div class="ms" id="s-scann">—</div></div>
+  <div class="mc"><div class="ml">🏆 Top Gainer · الأعلى ربحاً</div><div class="mv tu" id="s-tg">—</div><div class="ms" id="s-tgn">—</div></div>
+  <div class="mc"><div class="ml">📉 Top Loser · الأعلى خسارة</div><div class="mv td" id="s-tl">—</div><div class="ms" id="s-tln">—</div></div>
+  <div class="mc"><div class="ml">🎯 Closest Pivot · أقرب اختراق</div><div class="mv" style="color:#BA7517" id="s-cp">—</div><div class="ms" id="s-cpn">—</div></div>
+  <div class="mc"><div class="ml">📊 Highest Volume · أعلى حجم</div><div class="mv" style="color:#185FA5" id="s-hv">—</div><div class="ms" id="s-hvn">—</div></div>
+  <div class="mc"><div class="ml">📋 Scan · الفحص</div><div class="mv tn" id="s-scan">—</div><div class="ms" id="s-scann">—</div></div>
 </div>
 
 <!-- ALERTS -->
 
 <!-- MOMENTUM LEADERBOARD -->
 <div id="tp-leaderboard">
-  <div class="lb-title">⚡ Momentum Leaderboard</div>
+  <div class="lb-title">⚡ Momentum Leaderboard · متصدّرو الزخم</div>
   <div class="lb-cols">
-    <div class="lb-col"><div class="lb-col-hdr">Top Movers</div><div id="lb-movers"></div></div>
-    <div class="lb-col"><div class="lb-col-hdr">Volume Leaders</div><div id="lb-volume"></div></div>
+    <div class="lb-col"><div class="lb-col-hdr">Top Movers · أكثر تحركاً</div><div id="lb-movers"></div></div>
+    <div class="lb-col"><div class="lb-col-hdr">Volume Leaders · قادة الحجم</div><div id="lb-volume"></div></div>
   </div>
 </div>
 <!-- SHARE BUTTON -->
-<button id="tp-share-btn" onclick="shareTop3()">📋 Copy Top 3 Picks for WhatsApp</button>
+<button id="tp-share-btn" onclick="shareTop3()">📋 Copy Top 3 Picks for WhatsApp · نسخ أفضل 3 للواتساب</button>
 
 
 <!-- BREAKOUT WATCH -->
@@ -1116,14 +1116,14 @@ body.dark-mode .tp-filter-bar .tp-fb-label{color:#fff;}
 <div class="tp-tab" id="tab-watchlist">
 <div class="bw-wrap" id="bw-wrap">
   <div class="bw-hdr">
-    <span class="bw-title" onclick="togBreakoutWatch()" title="Click to collapse/expand">🎯 Breakout Watch <span id="bw-chevron">▲</span></span>
+    <span class="bw-title" onclick="togBreakoutWatch()" title="Click to collapse/expand · انقر للطيّ/الإظهار">🎯 Breakout Watch · مراقبة الاختراقات <span id="bw-chevron">▲</span></span>
     <span class="bw-count" id="bw-count">0</span>
     <span style="display:flex;gap:6px;align-items:center;margin-left:auto;">
-      <button id="brk-hideext-btn" type="button" onclick="toggleHideExtended()" title="Hide stocks more than 5% above pivot (extended / chase zone)"
-              style="padding:4px 10px;border-radius:6px;border:1.5px solid #A32D2D;background:#fff;color:#A32D2D;font-size:11px;font-weight:700;cursor:pointer;">📏 Hide Extended</button>
+      <button id="brk-hideext-btn" type="button" onclick="toggleHideExtended()" title="Hide stocks more than 5% above pivot (extended / chase zone) · إخفاء الممتد فوق 5%"
+              style="padding:4px 10px;border-radius:6px;border:1.5px solid #A32D2D;background:#fff;color:#A32D2D;font-size:11px;font-weight:700;cursor:pointer;">📏 Hide Extended · إخفاء المُمتد</button>
       <button id="brk-filter-btn" type="button" onclick="toggleBreakoutFilter()"
-              style="padding:4px 10px;border-radius:6px;border:1.5px solid #D4912E;background:#fff;color:#633806;font-size:11px;font-weight:700;cursor:pointer;">🚀 Breakouts Only</button>
-      <button id="brk-sound-btn" type="button" onclick="toggleBreakoutSound()" title="Toggle breakout sound alert"
+              style="padding:4px 10px;border-radius:6px;border:1.5px solid #D4912E;background:#fff;color:#633806;font-size:11px;font-weight:700;cursor:pointer;">🚀 Breakouts Only · الاختراقات فقط</button>
+      <button id="brk-sound-btn" type="button" onclick="toggleBreakoutSound()" title="Toggle breakout sound alert · تبديل صوت الاختراق"
               style="padding:4px 8px;border-radius:6px;border:1.5px solid #aaa;background:#fff;color:#333;font-size:13px;cursor:pointer;">🔔</button>
     </span>
   </div>
@@ -1138,7 +1138,7 @@ body.dark-mode .tp-filter-bar .tp-fb-label{color:#fff;}
 <!-- ALERT LOG -->
 <div id="alert-log-wrap">
   <div class="al-hdr" onclick="toggleAlertLog()">
-    <span>📋</span><span>Alert History</span><span id="al-count" style="background:#185FA5;color:#fff;border-radius:10px;padding:0 7px;font-size:10px">0</span><span id="al-last-time" style="font-size:10px;color:#185FA5;font-weight:700;margin-left:6px;"></span>
+    <span>📋</span><span>Alert History · سجل التنبيهات</span><span id="al-count" style="background:#185FA5;color:#fff;border-radius:10px;padding:0 7px;font-size:10px">0</span><span id="al-last-time" style="font-size:10px;color:#185FA5;font-weight:700;margin-left:6px;"></span>
     <span id="al-chevron" style="margin-left:auto">▼</span>
   </div>
   <div class="al-body" id="al-body"></div>
@@ -1147,17 +1147,17 @@ body.dark-mode .tp-filter-bar .tp-fb-label{color:#fff;}
 <!-- FALLBACK BREAKOUT PANEL -->
 <div id="fb-panel">
   <div class="fb-hdr" onclick="toggleFbPanel()">
-    🎯 Fallback Breakout
+    🎯 Fallback Breakout · اختراق احتياطي
     <span class="fb-count" id="fb-count">0</span>
     <span class="fb-last" id="fb-last"></span>
-    <button class="fb-clear" onclick="event.stopPropagation();clearFbPanel()">🗑 Clear</button>
+    <button class="fb-clear" onclick="event.stopPropagation();clearFbPanel()">🗑 Clear · مسح</button>
     <span id="fb-chevron" style="margin-left:4px;font-size:10px;">▼</span>
   </div>
   <div class="fb-body" id="fb-body"></div>
 </div>
 <!-- SECTOR CLEAR BANNER -->
 <div id="sector-clear-banner" onclick="clearSectorFilter()">
-  <span>✕ Show All Stocks</span>
+  <span>✕ Show All Stocks · عرض الكل</span>
   <span id="sector-clear-name" style="font-weight:400;opacity:.85"></span>
 </div>
 <!-- TABLE -->
@@ -1165,56 +1165,56 @@ body.dark-mode .tp-filter-bar .tp-fb-label{color:#fff;}
   <!-- v2.3.6 / SARv1.7 — clear-filter status bar (above pills) -->
 <div class="tp-filter-bar" id="tp-filter-bar">
   <div>
-    <span class="tp-fb-label">🔍 Filtered:</span>
+    <span class="tp-fb-label">🔍 Filtered · مُصفّى:</span>
     <span class="tp-fb-chip sec" id="tp-fb-sec" style="display:none;"></span>
     <span class="tp-fb-chip ind" id="tp-fb-ind" style="display:none;"></span>
     <span class="tp-fb-count" id="tp-fb-count"></span>
   </div>
-  <button class="tp-fb-clear" onclick="clearAllFilters()">✕ Clear all</button>
+  <button class="tp-fb-clear" onclick="clearAllFilters()">✕ Clear all · مسح الكل</button>
 </div>
 <div class="tbar2">
-    <span class="t2t" id="tbl-title">📋 Watchlist</span>
-    <input class="srch" id="srch" placeholder="Search…" oninput="render()">
-    <button class="fbtn" id="f-s2" onclick="togF('stage2')">Stage 2</button>
-    <button class="fbtn" id="f-pt" onclick="togF('potential')">Potential</button>
-    <button class="fbtn" id="f-nr" onclick="togF('near')">🔥 Near Pivot</button>
-    <button class="fbtn" id="f-lq" onclick="togF('liq')" title="Show only stocks with Liquidity score ≥ 75">💧 Liquid ≥75</button>
-    <button class="fbtn" id="f-lqp" onclick="togF('liqP')" title="Show only stocks with Liquidity score ≥ 85 (premium)">🔥 Premium ≥85</button>
-    <button class="fbtn" id="f-liqf" onclick="togF('liqFloor')" title="Hide names below $5 OR avg vol < 250k. Click to toggle.">💧 Liq Floor</button>
-    <button class="fbtn" id="f-ai" onclick="togAI()" title="Show AI & Semiconductor stocks">🤖 AI</button>
-    <button class="fbtn" onclick="exportReportHtml()" title="Export current report as standalone HTML">📤 Share HTML</button>
+    <span class="t2t" id="tbl-title">📋 Watchlist · قائمة المراقبة</span>
+    <input class="srch" id="srch" placeholder="Search… · بحث" oninput="render()">
+    <button class="fbtn" id="f-s2" onclick="togF('stage2')">Stage 2 · المرحلة 2</button>
+    <button class="fbtn" id="f-pt" onclick="togF('potential')">Potential · محتمل</button>
+    <button class="fbtn" id="f-nr" onclick="togF('near')">🔥 Near Pivot · قرب الاختراق</button>
+    <button class="fbtn" id="f-lq" onclick="togF('liq')" title="Show only stocks with Liquidity score ≥ 75 · سيولة ≥ 75 فقط">💧 Liquid ≥75 · سائل</button>
+    <button class="fbtn" id="f-lqp" onclick="togF('liqP')" title="Show only stocks with Liquidity score ≥ 85 (premium) · سيولة ≥ 85 (ممتاز)">🔥 Premium ≥85 · ممتاز</button>
+    <button class="fbtn" id="f-liqf" onclick="togF('liqFloor')" title="Hide names below $5 OR avg vol < 250k. Click to toggle. · إخفاء أقل من $5 أو حجم < 250 ألف">💧 Liq Floor · حد السيولة</button>
+    <button class="fbtn" id="f-ai" onclick="togAI()" title="Show AI & Semiconductor stocks · أسهم الذكاء الاصطناعي وأشباه الموصلات">🤖 AI · ذكاء اصطناعي</button>
+    <button class="fbtn" onclick="exportReportHtml()" title="Export current report as standalone HTML · تصدير التقرير كملف HTML">📤 Share HTML · مشاركة</button>
     <span class="cnt" id="cnt"></span>
   </div>
   <div class="tabs-row">
-    <div class="tab on" onclick="setTab('all')">All</div>
-    <div class="tab" onclick="setTab('BUY')">Buy</div>
-    <div class="tab" onclick="setTab('ON RADAR')">On Radar</div>
-    <div class="tab" onclick="setTab('WATCH')">Watch</div>
-    <div class="tab" onclick="setTab('AVOID')">Avoid</div>
+    <div class="tab on" onclick="setTab('all')">All · الكل</div>
+    <div class="tab" onclick="setTab('BUY')">Buy · شراء</div>
+    <div class="tab" onclick="setTab('ON RADAR')">On Radar · على الرادار</div>
+    <div class="tab" onclick="setTab('WATCH')">Watch · مراقبة</div>
+    <div class="tab" onclick="setTab('AVOID')">Avoid · تجنّب</div>
   </div>
   <div style="overflow-x:auto">
     <table>
       <thead><tr>
-        <th onclick="so('ticker')">⬍ Ticker</th>
-        <th onclick="so('company')">⬍ Company</th>
-        <th onclick="so('stage')">Stage</th>
-        <th onclick="so('livePrice')">⬍ Price</th>
-        <th onclick="so('liveChg')">⬍ Chg%</th>
+        <th onclick="so('ticker')">⬍ Ticker · الرمز</th>
+        <th onclick="so('company')">⬍ Company · الشركة</th>
+        <th onclick="so('stage')">Stage · المرحلة</th>
+        <th onclick="so('livePrice')">⬍ Price · السعر</th>
+        <th onclick="so('liveChg')">⬍ Chg% · التغيّر%</th>
         <th onclick="so('rs')">⬍ RS</th>
         <th onclick="so('score')">⬍ CE</th>
         <th onclick="so('total')">⬍ Boss ▼</th>
-        <th onclick="so('breakout_level')">🚀 Pivot</th>
-        <th>Buy Zone</th>
-        <th>Stop</th>
-        <th onclick="so('liveGap')">📏 Gap%</th>
-        <th onclick="so('liveVol')">Volume</th>
-        <th onclick="so('action')">Action</th>
+        <th onclick="so('breakout_level')">🚀 Pivot · الاختراق</th>
+        <th>Buy Zone · منطقة الشراء</th>
+        <th>Stop · وقف</th>
+        <th onclick="so('liveGap')">📏 Gap% · الفجوة%</th>
+        <th onclick="so('liveVol')">Volume · الحجم</th>
+        <th onclick="so('action')">Action · الإجراء</th>
       </tr></thead>
       <tbody id="tbody">
         <tr><td colspan="14"><div class="empty">
           <div class="ei">📁</div>
-          <div class="et">No scan loaded</div>
-          <div class="es">Drop your ChartEdge CSV above.<br>Agents run instantly.</div>
+          <div class="et">No scan loaded · لا يوجد فحص</div>
+          <div class="es">Drop your ChartEdge CSV above.<br>Agents run instantly. · أسقط ملف ChartEdge أعلاه<br>الوكلاء يعملون فوراً.</div>
         </div></td></tr>
       </tbody>
     </table>
@@ -1244,7 +1244,7 @@ body.dark-mode .tp-filter-bar .tp-fb-label{color:#fff;}
 // ══════════════════════════════════════════════
 // VERSION — used to verify which build is running
 // ══════════════════════════════════════════════
-const TP_VERSION = 'USv2.4.3-2026-05-29';
+const TP_VERSION = 'USv2.4.4-2026-06-01';
 console.log('%c[TradePulse] ' + TP_VERSION + ' loaded', 'color:#3B6D11;font-weight:bold;font-size:13px');
 
 // ══════════════════════════════════════════════
@@ -2190,7 +2190,7 @@ function parseChartEdge(text, filename) {
 
   el('s-scan').textContent=stocks.length;
   el('s-scann').textContent=`${buys} Buy · ${onr} Radar · ${wat} Watch`;
-  el('tbl-title').textContent=`📋 Watchlist — ${stocks.length} stocks · ${scanDate}`;
+  el('tbl-title').textContent=`📋 Watchlist · قائمة المراقبة — ${stocks.length} stocks · ${scanDate}`;
 
   el('card-ce').classList.add('ok-ce');
   try { collapseDropZone('ce'); } catch(e){}
