@@ -1995,29 +1995,44 @@ table.rs-tbl tbody tr:hover { background: rgba(255,255,255,0.02); }
 /* ════════════════════════════════════════════════════════════════════
    Analyze-a-stock floating button + request panel
    ════════════════════════════════════════════════════════════════════ */
+/* Compact circular icon button — raised above the dashboard's own bottom-right
+   controls (PDF export etc.) so it never overlaps page content. Expands to
+   show its label on hover for discoverability. */
 .analyze-fab{
-  position:fixed;bottom:24px;right:24px;z-index:90;
-  display:inline-flex;align-items:center;gap:10px;
+  position:fixed;bottom:90px;right:22px;z-index:90;
+  display:inline-flex;align-items:center;justify-content:center;gap:0;
+  width:54px;height:54px;overflow:hidden;
   background:linear-gradient(135deg,#d4a84b,#b8862f);
   color:#1a1a1a;font-family:'Manrope',sans-serif;font-weight:800;font-size:14px;
-  padding:13px 20px;border:none;border-radius:999px;cursor:pointer;
-  box-shadow:0 8px 24px rgba(212,168,75,.4),0 0 0 1px rgba(255,255,255,.15) inset;
-  transition:transform .12s,box-shadow .12s;
+  padding:0;border:none;border-radius:50%;cursor:pointer;white-space:nowrap;
+  box-shadow:0 6px 18px rgba(212,168,75,.45),0 0 0 1px rgba(255,255,255,.15) inset;
+  transition:width .2s ease,border-radius .2s ease,transform .12s,box-shadow .12s;
 }
-.analyze-fab:hover{transform:translateY(-2px);box-shadow:0 12px 30px rgba(212,168,75,.55)}
-.analyze-fab .ico{font-size:18px;line-height:1}
-.analyze-fab .lbl{display:flex;flex-direction:column;line-height:1.15;text-align:left}
+.analyze-fab .ico{font-size:22px;line-height:1;flex:0 0 auto;width:54px;text-align:center}
+.analyze-fab .lbl{display:flex;flex-direction:column;line-height:1.15;text-align:left;
+  opacity:0;max-width:0;transition:opacity .15s,max-width .2s;padding-right:0}
 .analyze-fab .lbl .ar{font-size:11px;opacity:.8;font-weight:600;
   font-family:'IBM Plex Sans Arabic','Segoe UI Arabic',Tahoma,sans-serif}
+.analyze-fab:hover{
+  width:210px;border-radius:999px;transform:translateY(-2px);
+  box-shadow:0 12px 30px rgba(212,168,75,.55);
+}
+.analyze-fab:hover .lbl{opacity:1;max-width:150px;padding-right:14px}
 @media (max-width:600px){
-  .analyze-fab .lbl{display:none}
-  .analyze-fab{padding:15px;border-radius:50%}
+  /* On phones: stay a plain icon, no expand */
+  .analyze-fab{bottom:80px;right:16px}
+  .analyze-fab:hover{width:54px;border-radius:50%}
+  .analyze-fab:hover .lbl{opacity:0;max-width:0;padding-right:0}
 }
 
 .analyze-overlay{
   position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:120;
   display:flex;align-items:center;justify-content:center;padding:16px;
 }
+/* CRITICAL: the `hidden` attribute is overridden by the display:flex above,
+   so without this rule the overlay sits invisibly over the whole page and
+   blocks every click. This restores hidden-means-hidden. */
+.analyze-overlay[hidden]{display:none !important;}
 .analyze-panel{
   background:linear-gradient(180deg,var(--panel),#0e1116);
   border:1px solid #2c3641;border-radius:18px;width:min(440px,94vw);
