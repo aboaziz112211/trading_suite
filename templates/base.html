@@ -230,5 +230,113 @@
       </div>
     </div>
   </footer>
+
+  {# ── Analyze-a-stock floating button + panel (every page) ─────────── #}
+  <button class="analyze-fab" id="analyzeFab" type="button" aria-label="Request a stock analysis">
+    <span class="ico" aria-hidden="true">🔍</span>
+    <span class="lbl"><span class="en">Analyze a stock</span><span class="ar" dir="rtl" lang="ar">اطلب تحليل سهم</span></span>
+  </button>
+
+  <div class="analyze-overlay" id="analyzeOverlay" hidden>
+    <div class="analyze-panel" role="dialog" aria-modal="true" aria-labelledby="analyzeTitle">
+      <button class="analyze-close" id="analyzeClose" type="button" aria-label="Close">&times;</button>
+      <span class="ap-kicker">🔍 Analyst request</span>
+      <h2 id="analyzeTitle">Request a company analysis</h2>
+      <div class="ap-h2ar" dir="rtl" lang="ar">اطلب تحليل شركة من المحلل</div>
+
+      <div class="ap-field">
+        <label for="azTicker">Ticker · الرمز</label>
+        <input id="azTicker" class="az-ticker" type="text" placeholder="e.g. 2222 or AAPL" maxlength="12" autocomplete="off">
+      </div>
+
+      <div class="ap-field">
+        <label>Market · السوق</label>
+        <div class="az-mkt">
+          <button type="button" class="az-mkt-btn active" data-mkt="TASI">🇸🇦 TASI</button>
+          <button type="button" class="az-mkt-btn" data-mkt="US">🇺🇸 US</button>
+        </div>
+      </div>
+
+      <div class="ap-field">
+        <label for="azContact">Your Telegram (so the analyst can reply) · حسابك في تيليجرام</label>
+        <input id="azContact" type="text" placeholder="@yourusername" maxlength="60" autocomplete="off">
+      </div>
+
+      <div class="ap-field">
+        <label for="azNote">Note (optional) · ملاحظة</label>
+        <input id="azNote" type="text" placeholder="entry zone, trend, timeframe…" maxlength="280" autocomplete="off">
+      </div>
+
+      <button class="az-send" id="azSend" type="button">
+        <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor" aria-hidden="true"><path d="M9.78 18.65l.28-4.23 7.68-6.92c.34-.31-.07-.46-.52-.19L7.74 13.3 3.64 12c-.88-.25-.89-.86.2-1.3l15.97-6.16c.73-.33 1.43.18 1.15 1.3l-2.72 12.81c-.19.91-.74 1.13-1.5.71L12.6 16.3l-1.99 1.93c-.23.23-.42.42-.83.42z"/></svg>
+        <span>Send to analyst on Telegram</span>
+      </button>
+
+      <div class="ap-msg" id="azMsg" hidden></div>
+      <div class="ap-foot">
+        The analyst replies directly in your Telegram chat.
+        <span class="ar" dir="rtl" lang="ar">سيردّ عليك المحلل مباشرة عبر تيليجرام</span>
+      </div>
+    </div>
+  </div>
+
+  <script>
+  (function(){
+    var fab     = document.getElementById('analyzeFab');
+    var overlay = document.getElementById('analyzeOverlay');
+    var closeB  = document.getElementById('analyzeClose');
+    var sendB   = document.getElementById('azSend');
+    var tickerI = document.getElementById('azTicker');
+    var contactI= document.getElementById('azContact');
+    var noteI   = document.getElementById('azNote');
+    var msgEl   = document.getElementById('azMsg');
+    var market  = 'TASI';
+    if (!fab) return;
+
+    function open(){ overlay.hidden = false; setTimeout(function(){ tickerI.focus(); }, 30); }
+    function close(){ overlay.hidden = true; msgEl.hidden = true; }
+    fab.addEventListener('click', open);
+    closeB.addEventListener('click', close);
+    overlay.addEventListener('click', function(e){ if (e.target === overlay) close(); });
+    document.addEventListener('keydown', function(e){ if (e.key === 'Escape' && !overlay.hidden) close(); });
+
+    document.querySelectorAll('.az-mkt-btn').forEach(function(b){
+      b.addEventListener('click', function(){
+        document.querySelectorAll('.az-mkt-btn').forEach(function(x){ x.classList.remove('active'); });
+        b.classList.add('active'); market = b.dataset.mkt;
+      });
+    });
+
+    function showMsg(text, ok){
+      msgEl.hidden = false;
+      msgEl.textContent = text;
+      msgEl.className = 'ap-msg ' + (ok ? 'ok' : 'err');
+    }
+
+    sendB.addEventListener('click', function(){
+      var ticker = (tickerI.value || '').trim().toUpperCase();
+      if (!ticker){ showMsg('Please enter a ticker first.', false); tickerI.focus(); return; }
+      sendB.disabled = true; sendB.querySelector('span').textContent = 'Sending…';
+      fetch('/api/analyze-request', {
+        method: 'POST',
+        headers: {'Content-Type':'application/json'},
+        body: JSON.stringify({ ticker: ticker, market: market,
+                               contact: (contactI.value||'').trim(),
+                               note: (noteI.value||'').trim() })
+      }).then(function(r){ return r.json().then(function(j){ return {s:r.status, j:j}; }); })
+        .then(function(res){
+          if (res.j && res.j.ok){
+            showMsg('✅ Sent! The analyst will reply on your Telegram.', true);
+            tickerI.value=''; noteI.value='';
+            setTimeout(close, 2500);
+          } else {
+            showMsg('⚠ ' + ((res.j && res.j.error) || 'Could not send. Try again.'), false);
+          }
+        })
+        .catch(function(){ showMsg('⚠ Network error — please try again.', false); })
+        .finally(function(){ sendB.disabled = false; sendB.querySelector('span').textContent = 'Send to analyst on Telegram'; });
+    });
+  })();
+  </script>
 </body>
 </html>

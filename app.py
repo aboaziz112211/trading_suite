@@ -1686,6 +1686,73 @@ def healthz():
     return {"ok": True}
 
 
+# ── Analyze-a-stock requests → admin's Telegram (via bot) ──────────────
+TELEGRAM_BOT_TOKEN = _secret("TELEGRAM_BOT_TOKEN")
+ANALYZE_CHAT_ID    = _secret("ANALYZE_CHAT_ID")   # admin's numeric Telegram chat id
+_analyze_hits = {}   # ip -> [timestamps]  (simple in-memory rate limit)
+
+
+@app.route("/api/analyze-request", methods=["POST"])
+def api_analyze_request():
+    """Visitor drops a ticker → we relay it to the admin's Telegram DM via a
+    bot. The visitor includes their own Telegram handle so the admin can
+    reply directly. Rate-limited to curb spam."""
+    import time as _t
+    import re as _re
+
+    if not (TELEGRAM_BOT_TOKEN and ANALYZE_CHAT_ID):
+        return {"ok": False, "error": "analysis requests are not configured yet"}, 503
+
+    # ── Rate limit: max 5 requests / 10 min per IP ──
+    ip = (request.headers.get("X-Forwarded-For", "") or request.remote_addr or "?").split(",")[0].strip()
+    now = _t.time()
+    window = 600
+    hits = [t for t in _analyze_hits.get(ip, []) if now - t < window]
+    if len(hits) >= 5:
+        return {"ok": False, "error": "too many requests — please wait a few minutes"}, 429
+    hits.append(now)
+    _analyze_hits[ip] = hits
+
+    try:
+        body = request.get_json(force=True, silent=True) or {}
+    except Exception:
+        body = {}
+
+    ticker  = str(body.get("ticker", "")).strip().upper()[:20]
+    market  = str(body.get("market", "")).strip()[:10]
+    contact = str(body.get("contact", "")).strip()[:60]
+    note    = str(body.get("note", "")).strip()[:280]
+
+    # Validate ticker: 1-10 alphanumerics (handles "2222", "AAPL", "RJHI")
+    if not _re.match(r"^[A-Z0-9.\-]{1,12}$", ticker):
+        return {"ok": False, "error": "Please enter a valid ticker (e.g. 2222 or AAPL)."}, 400
+
+    flag = "🇸🇦" if market.upper() in ("TASI", "SA", "SAR") else ("🇺🇸" if market.upper() in ("US", "USA") else "📈")
+    contact_line = f"\n👤 Reply to: {contact}" if contact else "\n⚠️ No contact provided — visitor left no Telegram handle."
+    note_line    = f"\n📝 Note: {note}" if note else ""
+
+    msg = (
+        f"📊 *New analysis request*\n"
+        f"{flag} Ticker: *{ticker}* ({market or 'unspecified'})"
+        f"{contact_line}"
+        f"{note_line}\n"
+        f"🌐 via ChartEdge website"
+    )
+
+    try:
+        import requests as _rq
+        r = _rq.post(
+            f"https://api.telegram.org/bot{TELEGRAM_BOT_TOKEN}/sendMessage",
+            json={"chat_id": ANALYZE_CHAT_ID, "text": msg, "parse_mode": "Markdown"},
+            timeout=15,
+        )
+        if r.status_code == 200 and r.json().get("ok"):
+            return {"ok": True}
+        return {"ok": False, "error": f"telegram error: {r.text[:160]}"}, 502
+    except Exception as e:
+        return {"ok": False, "error": f"send failed: {e}"}, 502
+
+
 # ── Visit counter — persistent across redeploys ────────────────────────
 # In-memory hot state, periodically flushed to disk + committed to GitHub
 # so cumulative counts survive worker restarts on Render's free plan.

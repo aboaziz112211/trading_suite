@@ -29,3 +29,10 @@ services:
         sync: false
       - key: CRON_TOKEN
         sync: false
+      # Analyze-a-stock feature → routes visitor requests to admin's Telegram.
+      # Create a bot via @BotFather for the token; get the admin chat id by
+      # messaging the bot once then reading getUpdates (or use @userinfobot).
+      - key: TELEGRAM_BOT_TOKEN
+        sync: false
+      - key: ANALYZE_CHAT_ID
+        sync: false

@@ -1991,3 +1991,72 @@ table.rs-tbl tbody tr:hover { background: rgba(255,255,255,0.02); }
   color: #4ade80 !important;
   transform: translateY(-1px);
 }
+
+/* ════════════════════════════════════════════════════════════════════
+   Analyze-a-stock floating button + request panel
+   ════════════════════════════════════════════════════════════════════ */
+.analyze-fab{
+  position:fixed;bottom:24px;right:24px;z-index:90;
+  display:inline-flex;align-items:center;gap:10px;
+  background:linear-gradient(135deg,#d4a84b,#b8862f);
+  color:#1a1a1a;font-family:'Manrope',sans-serif;font-weight:800;font-size:14px;
+  padding:13px 20px;border:none;border-radius:999px;cursor:pointer;
+  box-shadow:0 8px 24px rgba(212,168,75,.4),0 0 0 1px rgba(255,255,255,.15) inset;
+  transition:transform .12s,box-shadow .12s;
+}
+.analyze-fab:hover{transform:translateY(-2px);box-shadow:0 12px 30px rgba(212,168,75,.55)}
+.analyze-fab .ico{font-size:18px;line-height:1}
+.analyze-fab .lbl{display:flex;flex-direction:column;line-height:1.15;text-align:left}
+.analyze-fab .lbl .ar{font-size:11px;opacity:.8;font-weight:600;
+  font-family:'IBM Plex Sans Arabic','Segoe UI Arabic',Tahoma,sans-serif}
+@media (max-width:600px){
+  .analyze-fab .lbl{display:none}
+  .analyze-fab{padding:15px;border-radius:50%}
+}
+
+.analyze-overlay{
+  position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:120;
+  display:flex;align-items:center;justify-content:center;padding:16px;
+}
+.analyze-panel{
+  background:linear-gradient(180deg,var(--panel),#0e1116);
+  border:1px solid #2c3641;border-radius:18px;width:min(440px,94vw);
+  padding:26px;box-shadow:0 30px 70px rgba(0,0,0,.6);position:relative;
+}
+.analyze-close{position:absolute;top:12px;right:16px;background:none;border:none;
+  color:var(--muted);font-size:24px;cursor:pointer;line-height:1}
+.analyze-close:hover{color:var(--text)}
+.ap-kicker{display:inline-flex;align-items:center;gap:7px;font-family:'JetBrains Mono',monospace;
+  font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:#f4d875;
+  background:rgba(212,168,75,.1);border:1px solid rgba(212,168,75,.3);
+  padding:4px 10px;border-radius:999px;margin-bottom:14px}
+.analyze-panel h2{font-family:'Manrope',sans-serif;font-weight:800;font-size:21px;
+  margin:0 0 4px;letter-spacing:-.3px}
+.ap-h2ar{font-family:'IBM Plex Sans Arabic','Segoe UI Arabic',Tahoma,sans-serif;
+  font-size:14px;color:var(--muted);direction:rtl;margin-bottom:18px}
+.ap-field{margin-bottom:14px}
+.ap-field label{display:block;font-size:11px;color:var(--muted);text-transform:uppercase;
+  letter-spacing:.5px;margin-bottom:6px;font-family:'JetBrains Mono',monospace}
+.ap-field input{width:100%;background:rgba(255,255,255,.04);border:1px solid var(--border);
+  color:var(--text);padding:11px 13px;border-radius:9px;font-size:15px;
+  font-family:'Inter',sans-serif;outline:none}
+.ap-field input:focus{border-color:var(--accent)}
+.ap-field input.az-ticker{font-family:'Manrope',sans-serif;font-weight:800;
+  font-size:20px;letter-spacing:1px;text-transform:uppercase}
+.az-mkt{display:flex;gap:8px}
+.az-mkt-btn{flex:1;background:rgba(255,255,255,.04);border:1px solid var(--border);
+  color:var(--text2,#c0c8d3);padding:10px;border-radius:9px;font-size:13px;font-weight:600;
+  cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px}
+.az-mkt-btn.active{background:rgba(78,161,255,.16);border-color:var(--accent);color:#7cc4ff}
+.az-send{width:100%;background:#2AABEE;color:#fff;border:none;border-radius:11px;
+  padding:14px;font-family:'Manrope',sans-serif;font-weight:800;font-size:15px;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;gap:9px;margin-top:6px;
+  box-shadow:0 8px 22px rgba(42,171,238,.35)}
+.az-send:hover{background:#229ED9}
+.az-send:disabled{opacity:.6;cursor:wait}
+.ap-msg{margin-top:12px;padding:10px 12px;border-radius:8px;font-size:13px;text-align:center}
+.ap-msg.ok{background:rgba(34,197,94,.12);border:1px solid rgba(34,197,94,.4);color:#22c55e}
+.ap-msg.err{background:rgba(239,68,68,.12);border:1px solid rgba(239,68,68,.4);color:#ef9a9a}
+.ap-foot{font-size:11px;color:var(--muted);text-align:center;margin-top:13px;line-height:1.6}
+.ap-foot .ar{display:block;direction:rtl;margin-top:2px;
+  font-family:'IBM Plex Sans Arabic','Segoe UI Arabic',Tahoma,sans-serif}
