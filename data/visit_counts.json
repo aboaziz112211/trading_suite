@@ -1,9 +1,9 @@
 {
   "first_seen": "2026-05-17T19:37:56",
-  "last_flushed": "2026-06-05T18:52:31",
+  "last_flushed": "2026-06-05T18:53:43",
   "totals": {
-    "/": 915,
-    "_total": 971,
+    "/": 916,
+    "_total": 972,
     "/p/tradepulse_sar": 36,
     "/p/tradepulse_us": 6,
     "/p/chartedge": 7,
@@ -85,8 +85,8 @@
     },
     "2026-06-05": {
       "/p/chartedge": 1,
-      "_total": 259,
-      "/": 257,
+      "_total": 260,
+      "/": 258,
       "/p/tradepulse_sar": 1
     }
   }
