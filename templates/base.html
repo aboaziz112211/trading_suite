@@ -137,6 +137,11 @@
       <a href="{{ url_for('market_report') }}" class="report-link nav-bi"><span class="en">📊 Brief</span><span class="ar" dir="rtl" lang="ar">التقرير</span></a>
       <a href="{{ url_for('rs_rating_latest') }}" class="rs-link nav-bi"><span class="en">🔥 RS Rating</span><span class="ar" dir="rtl" lang="ar">القوة النسبية</span></a>
       <a href="{{ url_for('contact') }}" class="contact-link nav-bi"><span class="en">Contact</span><span class="ar" dir="rtl" lang="ar">تواصل</span></a>
+      {# Analyze-a-stock trigger — Arabic-first label in the topbar #}
+      <button type="button" class="analyze-navbtn" id="analyzeFab" aria-label="اطلب تحليل سهم">
+        <span class="ar" dir="rtl" lang="ar">🔍 اطلب تحليل سهم</span>
+        <span class="en">Analyze a stock</span>
+      </button>
       {# Market live pills — JS below flips classes based on time-of-day #}
       <span class="market-pill is-closed" id="pill-tasi" data-market="tasi" title="Saudi market">
         <span class="flag" aria-hidden="true">🇸🇦</span><span class="dot" aria-hidden="true"></span><span class="lbl">TASI</span>
@@ -231,12 +236,7 @@
     </div>
   </footer>
 
-  {# ── Analyze-a-stock floating button + panel (every page) ─────────── #}
-  <button class="analyze-fab" id="analyzeFab" type="button" aria-label="Request a stock analysis" title="Analyze a stock · اطلب تحليل سهم">
-    <span class="ico" aria-hidden="true">🔍</span>
-    <span class="lbl"><span class="en">Analyze a stock</span><span class="ar" dir="rtl" lang="ar">اطلب تحليل سهم</span></span>
-  </button>
-
+  {# ── Analyze-a-stock panel (trigger lives in the topbar nav) ─────────── #}
   <div class="analyze-overlay" id="analyzeOverlay" hidden>
     <div class="analyze-panel" role="dialog" aria-modal="true" aria-labelledby="analyzeTitle">
       <button class="analyze-close" id="analyzeClose" type="button" aria-label="Close">&times;</button>

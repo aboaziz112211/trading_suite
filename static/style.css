@@ -1993,36 +1993,30 @@ table.rs-tbl tbody tr:hover { background: rgba(255,255,255,0.02); }
 }
 
 /* ════════════════════════════════════════════════════════════════════
-   Analyze-a-stock floating button + request panel
+   Analyze-a-stock — topbar trigger button (Arabic-first) + request panel
    ════════════════════════════════════════════════════════════════════ */
-/* Compact circular icon button — raised above the dashboard's own bottom-right
-   controls (PDF export etc.) so it never overlaps page content. Expands to
-   show its label on hover for discoverability. */
-.analyze-fab{
-  position:fixed;bottom:90px;right:22px;z-index:90;
-  display:inline-flex;align-items:center;justify-content:center;gap:0;
-  width:54px;height:54px;overflow:hidden;
-  background:linear-gradient(135deg,#d4a84b,#b8862f);
-  color:#1a1a1a;font-family:'Manrope',sans-serif;font-weight:800;font-size:14px;
-  padding:0;border:none;border-radius:50%;cursor:pointer;white-space:nowrap;
-  box-shadow:0 6px 18px rgba(212,168,75,.45),0 0 0 1px rgba(255,255,255,.15) inset;
-  transition:width .2s ease,border-radius .2s ease,transform .12s,box-shadow .12s;
+/* Gold pill in the topbar nav. Arabic label is primary; small English
+   sub-label underneath. Stands out against the other muted nav links. */
+.analyze-navbtn{
+  display:inline-flex;flex-direction:column;align-items:center;justify-content:center;
+  line-height:1.15;cursor:pointer;border:1px solid rgba(212,168,75,.55);
+  background:linear-gradient(135deg,rgba(212,168,75,.18),rgba(212,168,75,.08));
+  color:#f4d875;font-family:'Manrope',sans-serif;
+  padding:5px 14px;border-radius:999px;white-space:nowrap;
+  transition:background .12s,transform .12s,box-shadow .12s;
 }
-.analyze-fab .ico{font-size:22px;line-height:1;flex:0 0 auto;width:54px;text-align:center}
-.analyze-fab .lbl{display:flex;flex-direction:column;line-height:1.15;text-align:left;
-  opacity:0;max-width:0;transition:opacity .15s,max-width .2s;padding-right:0}
-.analyze-fab .lbl .ar{font-size:11px;opacity:.8;font-weight:600;
-  font-family:'IBM Plex Sans Arabic','Segoe UI Arabic',Tahoma,sans-serif}
-.analyze-fab:hover{
-  width:210px;border-radius:999px;transform:translateY(-2px);
-  box-shadow:0 12px 30px rgba(212,168,75,.55);
+.analyze-navbtn .ar{
+  font-family:'IBM Plex Sans Arabic','Segoe UI Arabic',Tahoma,sans-serif;
+  font-size:13px;font-weight:700;
 }
-.analyze-fab:hover .lbl{opacity:1;max-width:150px;padding-right:14px}
-@media (max-width:600px){
-  /* On phones: stay a plain icon, no expand */
-  .analyze-fab{bottom:80px;right:16px}
-  .analyze-fab:hover{width:54px;border-radius:50%}
-  .analyze-fab:hover .lbl{opacity:0;max-width:0;padding-right:0}
+.analyze-navbtn .en{font-size:9px;opacity:.7;font-weight:600;letter-spacing:.3px;margin-top:1px}
+.analyze-navbtn:hover{
+  background:linear-gradient(135deg,rgba(212,168,75,.32),rgba(212,168,75,.16));
+  transform:translateY(-1px);box-shadow:0 6px 16px rgba(212,168,75,.3);
+}
+@media (max-width:768px){
+  .analyze-navbtn .en{display:none}
+  .analyze-navbtn{padding:6px 12px}
 }
 
 .analyze-overlay{
