@@ -1,0 +1,340 @@
+{
+  "generated_at": "2026-06-07T12:20:15",
+  "index": {
+    "today": {
+      "date": "2026-06-07",
+      "open": 10990.45,
+      "high": 10957.35,
+      "low": 10907.9,
+      "close": 10928.79,
+      "volume": 166976901.0
+    },
+    "prev": {
+      "close": 10990.45
+    },
+    "source": "bloomberg_xlsx"
+  },
+  "stage2_count": 32,
+  "potential_count": 41,
+  "score10_count": 12,
+  "scan_total": 269,
+  "top_picks": [
+    {
+      "Ticker": "4280.SR",
+      "_vol_ratio": null,
+      "Company": "\u0627\u0644\u0645\u0645\u0644\u0643\u0629",
+      "Stage": "stage2",
+      "Score": "10",
+      "RS": "97",
+      "12m%": "83.7"
+    },
+    {
+      "Ticker": "2380.SR",
+      "_vol_ratio": null,
+      "Company": "\u0628\u062a\u0631\u0648 \u0631\u0627\u0628\u063a",
+      "Stage": "stage2",
+      "Score": "10",
+      "RS": "96",
+      "12m%": "127.7"
+    },
+    {
+      "Ticker": "8313.SR",
+      "_vol_ratio": null,
+      "Company": "\u0631\u0633\u0646",
+      "Stage": "stage2",
+      "Score": "10",
+      "RS": "95",
+      "12m%": "94.9"
+    },
+    {
+      "Ticker": "7200.SR",
+      "_vol_ratio": null,
+      "Company": "\u0627\u0645 \u0622\u064a \u0627\u0633",
+      "Stage": "stage2",
+      "Score": "10",
+      "RS": "92",
+      "12m%": "47.0"
+    },
+    {
+      "Ticker": "1321.SR",
+      "_vol_ratio": null,
+      "Company": "\u0623\u0646\u0627\u0628\u064a\u0628 \u0627\u0644\u0634\u0631\u0642",
+      "Stage": "stage2",
+      "Score": "10",
+      "RS": "91",
+      "12m%": "92.8"
+    },
+    {
+      "Ticker": "2200.SR",
+      "_vol_ratio": null,
+      "Company": "\u0623\u0646\u0627\u0628\u064a\u0628",
+      "Stage": "stage2",
+      "Score": "10",
+      "RS": "89",
+      "12m%": "34.5"
+    },
+    {
+      "Ticker": "2230.SR",
+      "_vol_ratio": null,
+      "Company": "\u0627\u0644\u0643\u064a\u0645\u064a\u0627\u0626\u064a\u0629",
+      "Stage": "stage2",
+      "Score": "10",
+      "RS": "88",
+      "12m%": "38.8"
+    },
+    {
+      "Ticker": "2223.SR",
+      "_vol_ratio": null,
+      "Company": "\u0644\u0648\u0628\u0631\u064a\u0641",
+      "Stage": "stage2",
+      "Score": "10",
+      "RS": "87",
+      "12m%": "34.0"
+    },
+    {
+      "Ticker": "2320.SR",
+      "_vol_ratio": null,
+      "Company": "\u0627\u0644\u0628\u0627\u0628\u0637\u064a\u0646",
+      "Stage": "stage2",
+      "Score": "10",
+      "RS": "87",
+      "12m%": "48.1"
+    },
+    {
+      "Ticker": "1831.SR",
+      "_vol_ratio": null,
+      "Company": "\u0645\u0647\u0627\u0631\u0629",
+      "Stage": "stage2",
+      "Score": "10",
+      "RS": "87",
+      "12m%": "42.5"
+    }
+  ],
+  "top_gainers": [
+    {
+      "Ticker": "BUILDSTA",
+      "Last Price": 48.58,
+      "%1D": 7.5254998207092285,
+      "%1M": 15.2277,
+      "%YTD": -10.2033,
+      "Volume": 1056599.0,
+      "Avg Vol 30D": 101390.1,
+      "_vol_ratio": 10.42112592846836
+    },
+    {
+      "Ticker": "SCACO",
+      "Last Price": 166.0,
+      "%1D": 5.5980000495910645,
+      "%1M": 7.7223,
+      "%YTD": 18.5714,
+      "Volume": 72790.0,
+      "Avg Vol 30D": 46509.9,
+      "_vol_ratio": null
+    },
+    {
+      "Ticker": "AMANA",
+      "Last Price": 7.39,
+      "%1D": 5.42080020904541,
+      "%1M": 12.6524,
+      "%YTD": 22.1488,
+      "Volume": 1473269.0,
+      "Avg Vol 30D": 801928.9,
+      "_vol_ratio": null
+    },
+    {
+      "Ticker": "MIAHONA",
+      "Last Price": 16.0,
+      "%1D": 4.643599987030029,
+      "%1M": -1.1736,
+      "%YTD": -10.7641,
+      "Volume": 2227011.0,
+      "Avg Vol 30D": 487168.9,
+      "_vol_ratio": 4.571332447535136
+    },
+    {
+      "Ticker": "SIDC",
+      "Last Price": 15.5,
+      "%1D": 4.236700057983398,
+      "%1M": 29.4904,
+      "%YTD": 29.1667,
+      "Volume": 1805474.0,
+      "Avg Vol 30D": 693446.9,
+      "_vol_ratio": null
+    }
+  ],
+  "top_losers": [
+    {
+      "Ticker": "JARIR",
+      "Last Price": 15.54,
+      "%1D": -3.9554998874664307,
+      "%1M": 3.531,
+      "%YTD": 21.5962,
+      "Volume": 2605371.0,
+      "Avg Vol 30D": 2571993,
+      "_vol_ratio": null
+    },
+    {
+      "Ticker": "SMASCO",
+      "Last Price": 6.22,
+      "%1D": -3.5659000873565674,
+      "%1M": 7.6125,
+      "%YTD": 17.803,
+      "Volume": 3680520.0,
+      "Avg Vol 30D": 3010009,
+      "_vol_ratio": null
+    },
+    {
+      "Ticker": "ARABIANM",
+      "Last Price": 46.0,
+      "%1D": -3.4830000400543213,
+      "%1M": 4.7836,
+      "%YTD": 18.863,
+      "Volume": 206362.0,
+      "Avg Vol 30D": 153330.1,
+      "_vol_ratio": null
+    },
+    {
+      "Ticker": "MAADEN",
+      "Last Price": 61.15,
+      "%1D": -3.0903000831604004,
+      "%1M": -7.3485,
+      "%YTD": 0.3281,
+      "Volume": 2124942.0,
+      "Avg Vol 30D": 2359704,
+      "_vol_ratio": null
+    },
+    {
+      "Ticker": "HERFY",
+      "Last Price": 15.43,
+      "%1D": -3.0169999599456787,
+      "%1M": -0.0648,
+      "%YTD": 4.3272,
+      "Volume": 188649.0,
+      "Avg Vol 30D": 208882,
+      "_vol_ratio": null
+    }
+  ],
+  "vol_leaders": [
+    {
+      "Ticker": "BUILDSTA",
+      "Last Price": 48.58,
+      "%1D": 7.5254998207092285,
+      "%1M": 15.2277,
+      "%YTD": -10.2033,
+      "Volume": 1056599.0,
+      "Avg Vol 30D": 101390.1,
+      "_vol_ratio": 10.42112592846836
+    },
+    {
+      "Ticker": "TALCO",
+      "Last Price": 37.44,
+      "%1D": 2.1833999156951904,
+      "%1M": 4.1157,
+      "%YTD": 8.5217,
+      "Volume": 378969.0,
+      "Avg Vol 30D": 66504.47,
+      "_vol_ratio": 5.6983989196515665
+    },
+    {
+      "Ticker": "MIAHONA",
+      "Last Price": 16.0,
+      "%1D": 4.643599987030029,
+      "%1M": -1.1736,
+      "%YTD": -10.7641,
+      "Volume": 2227011.0,
+      "Avg Vol 30D": 487168.9,
+      "_vol_ratio": 4.571332447535136
+    },
+    {
+      "Ticker": "SCH",
+      "Last Price": 23.41,
+      "%1D": 3.859800100326538,
+      "%1M": -5.9839,
+      "%YTD": -9.8228,
+      "Volume": 352737.0,
+      "Avg Vol 30D": 107557.8,
+      "_vol_ratio": 3.27951110937561
+    },
+    {
+      "Ticker": "AICC",
+      "Last Price": 8.24,
+      "%1D": -1.6706000566482544,
+      "%1M": -2.2539,
+      "%YTD": -11.2069,
+      "Volume": 137364.0,
+      "Avg Vol 30D": 44389.3,
+      "_vol_ratio": 3.094529537523682
+    }
+  ],
+  "sectors_leading": [
+    {
+      "name": "Consumer Discretionary Distribution & Retail",
+      "count": 12,
+      "avg_pct": 0.5737250118205944,
+      "advancers": 4,
+      "decliners": 8,
+      "top_ticker": "BUILDSTA",
+      "top_pct": 7.5254998207092285
+    },
+    {
+      "name": "Capital Goods",
+      "count": 18,
+      "avg_pct": 0.05860555171966553,
+      "advancers": 8,
+      "decliners": 9,
+      "top_ticker": "SCACO",
+      "top_pct": 5.5980000495910645
+    },
+    {
+      "name": "Insurance",
+      "count": 26,
+      "avg_pct": -0.03457306927213302,
+      "advancers": 8,
+      "decliners": 16,
+      "top_ticker": "AMANA",
+      "top_pct": 5.42080020904541
+    }
+  ],
+  "sectors_lagging": [
+    {
+      "name": "Commercial & Professional Services",
+      "count": 7,
+      "avg_pct": -1.334500023296901,
+      "advancers": 0,
+      "decliners": 6,
+      "top_ticker": "SPPC",
+      "top_pct": 0.0
+    },
+    {
+      "name": "Food, Beverage & Tobacco",
+      "count": 22,
+      "avg_pct": -1.0487545488232917,
+      "advancers": 2,
+      "decliners": 19,
+      "top_ticker": "JADCO",
+      "top_pct": 1.2718000411987305
+    },
+    {
+      "name": "Financial Services",
+      "count": 10,
+      "avg_pct": -0.9769600167870521,
+      "advancers": 0,
+      "decliners": 9,
+      "top_ticker": "ABDICO",
+      "top_pct": 0.0
+    }
+  ],
+  "breadth": {
+    "above_ma200": 83,
+    "total_ma200": 262,
+    "above_ma50": 127,
+    "total_ma50": 268,
+    "new_highs": 2,
+    "new_lows": 9,
+    "advancers": 74,
+    "decliners": 177,
+    "unchanged": 18,
+    "ad_ratio": 0.4180790960451977,
+    "total_stocks": 269
+  }
+}
