@@ -1846,17 +1846,26 @@ def _flush_visit_counts(commit_to_github: bool = False):
 
 
 def _maybe_flush_visit_counts():
-    """Throttled flush. Disk-only on the per-visit path so we never spam
-    GitHub. GitHub commits happen via /admin/flush-stats or once-per-day."""
+    """Throttled flush — LOCAL DISK ONLY, never GitHub.
+
+    Why disk-only: every GitHub commit triggers a Render auto-deploy, and
+    each deploy restarts the worker. The old 'once per day' GitHub guard
+    used an in-memory timestamp (_visit_last_github_flush) that RESET to 0
+    on every restart — so after each deploy it thought 24h had passed and
+    committed again, which triggered another deploy, which restarted, which
+    committed again… a self-sustaining loop that burned all the Render
+    pipeline minutes.
+
+    Fix: the per-visit path now ONLY writes to the container's local disk
+    (free, no deploy). Cumulative counts still survive redeploys because
+    _load_visit_counts() restores them from the committed repo snapshot on
+    boot. To persist a fresh permanent checkpoint to GitHub, the admin hits
+    /admin/flush-stats explicitly — that's the only path that commits."""
     if not _visit_dirty:
         return
     now = _time.time()
     if (now - _visit_last_disk_flush) >= _VISIT_DISK_FLUSH_INTERVAL:
-        # Auto-promote to a GitHub commit once per day so the file survives
-        # an unexpected Render restart that happens to land far from
-        # admin/flush-stats time.
-        do_gh = (now - _visit_last_github_flush) >= _VISIT_GITHUB_FLUSH_INTERVAL
-        _flush_visit_counts(commit_to_github=do_gh)
+        _flush_visit_counts(commit_to_github=False)   # disk only, never auto-commit
 
 
 # Restore previous counts at boot — runs once when the module loads
