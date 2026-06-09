@@ -2069,3 +2069,42 @@ table.rs-tbl tbody tr:hover { background: rgba(255,255,255,0.02); }
 .ap-foot{font-size:11px;color:var(--muted);text-align:center;margin-top:13px;line-height:1.6}
 .ap-foot .ar{display:block;direction:rtl;margin-top:2px;
   font-family:'IBM Plex Sans Arabic','Segoe UI Arabic',Tahoma,sans-serif}
+
+/* ════════════════════════════════════════════════════════════════════
+   About / من نحن page
+   ════════════════════════════════════════════════════════════════════ */
+.about-block{
+  background:var(--panel);border:1px solid var(--border);border-radius:14px;
+  padding:22px 26px;margin-bottom:14px;font-size:15px;line-height:1.9;color:var(--text2,#c0c8d3);
+}
+.about-block[dir="rtl"]{font-family:'IBM Plex Sans Arabic','Segoe UI Arabic',Tahoma,sans-serif}
+.about-block b{color:var(--text)}
+.about-block ul{margin:10px 0;padding-right:22px;padding-left:0}
+.about-block li{margin:6px 0}
+.about-block.about-en{font-size:13.5px;color:var(--muted);line-height:1.7}
+
+.about-cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:14px}
+.about-card{
+  background:var(--panel);border:1px solid var(--border);border-radius:14px;padding:20px;
+  transition:border-color .15s,transform .15s;
+}
+.about-card:hover{border-color:var(--accent);transform:translateY(-2px)}
+.about-card .ac-ico{font-size:26px;margin-bottom:10px}
+.about-card h3{font-family:'Manrope',sans-serif;font-size:17px;font-weight:800;margin:0 0 8px;letter-spacing:-.2px}
+.about-card p{font-size:13.5px;line-height:1.8;color:var(--muted);margin:0;
+  font-family:'IBM Plex Sans Arabic','Segoe UI Arabic',Tahoma,sans-serif}
+
+.about-why{display:grid;gap:12px}
+.why-item{display:flex;gap:14px;align-items:flex-start;background:var(--panel);
+  border:1px solid var(--border);border-radius:12px;padding:14px 18px;
+  font-size:14.5px;line-height:1.7;color:var(--text2,#c0c8d3);
+  font-family:'IBM Plex Sans Arabic','Segoe UI Arabic',Tahoma,sans-serif}
+.why-item b{color:var(--text)}
+.why-item .why-ico{font-size:22px;flex:0 0 auto}
+
+.about-disclaimer{
+  background:#1f1a0e;border:1px solid #5a4a20;border-left:3px solid #d4a829;
+  border-radius:8px;padding:14px 18px;font-size:12.5px;line-height:1.8;color:#e0d3a8;
+  font-family:'IBM Plex Sans Arabic','Segoe UI Arabic',Tahoma,sans-serif;
+}
+.about-disclaimer b{color:#ffd98a}

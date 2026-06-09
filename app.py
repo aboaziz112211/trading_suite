@@ -380,6 +380,11 @@ def contact():
     )
 
 
+@app.route("/about")
+def about():
+    return render_template("about.html")
+
+
 def _compute_brief_data(for_date: str = None):
     """Build a unified data bundle for both /report and /agent.
 
