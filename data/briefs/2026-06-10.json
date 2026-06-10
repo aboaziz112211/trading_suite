@@ -1,0 +1,340 @@
+{
+  "generated_at": "2026-06-10T12:20:24",
+  "index": {
+    "today": {
+      "date": "2026-06-10",
+      "open": 11115.37,
+      "high": 11115.71,
+      "low": 11008.2,
+      "close": 11012.64,
+      "volume": 225216377.0
+    },
+    "prev": {
+      "close": 11115.37
+    },
+    "source": "bloomberg_xlsx"
+  },
+  "stage2_count": 32,
+  "potential_count": 41,
+  "score10_count": 12,
+  "scan_total": 269,
+  "top_picks": [
+    {
+      "Ticker": "4280.SR",
+      "_vol_ratio": null,
+      "Company": "\u0627\u0644\u0645\u0645\u0644\u0643\u0629",
+      "Stage": "stage2",
+      "Score": "10",
+      "RS": "97",
+      "12m%": "83.7"
+    },
+    {
+      "Ticker": "2380.SR",
+      "_vol_ratio": null,
+      "Company": "\u0628\u062a\u0631\u0648 \u0631\u0627\u0628\u063a",
+      "Stage": "stage2",
+      "Score": "10",
+      "RS": "96",
+      "12m%": "127.7"
+    },
+    {
+      "Ticker": "8313.SR",
+      "_vol_ratio": null,
+      "Company": "\u0631\u0633\u0646",
+      "Stage": "stage2",
+      "Score": "10",
+      "RS": "95",
+      "12m%": "94.9"
+    },
+    {
+      "Ticker": "7200.SR",
+      "_vol_ratio": null,
+      "Company": "\u0627\u0645 \u0622\u064a \u0627\u0633",
+      "Stage": "stage2",
+      "Score": "10",
+      "RS": "92",
+      "12m%": "47.0"
+    },
+    {
+      "Ticker": "1321.SR",
+      "_vol_ratio": null,
+      "Company": "\u0623\u0646\u0627\u0628\u064a\u0628 \u0627\u0644\u0634\u0631\u0642",
+      "Stage": "stage2",
+      "Score": "10",
+      "RS": "91",
+      "12m%": "92.8"
+    },
+    {
+      "Ticker": "2200.SR",
+      "_vol_ratio": null,
+      "Company": "\u0623\u0646\u0627\u0628\u064a\u0628",
+      "Stage": "stage2",
+      "Score": "10",
+      "RS": "89",
+      "12m%": "34.5"
+    },
+    {
+      "Ticker": "2230.SR",
+      "_vol_ratio": null,
+      "Company": "\u0627\u0644\u0643\u064a\u0645\u064a\u0627\u0626\u064a\u0629",
+      "Stage": "stage2",
+      "Score": "10",
+      "RS": "88",
+      "12m%": "38.8"
+    },
+    {
+      "Ticker": "2223.SR",
+      "_vol_ratio": null,
+      "Company": "\u0644\u0648\u0628\u0631\u064a\u0641",
+      "Stage": "stage2",
+      "Score": "10",
+      "RS": "87",
+      "12m%": "34.0"
+    },
+    {
+      "Ticker": "2320.SR",
+      "_vol_ratio": null,
+      "Company": "\u0627\u0644\u0628\u0627\u0628\u0637\u064a\u0646",
+      "Stage": "stage2",
+      "Score": "10",
+      "RS": "87",
+      "12m%": "48.1"
+    },
+    {
+      "Ticker": "1831.SR",
+      "_vol_ratio": null,
+      "Company": "\u0645\u0647\u0627\u0631\u0629",
+      "Stage": "stage2",
+      "Score": "10",
+      "RS": "87",
+      "12m%": "42.5"
+    }
+  ],
+  "top_gainers": [
+    {
+      "Ticker": "GAS",
+      "Last Price": 16.62,
+      "%1D": 6.0625,
+      "%1M": 4.858,
+      "%YTD": 27.0642,
+      "Volume": 2234247.0,
+      "Avg Vol 30D": 431373.5,
+      "_vol_ratio": 5.1793793545500595
+    },
+    {
+      "Ticker": "ALABDUL",
+      "Last Price": 11.2,
+      "%1D": 5.065700054168701,
+      "%1M": 10.8911,
+      "%YTD": 5.7602,
+      "Volume": 2522330.0,
+      "Avg Vol 30D": 149267.3,
+      "_vol_ratio": 16.898074796020296
+    },
+    {
+      "Ticker": "ALMAJED",
+      "Last Price": 142.0,
+      "%1D": 4.48859977722168,
+      "%1M": 5.7334,
+      "%YTD": 7.3318,
+      "Volume": 191409.0,
+      "Avg Vol 30D": 119256.4,
+      "_vol_ratio": null
+    },
+    {
+      "Ticker": "ALMAWARI",
+      "Last Price": 101.7,
+      "%1D": 3.881500005722046,
+      "%1M": 15.9635,
+      "%YTD": 4.2275,
+      "Volume": 335140.0,
+      "Avg Vol 30D": 185961.2,
+      "_vol_ratio": null
+    },
+    {
+      "Ticker": "LUBEREF",
+      "Last Price": 129.2,
+      "%1D": 3.359999895095825,
+      "%1M": 8.9376,
+      "%YTD": 34.3734,
+      "Volume": 778688.0,
+      "Avg Vol 30D": 504919.9,
+      "_vol_ratio": null
+    }
+  ],
+  "top_losers": [
+    {
+      "Ticker": "YNCCO",
+      "Last Price": 15.51,
+      "%1D": -6.45359992980957,
+      "%1M": 5.0102,
+      "%YTD": 7.4844,
+      "Volume": 1325702.0,
+      "Avg Vol 30D": 640507.1,
+      "_vol_ratio": null
+    },
+    {
+      "Ticker": "RAOOM",
+      "Last Price": 66.9,
+      "%1D": -4.291800022125244,
+      "%1M": -6.5642,
+      "%YTD": 2.5287,
+      "Volume": 83532.0,
+      "Avg Vol 30D": 56848.54,
+      "_vol_ratio": null
+    },
+    {
+      "Ticker": "AMAK",
+      "Last Price": 71.0,
+      "%1D": -3.7939999103546143,
+      "%1M": -11.5265,
+      "%YTD": -19.3182,
+      "Volume": 1091334.0,
+      "Avg Vol 30D": 400459.3,
+      "_vol_ratio": null
+    },
+    {
+      "Ticker": "YANSAB",
+      "Last Price": 30.54,
+      "%1D": -3.5985000133514404,
+      "%1M": -10.7018,
+      "%YTD": 11.1354,
+      "Volume": 1551040.0,
+      "Avg Vol 30D": 1074979,
+      "_vol_ratio": null
+    },
+    {
+      "Ticker": "MAADEN",
+      "Last Price": 58.55,
+      "%1D": -3.4625000953674316,
+      "%1M": -11.2879,
+      "%YTD": -3.9377,
+      "Volume": 2178594.0,
+      "Avg Vol 30D": 2448555,
+      "_vol_ratio": null
+    }
+  ],
+  "vol_leaders": [
+    {
+      "Ticker": "ALABDUL",
+      "Last Price": 11.2,
+      "%1D": 5.065700054168701,
+      "%1M": 10.8911,
+      "%YTD": 5.7602,
+      "Volume": 2522330.0,
+      "Avg Vol 30D": 149267.3,
+      "_vol_ratio": 16.898074796020296
+    },
+    {
+      "Ticker": "UCA",
+      "Last Price": 3.38,
+      "%1D": 1.5015000104904175,
+      "%1M": 12.2924,
+      "%YTD": -9.1398,
+      "Volume": 4380756.0,
+      "Avg Vol 30D": 485105.4,
+      "_vol_ratio": 9.030524088167232
+    },
+    {
+      "Ticker": "ZIIC",
+      "Last Price": 35.16,
+      "%1D": 0.3425000011920929,
+      "%1M": -8.8174,
+      "%YTD": -8.1984,
+      "Volume": 3302346.0,
+      "Avg Vol 30D": 468649.4,
+      "_vol_ratio": 7.046517076518182
+    },
+    {
+      "Ticker": "GAS",
+      "Last Price": 16.62,
+      "%1D": 6.0625,
+      "%1M": 4.858,
+      "%YTD": 27.0642,
+      "Volume": 2234247.0,
+      "Avg Vol 30D": 431373.5,
+      "_vol_ratio": 5.1793793545500595
+    },
+    {
+      "Ticker": "GGCI",
+      "Last Price": 3.9,
+      "%1D": -2.2555999755859375,
+      "%1M": 3.7234,
+      "%YTD": -0.7634,
+      "Volume": 1135481.0,
+      "Avg Vol 30D": 242631.4,
+      "_vol_ratio": 4.679860067575755
+    }
+  ],
+  "sectors_leading": [
+    {
+      "name": "Pharmaceuticals, Biotechnology & Life Sciences",
+      "count": 3,
+      "avg_pct": 0.7968333661556244,
+      "advancers": 2,
+      "decliners": 1,
+      "top_ticker": "AVALONPH",
+      "top_pct": 2.780100107192993
+    },
+    {
+      "name": "Consumer Durables & Apparel",
+      "count": 6,
+      "avg_pct": 0.6041166658202807,
+      "advancers": 3,
+      "decliners": 3,
+      "top_ticker": "ALABDUL",
+      "top_pct": 5.065700054168701
+    },
+    {
+      "name": "Commercial & Professional Services",
+      "count": 7,
+      "avg_pct": 0.49751428195408415,
+      "advancers": 2,
+      "decliners": 4,
+      "top_ticker": "ALMAWARI",
+      "top_pct": 3.881500005722046
+    }
+  ],
+  "sectors_lagging": [
+    {
+      "name": "Media & Entertainment",
+      "count": 4,
+      "avg_pct": -1.4928750358521938,
+      "advancers": 1,
+      "decliners": 3,
+      "top_ticker": "RESEARCH",
+      "top_pct": 0.18170000612735748
+    },
+    {
+      "name": "Software & Services",
+      "count": 6,
+      "avg_pct": -1.4023833225170772,
+      "advancers": 1,
+      "decliners": 5,
+      "top_ticker": "AZM",
+      "top_pct": 0.26409998536109924
+    },
+    {
+      "name": "Banks",
+      "count": 10,
+      "avg_pct": -1.3441200017929078,
+      "advancers": 0,
+      "decliners": 10,
+      "top_ticker": "ARNB",
+      "top_pct": -0.7139000296592712
+    }
+  ],
+  "breadth": {
+    "above_ma200": 87,
+    "total_ma200": 262,
+    "above_ma50": 127,
+    "total_ma50": 268,
+    "new_highs": 4,
+    "new_lows": 4,
+    "advancers": 83,
+    "decliners": 176,
+    "unchanged": 10,
+    "ad_ratio": 0.4715909090909091,
+    "total_stocks": 269
+  }
+}
