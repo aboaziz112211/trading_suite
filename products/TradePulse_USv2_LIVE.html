@@ -844,7 +844,7 @@ body.dark-mode .tp-filter-bar .tp-fb-label{color:#fff;}
 <div class="hdr">
   <div>
     <h1>TradePulse US · تريد بَلْس الأمريكي</h1>
-    <div class="sub">Minervini SEPA 10-Criteria · VCP Pivot · 11 US GICS Sectors · ChartEdge + Polygon.io Live · معايير مينيرفيني · نقطة اختراق VCP · 11 قطاع</div>
+    <div class="sub">SEPA 10-Criteria · VCP Pivot · 11 US GICS Sectors · ChartEdge + Polygon.io Live · معايير SEPA · نقطة اختراق VCP · 11 قطاع</div>
   </div>
   <div style="display:flex;flex-direction:column;align-items:flex-end;gap:3px;">
     <button id="theme-toggle" onclick="toggleTheme()" title="Toggle dark mode · تبديل الوضع الليلي">🌙</button>
@@ -3391,7 +3391,7 @@ function exportReportHtml(){
     const clone = document.documentElement.cloneNode(true);
     // Remove drop zones / file inputs / buttons that won't work standalone
     clone.querySelectorAll('input[type=file],.dz,#parse-diag').forEach(n=>n.remove());
-    clone.querySelectorAll('button').forEach(b=>{ if(/Share HTML|Auto-Refresh|Pick Bloomberg|⟳|⏹/i.test(b.textContent)) b.remove(); });
+    clone.querySelectorAll('button').forEach(b=>{ if(/Share HTML|Auto-Refresh|Pick Market|⟳|⏹/i.test(b.textContent)) b.remove(); });
     const html = '<!DOCTYPE html>\n' + clone.outerHTML;
     const blob = new Blob([html], {type:'text/html'});
     const url = URL.createObjectURL(blob);

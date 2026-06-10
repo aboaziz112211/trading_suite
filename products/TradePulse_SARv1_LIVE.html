@@ -874,12 +874,12 @@ document.addEventListener('drop',      function(e){
 <!-- HEADER -->
 <div style="background:#1B4D0F;color:#fff;padding:8px 18px;border-radius:10px;margin-bottom:12px;display:flex;align-items:center;justify-content:space-between;font-size:13px;font-weight:700;letter-spacing:.3px;">
   <span>🇸🇦 &nbsp;SAUDI MARKET &nbsp;·&nbsp; TASI &nbsp;·&nbsp; SAR &nbsp;·&nbsp; Sun–Thu 10:00–15:30 AST</span>
-  <span style="font-size:11px;font-weight:400;opacity:.85">Data: Bloomberg XLSX &nbsp;|&nbsp; SARv1.7</span>
+  <span style="font-size:11px;font-weight:400;opacity:.85">Data: Live XLSX Feed &nbsp;|&nbsp; SARv1.8</span>
 </div>
 <div class="hdr">
   <div>
     <h1>TradePulse SAR · تريد بَلْس السعودية</h1>
-    <div class="sub">Minervini SEPA 10-Criteria · VCP Pivot · 22 GICS Sectors · ChartEdge + Bloomberg XLSX · معايير مينيرفيني · نقطة اختراق VCP · 22 قطاع</div>
+    <div class="sub">SEPA 10-Criteria · VCP Pivot · 22 GICS Sectors · ChartEdge + Live XLSX Feed · معايير SEPA · نقطة اختراق VCP · 22 قطاع</div>
   </div>
   <div style="display:flex;flex-direction:column;align-items:flex-end;gap:3px;">
     <button id="theme-toggle" onclick="toggleTheme()" title="Toggle dark mode · تبديل الوضع الليلي">🌙</button>
@@ -1155,7 +1155,7 @@ document.addEventListener('drop',      function(e){
 
   <button id="share-top3-btn" onclick="shareTop3()" title="نسخ أفضل 3 أسهم وإرسالها عبر واتساب">📋 Copy Top 3 Picks for WhatsApp · نسخ أفضل 3 للواتساب</button>
 
-  <div id="mom-board"><h4>⚡ Momentum Leaderboard · متصدّرو الزخم<span style="font-size:10px;font-weight:500;color:#888">updates on Bloomberg refresh · يتحدّث مع بيانات Bloomberg</span></h4><div class="mom-cols"><div><div class="mom-col-title">🚀 Top Movers (% chg) · أكثر تحركاً</div><div id="mom-movers"></div></div><div><div class="mom-col-title">📊 Volume Leaders (vs 30D avg) · قادة الحجم</div><div id="mom-vol"></div></div></div></div>
+  <div id="mom-board"><h4>⚡ Momentum Leaderboard · متصدّرو الزخم<span style="font-size:10px;font-weight:500;color:#888">updates on feed refresh · يتحدّث مع بيانات السوق</span></h4><div class="mom-cols"><div><div class="mom-col-title">🚀 Top Movers (% chg) · أكثر تحركاً</div><div id="mom-movers"></div></div><div><div class="mom-col-title">📊 Volume Leaders (vs 30D avg) · قادة الحجم</div><div id="mom-vol"></div></div></div></div>
 
 <!-- BREAKOUT WATCH -->
 </div> <!-- end tab-movers -->
@@ -1273,7 +1273,7 @@ document.addEventListener('drop',      function(e){
 // ══════════════════════════════════════════════
 // VERSION — used to verify which build is running
 // ══════════════════════════════════════════════
-const TP_VERSION = 'SARv1.7.4-2026-06-01';// ── TASI Regime Gate (Scout discipline control) ──
+const TP_VERSION = 'SARv1.8-2026-06-10';// ── TASI Regime Gate (Scout discipline control) ──
 // Manually-set Wyckoff stage classification of TASI itself.
 // Stage 1 = Accumulation, Stage 2 = Markup, Stage 3 = Distribution, Stage 4 = Markdown
 // Stage 4 = Scout in observation mode only; warning banner shown, no new entries.
@@ -1459,50 +1459,45 @@ const nowDate= () => new Date().toLocaleDateString('en-SA',{day:'2-digit',month:
 // AGENT 5: LIQUIDITY SCORING
 // ══════════════════════════════════════════════
 function calcLiq(s) {
-  // SARv1.7.3 — tiered liquidity scoring (Saudi vol tiers ~10× smaller than US).
+  // SARv1.8 — continuous liquidity scoring (replaces v1.7.x discrete buckets).
+  // Fixes pre-market score clustering: 7 distinct values → fully continuous.
+  // Anchors preserved from v1.7.x tiers: avg 1M→50, 500k→42.5; vr 1→10, 3→20.
   // Always scores from whatever data exists; never 0 when avgVol is known.
+  const clamp = (lo, hi, v) => Math.max(lo, Math.min(hi, v));
   let score = 0, maxScore = 0;
   const price = s.livePrice || s.price || 0;
   const avg   = s.avgVol30  || s.avgVol  || 0;
   const lv    = s.liveVol   || 0;
 
-  // ── Tier A: Static Baseline (50 pts) — Saudi avgVol tiers ──
-  maxScore += 50;
-  if      (avg >= 1_000_000) score += 50;
-  else if (avg >= 500_000)   score += 42;
-  else if (avg >= 200_000)   score += 35;
-  else if (avg >= 100_000)   score += 28;
-  else if (avg >= 50_000)    score += 20;
-  else if (avg >= 20_000)    score += 12;
-  else if (avg > 0)          score += 5;
+  // ── Tier A: Static Baseline (50 pts) — continuous log10 of avgVol ──
+  // 10k shares → 0, 100k → 25, 1M+ → 50 (Saudi tiers ~10× smaller than US)
+  if (avg > 0) {
+    maxScore += 50;
+    score += clamp(0, 50, 25 * Math.log10(avg / 10_000));
+  }
 
-  // ── Tier B: Live Volume Ratio (20 pts) — when liveVol arrives ──
+  // ── Tier B: Live Volume Ratio (20 pts) — continuous log2, when liveVol arrives ──
+  // vr 0.1× → 0, 1× → 10, 3×+ → 20
   if (lv > 0 && avg > 0) {
     maxScore += 20;
     const vr = lv / avg;
-    if      (vr >= 3)   score += 20;
-    else if (vr >= 2)   score += 17;
-    else if (vr >= 1.5) score += 14;
-    else if (vr >= 1)   score += 10;
-    else if (vr >= 0.5) score += 5;
+    score += clamp(0, 20, 10 * Math.log2(vr) / Math.log2(3) + 10);
   }
 
-  // ── Tier C: VWAP Position (15 pts) — when VWAP arrives ──
+  // ── Tier C: VWAP Position (15 pts) — linear, when VWAP arrives ──
+  // vp -1.0% → 0, +1.0%+ → 15 (midpoint 0% → 7.5, vs old step 8)
   if (s.vwap && s.vwap > 0 && price > 0) {
     maxScore += 15;
     const vp = (price - s.vwap) / s.vwap * 100;
-    if      (vp > 0.5)  score += 15;
-    else if (vp > -0.1) score += 8;
+    score += clamp(0, 15, 7.5 * (vp + 1));
   }
 
-  // ── Tier D: Bid-Ask Spread (15 pts) — when bid/ask present ──
+  // ── Tier D: Bid-Ask Spread (15 pts) — linear penalty, when bid/ask present ──
+  // spread 0.10% or tighter → 15, fades linearly to 0 at 1.10%
   if (s.bid && s.ask && s.bid > 0 && s.ask > 0 && price > 0) {
     maxScore += 15;
     const spd = (s.ask - s.bid) / price * 100;
-    if      (spd <= 0.15) score += 15;
-    else if (spd <= 0.30) score += 12;
-    else if (spd <= 0.50) score += 8;
-    else if (spd <= 1.00) score += 3;
+    score += clamp(0, 15, 15 * (1.10 - spd));
   }
 
   if (maxScore === 0) return 0;
@@ -3432,7 +3427,7 @@ function renderPullbackWatch() {
         <span class="pb-m">12m +${s.pct12}%</span>
         ${risk ? '<span class="pb-m" style="background:#FDE8E8;color:#A32D2D">Risk ' + risk.toFixed(2) + '</span>' : ''}
         ${rr   ? '<span class="pb-m" style="background:#EAF3DE;color:#3B6D11">R:R ' + rr + ':1</span>' : ''}
-        ${lastLow ? '' : '<span class="pb-m" style="color:#BA7517" title="Connect Bloomberg for exact last low">⚠ est. stop</span>'}
+        ${lastLow ? '' : '<span class="pb-m" style="color:#BA7517" title="Connect Market Feed for exact last low">⚠ est. stop</span>'}
       </div>
     </div>`;
   }).join('');
@@ -3762,7 +3757,7 @@ function exportReportHtml(){
     const clone = document.documentElement.cloneNode(true);
     // Remove drop zones / file inputs / buttons that won't work standalone
     clone.querySelectorAll('input[type=file],.dz,#parse-diag').forEach(n=>n.remove());
-    clone.querySelectorAll('button').forEach(b=>{ if(/Share HTML|Auto-Refresh|Pick Bloomberg|⟳|⏹/i.test(b.textContent)) b.remove(); });
+    clone.querySelectorAll('button').forEach(b=>{ if(/Share HTML|Auto-Refresh|Pick Market|⟳|⏹/i.test(b.textContent)) b.remove(); });
     const html = '<!DOCTYPE html>\n' + clone.outerHTML;
     const blob = new Blob([html], {type:'text/html'});
     const url = URL.createObjectURL(blob);
