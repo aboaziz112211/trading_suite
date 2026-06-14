@@ -5,6 +5,12 @@
 {% set b = live.latest_brief %}
 {% set scan = live.scan %}
 
+{# Shown only on small screens — data-heavy dashboards are best on a laptop #}
+<div class="laptop-notice" role="note">
+  <span class="ar" dir="rtl" lang="ar">💻 لكثافة البيانات، يُنصح بتصفّح اللوحات على جهاز كمبيوتر أو لابتوب للحصول على أفضل تجربة.</span>
+  <span class="en" lang="en">For the best experience with these data-heavy dashboards, browse on a laptop or desktop.</span>
+</div>
+
 {# ── HERO ──────────────────────────────────────────────────────── #}
 <section class="hero-v2">
   <div class="hero-left">
