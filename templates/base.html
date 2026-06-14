@@ -275,8 +275,9 @@
 
       <div class="ap-msg" id="azMsg" hidden></div>
       <div class="ap-foot">
-        The analyst replies directly in your Telegram chat.
         <span class="ar" dir="rtl" lang="ar">سيردّ عليك المحلل مباشرة عبر تيليجرام</span>
+        <span class="ap-note" dir="rtl" lang="ar">⏰ الرد سوف يكون خارج أوقات التداول</span>
+        <span class="en">The analyst replies on Telegram — outside trading hours.</span>
       </div>
     </div>
   </div>
@@ -316,7 +317,7 @@
 
     sendB.addEventListener('click', function(){
       var ticker = (tickerI.value || '').trim().toUpperCase();
-      if (!ticker){ showMsg('Please enter a ticker first.', false); tickerI.focus(); return; }
+      if (!ticker){ showMsg('⚠ أدخل رمز السهم أولاً', false); tickerI.focus(); return; }
       sendB.disabled = true; sendB.querySelector('span').textContent = 'Sending…';
       fetch('/api/analyze-request', {
         method: 'POST',
@@ -327,14 +328,14 @@
       }).then(function(r){ return r.json().then(function(j){ return {s:r.status, j:j}; }); })
         .then(function(res){
           if (res.j && res.j.ok){
-            showMsg('✅ Sent! The analyst will reply on your Telegram.', true);
+            showMsg('✅ تم إرسال طلبك بنجاح\nسيردّ عليك المحلل عبر تيليجرام خارج أوقات التداول', true);
             tickerI.value=''; noteI.value='';
-            setTimeout(close, 2500);
+            setTimeout(close, 3500);
           } else {
-            showMsg('⚠ ' + ((res.j && res.j.error) || 'Could not send. Try again.'), false);
+            showMsg('⚠ تعذّر الإرسال — حاول مرة أخرى', false);
           }
         })
-        .catch(function(){ showMsg('⚠ Network error — please try again.', false); })
+        .catch(function(){ showMsg('⚠ خطأ في الاتصال — حاول مرة أخرى', false); })
         .finally(function(){ sendB.disabled = false; sendB.querySelector('span').textContent = 'Send to analyst on Telegram'; });
     });
   })();

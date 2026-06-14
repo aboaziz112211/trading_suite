@@ -2042,10 +2042,11 @@ table.rs-tbl tbody tr:hover { background: rgba(255,255,255,0.02); }
 .analyze-panel h2{font-family:'Manrope',sans-serif;font-weight:800;font-size:21px;
   margin:0 0 4px;letter-spacing:-.3px}
 .ap-h2ar{font-family:'IBM Plex Sans Arabic','Segoe UI Arabic',Tahoma,sans-serif;
-  font-size:14px;color:var(--muted);direction:rtl;margin-bottom:18px}
+  font-size:17px;font-weight:600;color:var(--text2,#c0c8d3);direction:rtl;margin-bottom:18px}
 .ap-field{margin-bottom:14px}
-.ap-field label{display:block;font-size:11px;color:var(--muted);text-transform:uppercase;
-  letter-spacing:.5px;margin-bottom:6px;font-family:'JetBrains Mono',monospace}
+.ap-field label{display:block;font-size:13px;color:var(--text2,#c0c8d3);
+  letter-spacing:.2px;margin-bottom:6px;
+  font-family:'IBM Plex Sans Arabic','Segoe UI Arabic',Tahoma,sans-serif}
 .ap-field input{width:100%;background:rgba(255,255,255,.04);border:1px solid var(--border);
   color:var(--text);padding:11px 13px;border-radius:9px;font-size:15px;
   font-family:'Inter',sans-serif;outline:none}
@@ -2063,12 +2064,17 @@ table.rs-tbl tbody tr:hover { background: rgba(255,255,255,0.02); }
   box-shadow:0 8px 22px rgba(42,171,238,.35)}
 .az-send:hover{background:#229ED9}
 .az-send:disabled{opacity:.6;cursor:wait}
-.ap-msg{margin-top:12px;padding:10px 12px;border-radius:8px;font-size:13px;text-align:center}
+.ap-msg{margin-top:12px;padding:11px 13px;border-radius:8px;font-size:14px;text-align:center;
+  line-height:1.7;white-space:pre-line;direction:rtl;
+  font-family:'IBM Plex Sans Arabic','Segoe UI Arabic',Tahoma,sans-serif}
 .ap-msg.ok{background:rgba(34,197,94,.12);border:1px solid rgba(34,197,94,.4);color:#22c55e}
 .ap-msg.err{background:rgba(239,68,68,.12);border:1px solid rgba(239,68,68,.4);color:#ef9a9a}
-.ap-foot{font-size:11px;color:var(--muted);text-align:center;margin-top:13px;line-height:1.6}
-.ap-foot .ar{display:block;direction:rtl;margin-top:2px;
+.ap-foot{font-size:12px;color:var(--muted);text-align:center;margin-top:14px;line-height:1.7}
+.ap-foot .ar{display:block;direction:rtl;margin-top:2px;font-size:13px;
   font-family:'IBM Plex Sans Arabic','Segoe UI Arabic',Tahoma,sans-serif}
+.ap-foot .ap-note{display:block;direction:rtl;margin-top:6px;font-size:13px;font-weight:700;
+  color:#f4d875;font-family:'IBM Plex Sans Arabic','Segoe UI Arabic',Tahoma,sans-serif}
+.ap-foot .en{display:block;margin-top:5px;font-size:10px;opacity:.7}
 
 /* ════════════════════════════════════════════════════════════════════
    About / من نحن page
