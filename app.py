@@ -1597,6 +1597,46 @@ def product_file(key):
     return send_from_directory(p["dir"], p["file"])
 
 
+# ── Runtime GitHub file fetch ──────────────────────────────────────────────
+# Admin uploads commit to GitHub, but Render's free tier has no persistent disk,
+# so the live server otherwise only sees new data after a (currently blocked)
+# redeploy. Fetching the scan CSVs from GitHub at request time — short cache,
+# disk fallback — lets uploads go live WITHOUT a deploy. This is a READ only;
+# it never commits, so it's safe on the request path (commits/deploys are the
+# hot-path hazard, not reads — see CLAUDE.md).
+_GH_FILE_CACHE = {}      # repo_path -> (fetched_at_epoch, bytes)
+_GH_FILE_TTL = 60.0      # seconds → ≤60 GitHub reads/hour/file, far under limits
+
+
+def _github_file_bytes(repo_path):
+    """Current bytes of a repo file from GitHub, cached ~60s.
+
+    Returns None on any failure so callers fall back to the on-disk copy.
+    Serves the last-good cached copy if a refresh fetch fails transiently.
+    """
+    if not GH_PAT:
+        return None
+    import time as _t
+    import requests as _rq
+    now = _t.time()
+    hit = _GH_FILE_CACHE.get(repo_path)
+    if hit and (now - hit[0]) < _GH_FILE_TTL:
+        return hit[1]
+    try:
+        r = _rq.get(
+            f"https://api.github.com/repos/{GH_REPO}/contents/{repo_path}",
+            headers={"Authorization": f"token {GH_PAT}",
+                     "Accept": "application/vnd.github.v3.raw",
+                     "User-Agent": "trading-suite"},
+            params={"ref": GH_BRANCH}, timeout=8)
+        if r.status_code == 200:
+            _GH_FILE_CACHE[repo_path] = (now, r.content)
+            return r.content
+    except Exception:
+        pass
+    return hit[1] if hit else None   # last-good on transient failure
+
+
 @app.route("/data/<path:filename>")
 def data_file(filename):
     from flask import Response
@@ -1615,6 +1655,12 @@ def data_file(filename):
                "guide_chartedge.pdf", "guide_tradepulse_us.pdf", "guide_tradepulse_sar.pdf"}
     if filename not in allowed:
         abort(404)
+    # Scan CSVs: prefer the live GitHub copy so admin uploads appear without a
+    # redeploy. Falls back to the on-disk copy when GitHub is unreachable.
+    if filename in ("chartedge_us.csv", "chartedge_sa.csv"):
+        data = _github_file_bytes(f"data/{filename}")
+        if data is not None:
+            return Response(data, mimetype="text/csv; charset=utf-8")
     return send_from_directory(DATA_DIR, filename)
 
 
