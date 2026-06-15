@@ -67,7 +67,16 @@ def _detect_csv_market(filename: str):
 
 
 def _detect_csv_market_from_content(raw: bytes) -> str:
-    """Peek at the first column of the CSV; mostly 4-digit numeric tickers -> Saudi."""
+    """Classify a scan CSV's market by sniffing the first (Ticker) column.
+
+    Saudi (Tadawul) tickers are 4-digit codes, usually carrying a '.SR' suffix
+    (e.g. '2030.SR'). US tickers are alphabetic (e.g. 'VSH', 'AAPL', 'BRK.B').
+    Returns 'sa', 'us', or None when the sample is too ambiguous to be sure.
+
+    NOTE: the earlier version tested `cell.isdigit()`, which is False for the
+    real '2030.SR' format and silently classified Saudi files as US — a bug that
+    let a TASI scan get written into the US slot twice. Handle the suffix here.
+    """
     try:
         text = raw[:8192].decode("utf-8", errors="ignore")
     except Exception:
@@ -75,15 +84,24 @@ def _detect_csv_market_from_content(raw: bytes) -> str:
     lines = [ln for ln in text.splitlines() if ln.strip()]
     if len(lines) < 2:
         return None
-    first_cells = []
-    for ln in lines[1:11]:  # skip header, sample up to 10 rows
-        cell = ln.split(",")[0].strip().strip('"').strip("'")
-        if cell:
-            first_cells.append(cell)
-    if not first_cells:
+    saudi = us = total = 0
+    for ln in lines[1:21]:  # skip header, sample up to 20 rows
+        cell = ln.split(",")[0].strip().strip('"').strip("'").upper()
+        if not cell:
+            continue
+        total += 1
+        base = cell[:-3] if cell.endswith(".SR") else cell
+        if cell.endswith(".SR") or (base.isdigit() and len(base) == 4):
+            saudi += 1
+        elif cell.replace(".", "").isalpha():
+            us += 1
+    if total == 0:
         return None
-    numeric = sum(1 for c in first_cells if c.isdigit() and len(c) == 4)
-    return "sa" if (numeric / len(first_cells)) >= 0.6 else "us"
+    if saudi / total >= 0.6:
+        return "sa"
+    if us / total >= 0.6:
+        return "us"
+    return None
 
 
 def _resolve_upload_target(filename: str, market_form: str = None, raw: bytes = None,
@@ -112,8 +130,22 @@ def _resolve_upload_target(filename: str, market_form: str = None, raw: bytes = 
     market = (market_form or "").lower().strip()
     if market not in ("us", "sa"):
         market = _detect_csv_market(filename) or ""
-    if market not in ("us", "sa") and raw is not None:
-        market = _detect_csv_market_from_content(raw) or ""
+    content_market = _detect_csv_market_from_content(raw) if raw is not None else None
+    if market not in ("us", "sa"):
+        market = content_market or ""
+    # SAFETY GUARD — never let a clearly-Saudi scan land in the US slot (or vice
+    # versa). A market mismatch here has overwritten the US dashboard with TASI
+    # data twice. If the chosen market and the file's actual tickers disagree
+    # confidently, refuse the upload instead of corrupting the wrong dashboard.
+    if market in ("us", "sa") and content_market in ("us", "sa") and content_market != market:
+        names = {"us": "US (NYSE/NASDAQ)", "sa": "Saudi (TASI)"}
+        looks = "Saudi 4-digit / .SR codes" if content_market == "sa" else "US letter symbols"
+        return None, (
+            f"⚠ Market mismatch — upload refused. You selected {names[market]}, "
+            f"but this file's tickers look like {names[content_market]} data ({looks}). "
+            f"This guard protects the {names[market]} dashboard from being overwritten "
+            f"with the wrong market. Pick the correct market, or check the file."
+        )
     if market == "us":
         return GH_CSV_US_PATH, None
     if market == "sa":
