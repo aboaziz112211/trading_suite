@@ -1810,8 +1810,13 @@ def api_analyze_request():
     if not _re.match(r"^[A-Z0-9.\-]{1,12}$", ticker):
         return {"ok": False, "error": "Please enter a valid ticker (e.g. 2222 or AAPL)."}, 400
 
+    # Telegram handle is REQUIRED so the analyst has somewhere to reply.
+    if len(contact.lstrip("@").strip()) < 4:
+        return {"ok": False,
+                "error": "Please enter your Telegram so the analyst can reply (e.g. @yourname)."}, 400
+
     flag = "🇸🇦" if market.upper() in ("TASI", "SA", "SAR") else ("🇺🇸" if market.upper() in ("US", "USA") else "📈")
-    contact_line = f"\n👤 Reply to: {contact}" if contact else "\n⚠️ No contact provided — visitor left no Telegram handle."
+    contact_line = f"\n👤 Reply to: {contact}"
     note_line    = f"\n📝 Note: {note}" if note else ""
 
     msg = (

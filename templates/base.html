@@ -259,8 +259,8 @@
       </div>
 
       <div class="ap-field">
-        <label for="azContact">Your Telegram (so the analyst can reply) · حسابك في تيليجرام</label>
-        <input id="azContact" type="text" placeholder="@yourusername" maxlength="60" autocomplete="off">
+        <label for="azContact">Your Telegram <span class="ap-req">*</span> (so the analyst can reply) · حسابك في تيليجرام <span class="ap-req">(مطلوب)</span></label>
+        <input id="azContact" type="text" placeholder="@yourusername" maxlength="60" autocomplete="off" required aria-required="true">
       </div>
 
       <div class="ap-field">
@@ -295,7 +295,10 @@
     var market  = 'TASI';
     if (!fab) return;
 
-    function open(){ overlay.hidden = false; setTimeout(function(){ tickerI.focus(); }, 30); }
+    // Remember the visitor's Telegram so they don't re-enter it every time.
+    try { var saved = localStorage.getItem('az_contact'); if (saved && !contactI.value) contactI.value = saved; } catch(e){}
+
+    function open(){ overlay.hidden = false; setTimeout(function(){ (contactI.value ? tickerI : contactI).focus(); }, 30); }
     function close(){ overlay.hidden = true; msgEl.hidden = true; }
     fab.addEventListener('click', open);
     closeB.addEventListener('click', close);
@@ -318,17 +321,23 @@
     sendB.addEventListener('click', function(){
       var ticker = (tickerI.value || '').trim().toUpperCase();
       if (!ticker){ showMsg('⚠ أدخل رمز السهم أولاً', false); tickerI.focus(); return; }
+      var contact = (contactI.value || '').trim();
+      if (!contact || contact.replace(/^@/,'').length < 4){
+        showMsg('⚠ أدخل معرّف تيليجرام ليتمكّن المحلل من الردّ عليك', false);
+        contactI.focus(); return;
+      }
       sendB.disabled = true; sendB.querySelector('span').textContent = 'Sending…';
       fetch('/api/analyze-request', {
         method: 'POST',
         headers: {'Content-Type':'application/json'},
         body: JSON.stringify({ ticker: ticker, market: market,
-                               contact: (contactI.value||'').trim(),
+                               contact: contact,
                                note: (noteI.value||'').trim() })
       }).then(function(r){ return r.json().then(function(j){ return {s:r.status, j:j}; }); })
         .then(function(res){
           if (res.j && res.j.ok){
             showMsg('✅ تم إرسال طلبك بنجاح\nسيردّ عليك المحلل عبر تيليجرام خارج أوقات التداول', true);
+            try { localStorage.setItem('az_contact', contact); } catch(e){}
             tickerI.value=''; noteI.value='';
             setTimeout(close, 3500);
           } else {

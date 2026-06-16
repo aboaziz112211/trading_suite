@@ -2131,3 +2131,6 @@ table.rs-tbl tbody tr:hover { background: rgba(255,255,255,0.02); }
     font-family:'IBM Plex Sans Arabic','Segoe UI Arabic',Tahoma,sans-serif}
   .laptop-notice .en{display:block;font-size:11px;opacity:.75;margin-top:3px}
 }
+
+/* ── Analyze panel: required-field marker ──────────────────────────────── */
+.ap-req{color:#ff6b6b;font-weight:700}
