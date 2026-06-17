@@ -1427,6 +1427,7 @@ function trackBreakout(s, price) {
       toast('🔻 FAILED BREAKOUT: ' + dtk(s), s.company + ' → back below pivot ' + piv.toFixed(2) + ' SAR');
       logAlert('🔻', '<b>' + (s.company || dtk(s)) + '</b> (' + dtk(s) + ') FAILED BREAKOUT · ' + price.toFixed(2) + ' SAR · pivot ' + piv.toFixed(2));
     }
+    try { if (typeof journalMarkFailed === 'function') journalMarkFailed(s, price); } catch(e){}
     _brkStSave();
     return null;
   }
@@ -1449,6 +1450,7 @@ function trackBreakout(s, price) {
   try { playBreakoutSound(); } catch(e) {}
   try { showBreakoutPopup(s, icon + ' ' + (re ? 'RE-BREAK' : bt.toUpperCase())); } catch(e) {}
   logAlert(icon, '<b>' + (s.company || dtk(s)) + '</b> (' + dtk(s) + ') ' + label + ' · ' + price.toFixed(2) + ' SAR · pivot ' + piv.toFixed(2) + (s.base_type ? ' · ' + s.base_type : ''));
+  try { if (typeof journalLog === 'function') journalLog(s, price, bt, re); } catch(e){}
   return label;
 }
 
@@ -4927,6 +4929,504 @@ function openMorningBrief() {
 <!-- MORNING BRIEF PRINT VIEW (SARv1.7) -->
 <div id="print-brief"></div>
 <div id="tp-brk-popup-container"></div>
+
+<script>
+/* ══════════════════════════════════════════════════════════════
+   SARv1.9.1 — BREAKOUT JOURNAL (سجل الاختراقات)
+   Auto-logs every confirmed breakout from trackBreakout(), tracks
+   each ticker's follow-through forward, renders a constellation
+   scatter + per-ticker lifecycle log. Offline, localStorage, no deps.
+   ══════════════════════════════════════════════════════════════ */
+var JRN_KEY = 'tp_sar_journal_v1';
+function jrnLoad(){ try{ var r=localStorage.getItem(JRN_KEY); var a=r?JSON.parse(r):[]; return Array.isArray(a)?a:[]; }catch(e){ return []; } }
+function jrnSave(a){ try{ localStorage.setItem(JRN_KEY, JSON.stringify(a)); }catch(e){} }
+
+var JRN_ST = {
+  working:{lbl:'Working · فعّال',  c:'#5fa728', bg:'#EAF3DE', tc:'#27500A'},
+  target: {lbl:'Target · هدف',    c:'#1d9e75', bg:'#E1F5EE', tc:'#085041'},
+  failed: {lbl:'Failed · فشل',    c:'#e24b4a', bg:'#FCEBEB', tc:'#791F1F'},
+  watching:{lbl:'Watching · مراقبة',c:'#d08a1a', bg:'#FAEEDA', tc:'#633806'}
+};
+var _JRN_FILTER = 'all';
+
+/* ---- write path: called from trackBreakout() ---- */
+function journalLog(s, price, bt, re){
+  if(!s || !price || price<=0) return;
+  var piv = s.breakout_level; if(!piv || piv<=0) return;
+  var arr = jrnLoad();
+  var date = new Date().toISOString().slice(0,10);
+  var id = s.ticker + '|' + date;
+  var vr = (s.liveVol && s.avgVol30 && s.avgVol30>0) ? +(s.liveVol/s.avgVol30).toFixed(1) : null;
+  var ex = arr.find(function(r){ return r.id===id; });
+  if(ex){ if(re) ex.rebroke=true; if(ex.entryVR==null && vr!=null) ex.entryVR=vr; jrnSave(arr); return; }
+  arr.push({
+    id:id, ticker:s.ticker, tk:(s.ticker||'').replace('.SR',''),
+    company:s.company||'', sector:s.sector||'',
+    ts:Date.now(), date:date, pivot:+piv, entry:+price, type:(bt||'confirmed'),
+    entryVR:vr, base:s.base_type||'',
+    last:+price, ft:0, mfe:0, mae:0, failedOnce:false, rebroke:!!re,
+    path:[0], lastSample:Date.now()
+  });
+  jrnSave(arr);
+  try{ toast('📒 Journal', (s.company||(s.ticker||'').replace('.SR',''))+' logged to Breakout Journal'); }catch(e){}
+  try{ renderJournal(); }catch(e){}
+}
+function journalMarkFailed(s, price){
+  var arr = jrnLoad(), changed=false;
+  for(var i=arr.length-1;i>=0;i--){ if(arr[i].ticker===s.ticker){ arr[i].failedOnce=true; changed=true; break; } }
+  if(changed){ jrnSave(arr); try{ renderJournal(); }catch(e){} }
+}
+function journalRemove(id){
+  var arr = jrnLoad().filter(function(r){ return r.id!==id; });
+  jrnSave(arr); renderJournal();
+}
+function clearJournal(){
+  if(!confirm('Clear the entire Breakout Journal? مسح كامل السجل؟')) return;
+  jrnSave([]); renderJournal();
+}
+
+/* ---- update path: recompute tracking against live STOCKS ---- */
+function journalUpdate(){
+  if(typeof STOCKS==='undefined' || !STOCKS) return;
+  var arr = jrnLoad(); if(!arr.length) return;
+  var now=Date.now(), SAMPLE=5*60000, changed=false;
+  arr.forEach(function(r){
+    var s = STOCKS.find(function(x){ return x.ticker===r.ticker; });
+    var px = (s && s.livePrice>0) ? s.livePrice : null;
+    if(px==null) return;
+    r.last=+px;
+    r.ft=+(((px-r.entry)/r.entry)*100).toFixed(1);
+    if(r.ft>r.mfe) r.mfe=r.ft;
+    if(r.ft<r.mae) r.mae=r.ft;
+    if(!r.path) r.path=[0];
+    if(now-(r.lastSample||0)>=SAMPLE){ r.path.push(r.ft); if(r.path.length>60) r.path.shift(); r.lastSample=now; }
+    changed=true;
+  });
+  if(changed) jrnSave(arr);
+}
+function jrnStatus(r){
+  var failPct=(typeof TP_BRK_CFG!=='undefined' && TP_BRK_CFG && TP_BRK_CFG.failPct)?TP_BRK_CFG.failPct:1;
+  if(r.pivot>0 && r.last < r.pivot*(1-failPct/100)) return 'failed';
+  if(r.mfe>=15) return 'target';
+  if(r.ft>0) return 'working';
+  return 'watching';
+}
+function jrnDays(r){ return Math.max(0, Math.floor((Date.now()-r.ts)/86400000)); }
+
+/* ---- visuals ---- */
+function jrnSpark(path,color){
+  var w=110,h=24; if(!path||!path.length) path=[0];
+  if(path.length===1) path=[0,path[0]];
+  var min=Math.min.apply(null,path), max=Math.max.apply(null,path), rng=(max-min)||1;
+  var pts=path.map(function(v,i){ return (i/(path.length-1)*w).toFixed(1)+','+(h-((v-min)/rng)*h).toFixed(1); }).join(' ');
+  var zy=Math.max(0,Math.min(h,(h-((0-min)/rng)*h))).toFixed(1);
+  return '<svg width="'+w+'" height="'+h+'" viewBox="0 0 '+w+' '+h+'" preserveAspectRatio="none"><line x1="0" y1="'+zy+'" x2="'+w+'" y2="'+zy+'" stroke="rgba(150,130,80,.35)" stroke-dasharray="2 2"/><polyline points="'+pts+'" fill="none" stroke="'+color+'" stroke-width="1.8"/></svg>';
+}
+function jrnConstSVG(arr, sts){
+  if(!arr.length) return '<div class="jrn-mut" style="font-size:12px;padding:24px;text-align:center">No breakouts logged yet — they appear here automatically when a stock breaks its pivot.<br>لا اختراقات بعد — ستظهر تلقائياً عند اختراق أي سهم لنقطته.</div>';
+  var W=680,H=280,L=44,R=14,T=14,B=34;
+  var maxD=1,maxF=4,minF=-4;
+  arr.forEach(function(r){ var d=jrnDays(r); if(d>maxD)maxD=d; if(r.ft>maxF)maxF=r.ft; if(r.mae<minF)minF=r.mae; });
+  var xMax=Math.max(14,maxD);
+  var yMax=Math.ceil((maxF+2)/2)*2; if(yMax<8) yMax=8;
+  var yMin=Math.floor((minF-2)/2)*2; if(yMin>-6) yMin=-6;
+  function px(d){ return L+(d/xMax)*(W-L-R); }
+  function py(v){ return T+((yMax-v)/(yMax-yMin))*(H-T-B); }
+  var svg='<svg width="100%" viewBox="0 0 '+W+' '+H+'" preserveAspectRatio="xMidYMid meet" role="img" aria-label="Breakout follow-through scatter: each dot is one breakout positioned by days held and follow-through percent.">';
+  [yMin,0,Math.round(yMax/2),yMax].forEach(function(v,i,a){ if(a.indexOf(v)!==i) return; var y=py(v).toFixed(1);
+    svg+='<line x1="'+L+'" y1="'+y+'" x2="'+(W-R)+'" y2="'+y+'" stroke="rgba(150,130,80,'+(v===0?'.5':'.15')+')"/>';
+    svg+='<text x="'+(L-6)+'" y="'+(+y+3)+'" text-anchor="end" font-size="10" fill="#9a8a5f">'+(v>0?'+':'')+v+'%</text>';
+  });
+  var step=xMax<=14?2:Math.ceil(xMax/7);
+  for(var d=0;d<=xMax;d+=step){ var x=px(d).toFixed(1);
+    svg+='<line x1="'+x+'" y1="'+T+'" x2="'+x+'" y2="'+(H-B)+'" stroke="rgba(150,130,80,.08)"/>';
+    svg+='<text x="'+x+'" y="'+(H-B+15)+'" text-anchor="middle" font-size="10" fill="#9a8a5f">'+d+'d</text>';
+  }
+  svg+='<text x="'+((L+W-R)/2)+'" y="'+(H-3)+'" text-anchor="middle" font-size="10" fill="#9a8a5f">days since breakout · أيام منذ الاختراق</text>';
+  arr.forEach(function(r,i){ var st=sts[i], c=JRN_ST[st].c, d=jrnDays(r);
+    var cx=px(d).toFixed(1), cy=py(Math.max(yMin,Math.min(yMax,r.ft))).toFixed(1);
+    var rad=Math.max(5,Math.min(16,5+(r.entryVR||1)*2.2)).toFixed(1);
+    svg+='<circle cx="'+cx+'" cy="'+cy+'" r="'+rad+'" fill="'+c+'" fill-opacity="0.72" stroke="'+c+'" stroke-width="1.3"><title>'+r.tk+'  '+(r.ft>0?'+':'')+r.ft+'%  · day '+d+' · '+st+'</title></circle>';
+    if(arr.length<=16) svg+='<text x="'+cx+'" y="'+(+cy-(+rad)-3)+'" text-anchor="middle" font-size="9" fill="#7a6b3f">'+r.tk+'</text>';
+  });
+  svg+='</svg>';
+  return svg;
+}
+
+function renderJournal(){
+  var wrap=document.getElementById('tab-journal'); if(!wrap) return;
+  var score=document.getElementById('jrn-score'), legend=document.getElementById('jrn-legend'),
+      cst=document.getElementById('jrn-const'), pillsEl=document.getElementById('jrn-pills'),
+      rows=document.getElementById('jrn-rows');
+  if(!score||!cst||!rows) return;
+  var arr=jrnLoad();
+  var sts=arr.map(jrnStatus);
+  var logged=arr.length;
+  var nW=sts.filter(function(x){return x==='working';}).length;
+  var nT=sts.filter(function(x){return x==='target';}).length;
+  var nF=sts.filter(function(x){return x==='failed';}).length;
+  var nWa=sts.filter(function(x){return x==='watching';}).length;
+  var ftRate=logged?Math.round((nW+nT)/logged*100):0;
+  var avgFt=logged?+(arr.reduce(function(a,r){return a+r.ft;},0)/logged).toFixed(1):0;
+  function card(l,v,col){ return '<div class="jrn-card"><div class="jrn-lbl">'+l+'</div><div class="jrn-num"'+(col?' style="color:'+col+'"':'')+'>'+v+'</div></div>'; }
+  score.innerHTML =
+    card('Logged · مسجّلة', logged, '') +
+    card('Followed through', ftRate+'%', ftRate>=50?'#5fa728':'#d08a1a') +
+    card('Avg follow-through', (avgFt>0?'+':'')+avgFt+'%', avgFt>0?'#5fa728':(avgFt<0?'#e24b4a':'')) +
+    card('Working now · فعّالة', (nW+nT), '');
+  if(legend) legend.innerHTML=['working','target','failed','watching'].map(function(k){ var z=JRN_ST[k];
+    return '<span style="display:flex;align-items:center;gap:4px"><span style="width:10px;height:10px;border-radius:50%;background:'+z.c+'"></span>'+z.lbl+'</span>'; }).join('');
+  cst.innerHTML=jrnConstSVG(arr,sts);
+  if(pillsEl){ var pills=[['all','All',logged],['working','Working',nW],['target','Target',nT],['failed','Failed',nF],['watching','Watching',nWa]];
+    pillsEl.innerHTML=pills.map(function(p){ return '<span class="jrn-pill'+(_JRN_FILTER===p[0]?' on':'')+'" onclick="jrnFilter(\''+p[0]+'\')">'+p[1]+' '+p[2]+'</span>'; }).join(''); }
+  var order=arr.map(function(r,i){ return {r:r,st:sts[i]}; }).sort(function(a,b){ return b.r.ts-a.r.ts; });
+  var shown=order.filter(function(o){ return _JRN_FILTER==='all'||o.st===_JRN_FILTER; });
+  if(!shown.length){ rows.innerHTML='<div class="jrn-mut" style="font-size:12px;padding:14px;text-align:center">'+(logged?'No entries in this filter.':'No entries yet — log fills automatically on breakouts.')+'</div>'; return; }
+  rows.innerHTML=shown.map(function(o){ var r=o.r, st=o.st, cfg=JRN_ST[st], c=cfg.c, d=jrnDays(r);
+    return '<div class="jrn-row">'
+      +'<div style="min-width:96px"><span style="font-weight:700">'+r.tk+'</span> <span class="jrn-mut" style="font-size:11px">'+(r.company||'')+'</span></div>'
+      +'<div style="flex:0 0 110px">'+jrnSpark(r.path,c)+'</div>'
+      +'<div class="jrn-mut" style="min-width:150px;font-size:11px">'+r.entry.toFixed(2)+' → '+r.last.toFixed(2)+' · piv '+r.pivot.toFixed(2)+'</div>'
+      +'<div style="min-width:58px;text-align:right;font-weight:700;color:'+c+'">'+(r.ft>0?'+':'')+r.ft+'%</div>'
+      +'<div class="jrn-mut" style="min-width:80px;text-align:right;font-size:11px">MFE '+(r.mfe>0?'+':'')+r.mfe+'%</div>'
+      +'<div class="jrn-mut" style="min-width:40px;text-align:right;font-size:11px">'+d+'d</div>'
+      +'<div style="min-width:100px;text-align:right"><span style="font-size:11px;padding:3px 9px;border-radius:10px;background:'+cfg.bg+';color:'+cfg.tc+'">'+cfg.lbl+'</span></div>'
+      +'<div style="min-width:18px;text-align:right"><span onclick="journalRemove(\''+r.id+'\')" title="Remove · حذف" style="cursor:pointer;color:#bbb;font-size:14px">×</span></div>'
+      +'</div>';
+  }).join('');
+}
+function jrnFilter(f){ _JRN_FILTER=f; renderJournal(); }
+
+function exportJournalCSV(){
+  var arr=jrnLoad(); if(!arr.length){ alert('Journal is empty.'); return; }
+  var sts=arr.map(jrnStatus);
+  var head=['Ticker','Company','Sector','Date','Type','Pivot','Entry','Last','FollowThrough%','MFE%','MAE%','Days','EntryVolX','Status'];
+  var lines=[head.join(',')];
+  arr.forEach(function(r,i){
+    var row=[r.tk, '"'+(r.company||'').replace(/"/g,'""')+'"', '"'+(r.sector||'').replace(/"/g,'""')+'"',
+      r.date, r.type, r.pivot, r.entry, r.last, r.ft, r.mfe, r.mae, jrnDays(r), (r.entryVR!=null?r.entryVR:''), sts[i]];
+    lines.push(row.join(','));
+  });
+  var blob=new Blob(['﻿'+lines.join('\n')], {type:'text/csv;charset=utf-8;'});
+  var url=URL.createObjectURL(blob), a=document.createElement('a');
+  a.href=url; a.download='TradePulse_SAR_Breakout_Journal_'+new Date().toISOString().slice(0,10)+'.csv';
+  document.body.appendChild(a); a.click(); document.body.removeChild(a);
+  setTimeout(function(){ URL.revokeObjectURL(url); }, 1000);
+}
+
+var JRN_CSS = ''
+ + '.jrn-wrap{background:#fff;border:1px solid #E8DCBF;border-radius:12px;padding:14px 16px;}'
+ + 'body.dark-mode .jrn-wrap{background:#1f1f26;border-color:#3a3a45;color:#e8e8e8;}'
+ + '.jrn-card{background:#FAF6EC;border:1px solid #EADFC4;border-radius:10px;padding:10px 12px;}'
+ + 'body.dark-mode .jrn-card{background:#2a2520;border-color:#3d3325;color:#e8e8e8;}'
+ + '.jrn-num{font-size:24px;font-weight:700;line-height:1.2;}'
+ + '.jrn-lbl{font-size:11px;color:#9a8a5f;}'
+ + 'body.dark-mode .jrn-lbl{color:#b8a87f;}'
+ + '.jrn-mut{color:#9a8a5f;}'
+ + 'body.dark-mode .jrn-mut{color:#b8a87f;}'
+ + '.jrn-row{display:flex;align-items:center;gap:12px;background:#fff;border:1px solid #EADFC4;border-radius:8px;padding:8px 12px;}'
+ + 'body.dark-mode .jrn-row{background:#23231f;border-color:#3d3325;color:#e8e8e8;}'
+ + '.jrn-pill{cursor:pointer;font-size:12px;padding:5px 11px;border-radius:14px;border:1px solid #EADFC4;background:#fff;color:#7a6b3f;}'
+ + '.jrn-pill.on{background:#BA7517;color:#fff;border-color:#BA7517;}'
+ + 'body.dark-mode .jrn-pill{background:#23231f;border-color:#3d3325;color:#c9bb95;}'
+ + 'body.dark-mode .jrn-pill.on{background:#BA7517;color:#fff;}'
+ + '.jrn-btn{cursor:pointer;font-size:12px;padding:6px 12px;border-radius:8px;border:1px solid #EADFC4;background:#fff;color:#633806;}'
+ + '.jrn-btn:hover{background:#FAF6EC;}'
+ + 'body.dark-mode .jrn-btn{background:#23231f;border-color:#3d3325;color:#e8c98a;}';
+
+var JRN_SCAFFOLD = ''
+ + '<div class="jrn-wrap">'
+ +   '<div style="display:flex;align-items:center;gap:8px;margin-bottom:12px;flex-wrap:wrap">'
+ +     '<span style="font-size:16px;font-weight:700;color:#BA7517">📒 Breakout Journal · سجل الاختراقات</span>'
+ +     '<span class="jrn-mut" style="font-size:12px">auto-logs every breakout · tracks follow-through · تتبّع تلقائي</span>'
+ +     '<span style="margin-left:auto;display:flex;gap:8px"><button class="jrn-btn" onclick="exportJournalCSV()">⤓ Export CSV</button><button class="jrn-btn" onclick="clearJournal()">🗑 Clear</button></span>'
+ +   '</div>'
+ +   '<div id="jrn-score" style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:14px"></div>'
+ +   '<div style="font-size:13px;font-weight:700;color:#BA7517;margin-bottom:2px">Constellation · كوكبة الاختراقات</div>'
+ +   '<div class="jrn-mut" style="font-size:11px;margin-bottom:6px">each dot = one breakout · x: days held · y: follow-through % · size: entry volume</div>'
+ +   '<div id="jrn-legend" style="display:flex;flex-wrap:wrap;gap:14px;font-size:11px;margin-bottom:6px"></div>'
+ +   '<div id="jrn-const" style="margin-bottom:16px"></div>'
+ +   '<div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:8px">'
+ +     '<span style="font-size:13px;font-weight:700;color:#BA7517">Lifecycle log · سجل الحالة</span>'
+ +     '<span id="jrn-pills" style="display:flex;gap:6px;flex-wrap:wrap;margin-left:auto"></span>'
+ +   '</div>'
+ +   '<div id="jrn-rows" style="display:flex;flex-direction:column;gap:6px"></div>'
+ + '</div>';
+
+function jrnSetup(){
+  if(window._JRN_READY) return;
+  var bar=document.getElementById('tp-tabbar'), wl=document.getElementById('tab-watchlist');
+  if(!bar||!wl){ return; }
+  if(!document.querySelector('#tp-tabbar button[data-tab="journal"]')){
+    var b=document.createElement('button');
+    b.setAttribute('data-tab','journal'); b.setAttribute('onclick',"showTpTab('journal')");
+    b.innerHTML='📒 Journal · السجل<span class="tcount">log · track · السجل والتتبّع</span>';
+    bar.appendChild(b);
+  }
+  if(!document.getElementById('tab-journal')){
+    var d=document.createElement('div'); d.className='tp-tab'; d.id='tab-journal'; d.innerHTML=JRN_SCAFFOLD;
+    wl.insertAdjacentElement('afterend', d);
+  }
+  if(!document.getElementById('jrn-style')){ var stl=document.createElement('style'); stl.id='jrn-style'; stl.textContent=JRN_CSS; document.head.appendChild(stl); }
+  if(typeof window.showTpTab==='function' && !window._JRN_TABWRAP){ window._JRN_TABWRAP=true; var o=window.showTpTab; window.showTpTab=function(n){ o(n); if(n==='journal'){ try{ journalUpdate(); renderJournal(); }catch(e){} } }; }
+  if(typeof window.render==='function' && !window._JRN_RENDERWRAP){ window._JRN_RENDERWRAP=true; var or=window.render; window.render=function(){ var x=or.apply(this,arguments); try{ journalUpdate(); renderJournal(); }catch(e){} return x; }; }
+  window._JRN_READY=true;
+  try{ journalUpdate(); renderJournal(); }catch(e){}
+  try{ if(localStorage.getItem('tp_active_tab_v1')==='journal' && typeof showTpTab==='function') showTpTab('journal'); }catch(e){}
+  if(!window._JRN_INT) window._JRN_INT=setInterval(function(){ try{ journalUpdate(); renderJournal(); }catch(e){} }, 30000);
+}
+jrnSetup();
+setTimeout(jrnSetup, 1200);
+</script>
+
+<!-- ===== BREAKOUT RADAR TAB — added 2026-06-17 — NAMESPACED rdr-* / RDR_ — isolated ===== -->
+<script>
+var RDR_COL = { base:'#8a8a93', near:'#E0A93B', hot:'#EF9F27', brk:'#8FD14F', ext:'#34C8A0' };
+function rdrCfg(k, d){ try { return (typeof TP_BRK_CFG==='object' && TP_BRK_CFG[k]!=null) ? TP_BRK_CFG[k] : d; } catch(e){ return d; } }
+function rdrGap(s){ return (s.liveGap != null ? s.liveGap : s.dist_to_breakout); }
+function rdrVR(s){ return (s.liveVol && s.avgVol30) ? (s.liveVol / s.avgVol30) : null; }
+function rdrName(s){ try { return (AR_NAMES && AR_NAMES[s.ticker.replace('.SR','')]) || s.company || s.ticker; } catch(e){ return s.company || s.ticker; } }
+function rdrSym(s){ try { return (typeof dtk==='function') ? dtk(s) : s.ticker.replace('.SR',''); } catch(e){ return s.ticker; } }
+function rdrState(s, gap, vr){
+  if (s.breakout_type === 'extended') return 'ext';
+  if (gap <= 0 || s.breakout_type === 'confirmed') return 'brk';
+  if (gap <= rdrCfg('hotGap', 1.5)) return 'hot';
+  if (gap <= rdrCfg('nearGap', 3)) return 'near';
+  return 'base';
+}
+function rdrWatch(){
+  if (typeof STOCKS==='undefined' || !STOCKS.length) return [];
+  var wg = rdrCfg('watchGap', 5);
+  return STOCKS.filter(function(s){ return s.stage === 'stage2'; })
+    .filter(function(s){ return s.rs >= 60; })
+    .filter(function(s){ var g = rdrGap(s); return g != null && g <= wg; });
+}
+var _RDR = { pos:{}, scale:null, raf:null, hover:null, paused:false };
+function renderRadar(){
+  var wrap = document.getElementById('tab-radar'); if (!wrap) return;
+  var cv = document.getElementById('rdr-cv'); if (!cv) return;
+  var watch = rdrWatch();
+  var msg = document.getElementById('rdr-msg');
+  var ctx = cv.getContext('2d');
+  if (!watch.length){
+    if (msg){ msg.style.display='block';
+      msg.textContent = (typeof STOCKS==='undefined' || !STOCKS.length) ? 'Load the market feed CSV to populate the radar - حمّل ملف السوق' : 'No Stage 2 stocks within pivot range right now - لا توجد أسهم قريبة من نقطة الاختراق'; }
+    ctx.clearRect(0,0,cv.width,cv.height);
+    ['base','brk','ext'].forEach(function(k){ var e=document.getElementById('rdr-m-'+k); if(e) e.textContent='0'; });
+    var cnt=document.getElementById('rdr-count'); if(cnt) cnt.textContent='0 tickers on watch';
+    return;
+  }
+  if (msg) msg.style.display='none';
+  var nB=0, nK=0, nE=0, vrMax=3, pMax=8, pMin=-(rdrCfg('watchGap',5)+1);
+  var seen = {};
+  watch.forEach(function(s){
+    var gap = rdrGap(s); var vr = rdrVR(s); var vrv = (vr==null?1:vr);
+    var pct = -gap; var st = rdrState(s, gap, vr);
+    if (st==='ext') nE++; else if (st==='brk') nK++; else nB++;
+    if (vrv > vrMax) vrMax = vrv; if (pct > pMax) pMax = pct; if (pct < pMin) pMin = pct;
+    var tk = s.ticker; seen[tk] = 1;
+    var prev = _RDR.pos[tk];
+    var flash = prev ? prev.flash : 0;
+    if (prev && prev.gap != null && prev.gap > 0 && gap <= 0 && vrv >= 1.5) flash = 1;
+    if (!prev){ _RDR.pos[tk] = { cx:vrv, cy:pct }; prev = _RDR.pos[tk]; }
+    prev.tx = vrv; prev.ty = pct; prev.gap = gap; prev.vr = vrv; prev.st = st;
+    prev.sym = rdrSym(s); prev.name = rdrName(s); prev.chg = s.liveChg; prev.flash = flash;
+  });
+  Object.keys(_RDR.pos).forEach(function(tk){ if(!seen[tk]) delete _RDR.pos[tk]; });
+  _RDR.scale = { vrMax: Math.max(3, Math.ceil(vrMax)), pMax: Math.max(8, Math.ceil(pMax)), pMin: Math.min(-(rdrCfg('watchGap',5)+1), Math.floor(pMin)) };
+  var mB=document.getElementById('rdr-m-base'), mK=document.getElementById('rdr-m-brk'), mE=document.getElementById('rdr-m-ext');
+  if(mB) mB.textContent=nB; if(mK) mK.textContent=nK; if(mE) mE.textContent=nE;
+  var cnt=document.getElementById('rdr-count'); if(cnt) cnt.textContent=watch.length+' tickers on watch';
+  if (!_RDR.raf) rdrLoop();
+}
+function rdrSizeCanvas(cv){
+  var w = cv.clientWidth || 640; var h = Math.max(300, Math.round(w*0.6));
+  var dpr = window.devicePixelRatio || 1;
+  if (cv._w !== w || cv._h !== h){ cv._w=w; cv._h=h; cv.width=w*dpr; cv.height=h*dpr; cv.getContext('2d').setTransform(dpr,0,0,dpr,0,0); }
+  return { w:w, h:h };
+}
+function rdrDraw(){
+  var cv = document.getElementById('rdr-cv'); if (!cv || !_RDR.scale) return;
+  var tab = document.getElementById('tab-radar');
+  if (!tab || !tab.classList.contains('tp-tab-on')) return;
+  var dim = rdrSizeCanvas(cv); var W=dim.w, H=dim.h; var ctx=cv.getContext('2d');
+  var PAD={l:48,r:16,t:16,b:36}; var sc=_RDR.scale;
+  function px(v){ return PAD.l + v/sc.vrMax*(W-PAD.l-PAD.r); }
+  function py(p){ return PAD.t + (sc.pMax-p)/(sc.pMax-sc.pMin)*(H-PAD.t-PAD.b); }
+  ctx.clearRect(0,0,W,H);
+  ctx.fillStyle='#0d1117'; ctx.fillRect(0,0,W,H);
+  ctx.fillStyle='rgba(143,208,79,0.07)';
+  ctx.fillRect(px(1.5), PAD.t, (W-PAD.r)-px(1.5), py(0)-PAD.t);
+  ctx.strokeStyle='rgba(255,255,255,0.06)'; ctx.lineWidth=1; ctx.fillStyle='#7d8590'; ctx.font='11px sans-serif';
+  var yStep = (sc.pMax-sc.pMin) <= 16 ? 2 : Math.ceil((sc.pMax-sc.pMin)/8);
+  for (var p=Math.ceil(sc.pMin/yStep)*yStep; p<=sc.pMax; p+=yStep){ var y=py(p);
+    ctx.beginPath(); ctx.moveTo(PAD.l,y); ctx.lineTo(W-PAD.r,y); ctx.stroke();
+    ctx.textAlign='right'; ctx.fillText((p>0?'+':'')+p+'%', PAD.l-6, y+3); }
+  for (var v=1; v<=sc.vrMax; v++){ var x=px(v);
+    ctx.beginPath(); ctx.moveTo(x,PAD.t); ctx.lineTo(x,H-PAD.b); ctx.stroke();
+    ctx.textAlign='center'; ctx.fillText(v+'x', x, H-PAD.b+16); }
+  ctx.setLineDash([5,4]); ctx.strokeStyle='rgba(143,208,79,0.55)'; ctx.lineWidth=1.5;
+  var yp=py(0); ctx.beginPath(); ctx.moveTo(PAD.l,yp); ctx.lineTo(W-PAD.r,yp); ctx.stroke();
+  ctx.strokeStyle='rgba(239,159,39,0.5)'; var xt=px(1.5); ctx.beginPath(); ctx.moveTo(xt,PAD.t); ctx.lineTo(xt,H-PAD.b); ctx.stroke();
+  ctx.setLineDash([]);
+  ctx.fillStyle='#8FD14F'; ctx.textAlign='left'; ctx.fillText('pivot', PAD.l+4, yp-5);
+  ctx.fillStyle='#EF9F27'; ctx.fillText('1.5x vol', xt+4, PAD.t+12);
+  ctx.fillStyle='#7d8590'; ctx.textAlign='center'; ctx.fillText('volume vs 30d avg', W/2, H-3);
+  ctx.save(); ctx.translate(12,H/2); ctx.rotate(-Math.PI/2); ctx.fillText('% from pivot', 0, 0); ctx.restore();
+  var keys = Object.keys(_RDR.pos);
+  keys.forEach(function(tk){ var d=_RDR.pos[tk];
+    d.cx += (d.tx - d.cx) * (_RDR.paused?0:0.12);
+    d.cy += (d.ty - d.cy) * (_RDR.paused?0:0.12);
+    if (d.flash > 0) d.flash -= 0.02;
+    var x=px(Math.max(0,Math.min(sc.vrMax,d.cx))), y=py(Math.max(sc.pMin,Math.min(sc.pMax,d.cy)));
+    var c=RDR_COL[d.st];
+    if (d.flash > 0){ ctx.beginPath(); ctx.arc(x,y, 10+24*(1-d.flash), 0, 6.283); ctx.strokeStyle='rgba(143,208,79,'+(d.flash*0.8)+')'; ctx.lineWidth=2; ctx.stroke(); }
+    ctx.beginPath(); ctx.arc(x,y, d.st==='base'?5:6.5, 0, 6.283); ctx.fillStyle=c; ctx.fill();
+    ctx.fillStyle='#e6edf3'; ctx.font='10px sans-serif'; ctx.textAlign='left'; ctx.fillText(d.sym, x+8, y+3);
+  });
+  if (_RDR.hover){ var hd=_RDR.pos[_RDR.hover];
+    if (hd){ var hx=px(hd.cx), hy=py(hd.cy);
+      var l0=hd.sym+'  '+hd.name, l1=(hd.cy>0?'+':'')+hd.cy.toFixed(1)+'% vs pivot  -  '+hd.vr.toFixed(1)+'x vol' + (hd.chg!=null?'  -  '+(hd.chg>=0?'+':'')+hd.chg.toFixed(2)+'%':'');
+      ctx.font='11px sans-serif'; var bw=Math.max(ctx.measureText(l0).width, ctx.measureText(l1).width)+16;
+      var bx=Math.min(hx+12, W-bw-4), by=Math.max(hy-38, 4);
+      ctx.fillStyle='rgba(20,24,31,0.95)'; ctx.strokeStyle=RDR_COL[hd.st]; ctx.lineWidth=1;
+      ctx.fillRect(bx,by,bw,32); ctx.strokeRect(bx,by,bw,32);
+      ctx.fillStyle='#fff'; ctx.textAlign='left'; ctx.fillText(l0, bx+8, by+13);
+      ctx.fillStyle='#b8c2cc'; ctx.fillText(l1, bx+8, by+26);
+    }
+  }
+}
+function rdrLoop(){ _RDR.raf = requestAnimationFrame(function(){ rdrDraw(); _RDR.raf=null; rdrLoop(); }); }
+function rdrHoverInit(cv){
+  cv.addEventListener('mousemove', function(ev){
+    if (!_RDR.scale){ return; }
+    var W=cv._w,H=cv._h; var PAD={l:48,r:16,t:16,b:36}; var sc=_RDR.scale;
+    var r=cv.getBoundingClientRect(); var mx=ev.clientX-r.left, my=ev.clientY-r.top;
+    function px(v){ return PAD.l + v/sc.vrMax*(W-PAD.l-PAD.r); } function py(p){ return PAD.t + (sc.pMax-p)/(sc.pMax-sc.pMin)*(H-PAD.t-PAD.b); }
+    var best=null, bd=225;
+    Object.keys(_RDR.pos).forEach(function(tk){ var d=_RDR.pos[tk]; var dx=px(d.cx)-mx, dy=py(d.cy)-my; var dist=dx*dx+dy*dy; if(dist<bd){ bd=dist; best=tk; } });
+    _RDR.hover=best;
+  });
+  cv.addEventListener('mouseleave', function(){ _RDR.hover=null; });
+}
+var RDR_CSS = ''
+ + '.rdr-wrap{background:#fff;border:1px solid #E8DCBF;border-radius:12px;padding:14px 16px;}'
+ + 'body.dark-mode .rdr-wrap{background:#1f1f26;border-color:#3a3a45;color:#e8e8e8;}'
+ + '.rdr-card{background:#FAF6EC;border:1px solid #EADFC4;border-radius:10px;padding:10px 12px;flex:1;min-width:110px;}'
+ + 'body.dark-mode .rdr-card{background:#2a2520;border-color:#3d3325;color:#e8e8e8;}'
+ + '.rdr-num{font-size:24px;font-weight:700;line-height:1.2;}'
+ + '.rdr-lbl{font-size:11px;color:#9a8a5f;}'
+ + 'body.dark-mode .rdr-lbl{color:#b8a87f;}'
+ + '.rdr-mut{color:#9a8a5f;}'
+ + 'body.dark-mode .rdr-mut{color:#b8a87f;}'
+ + '.rdr-panel{position:relative;background:#0d1117;border-radius:10px;padding:8px;border:1px solid #2a2f37;}'
+ + '.rdr-msg{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);color:#b8c2cc;font-size:13px;text-align:center;max-width:80%;}'
+ + '.rdr-btn{cursor:pointer;font-size:12px;padding:6px 12px;border-radius:8px;border:1px solid #EADFC4;background:#fff;color:#633806;}'
+ + '.rdr-btn:hover{background:#FAF6EC;}'
+ + 'body.dark-mode .rdr-btn{background:#23231f;border-color:#3d3325;color:#e8c98a;}';
+var RDR_SCAFFOLD = ''
+ + '<div class="rdr-wrap">'
+ +   '<div style="display:flex;align-items:center;gap:8px;margin-bottom:12px;flex-wrap:wrap">'
+ +     '<span style="font-size:16px;font-weight:700;color:#BA7517">🎯 Breakout Radar · رادار الاختراقات</span>'
+ +     '<span class="rdr-mut" style="font-size:12px">live · x: volume vs avg · y: % from pivot · تحديث مباشر</span>'
+ +     '<span style="margin-left:auto;display:flex;gap:8px"><button class="rdr-btn" id="rdr-pause" onclick="rdrTogglePause()">⏸ Pause motion</button></span>'
+ +   '</div>'
+ +   '<div id="rdr-score" style="display:flex;gap:10px;margin-bottom:12px;flex-wrap:wrap">'
+ +     '<div class="rdr-card"><div class="rdr-lbl">Basing / coiling · متراوح</div><div class="rdr-num" id="rdr-m-base" style="color:#8a8a93">0</div></div>'
+ +     '<div class="rdr-card"><div class="rdr-lbl">Breaking out · يخترق</div><div class="rdr-num" id="rdr-m-brk" style="color:#5fa728">0</div></div>'
+ +     '<div class="rdr-card"><div class="rdr-lbl">Extended · ممتد</div><div class="rdr-num" id="rdr-m-ext" style="color:#1d9e75">0</div></div>'
+ +   '</div>'
+ +   '<div class="rdr-panel"><canvas id="rdr-cv" style="width:100%;display:block;border-radius:6px"></canvas><div class="rdr-msg" id="rdr-msg" style="display:none"></div></div>'
+ +   '<div id="rdr-legend" style="display:flex;flex-wrap:wrap;gap:14px;font-size:11px;margin-top:10px"></div>'
+ +   '<div class="rdr-mut" id="rdr-count" style="font-size:11px;margin-top:6px">0 tickers on watch</div>'
+ + '</div>';
+function rdrTogglePause(){ _RDR.paused=!_RDR.paused; var b=document.getElementById('rdr-pause'); if(b) b.textContent=_RDR.paused?'▶ Resume motion':'⏸ Pause motion'; }
+function rdrSetup(){
+  if (window._RDR_READY) return;
+  var bar=document.getElementById('tp-tabbar'), wl=document.getElementById('tab-watchlist');
+  if (!bar || !wl) return;
+  if (!document.querySelector('#tp-tabbar button[data-tab="radar"]')){
+    var b=document.createElement('button');
+    b.setAttribute('data-tab','radar'); b.setAttribute('onclick',"showTpTab('radar')");
+    b.innerHTML='🎯 Radar · الرادار<span class="tcount">breakouts in motion · اختراقات حية</span>';
+    var jbtn=document.querySelector('#tp-tabbar button[data-tab="journal"]');
+    if (jbtn) bar.insertBefore(b, jbtn); else bar.appendChild(b);
+  }
+  if (!document.getElementById('tab-radar')){
+    var d=document.createElement('div'); d.className='tp-tab'; d.id='tab-radar'; d.innerHTML=RDR_SCAFFOLD;
+    wl.insertAdjacentElement('afterend', d);
+  }
+  if (!document.getElementById('rdr-style')){ var stl=document.createElement('style'); stl.id='rdr-style'; stl.textContent=RDR_CSS; document.head.appendChild(stl); }
+  var lg=document.getElementById('rdr-legend');
+  if (lg){ var L=[['base','Basing'],['near','Coiling'],['hot','Hot'],['brk','Breaking out'],['ext','Extended']];
+    lg.innerHTML=L.map(function(k){ return '<span style="display:flex;align-items:center;gap:5px"><span style="width:10px;height:10px;border-radius:50%;background:'+RDR_COL[k[0]]+'"></span>'+k[1]+'</span>'; }).join(''); }
+  var cv=document.getElementById('rdr-cv'); if (cv) rdrHoverInit(cv);
+  if (typeof window.showTpTab==='function' && !window._RDR_TABWRAP){ window._RDR_TABWRAP=true; var o=window.showTpTab; window.showTpTab=function(n){ o(n); if(n==='radar'){ try{ rdrSizeCanvas(document.getElementById('rdr-cv')); renderRadar(); }catch(e){} } }; }
+  if (typeof window.render==='function' && !window._RDR_RENDERWRAP){ window._RDR_RENDERWRAP=true; var orf=window.render; window.render=function(){ var x=orf.apply(this,arguments); try{ renderRadar(); }catch(e){} return x; }; }
+  if (typeof window.renderBreakoutWatch==='function' && !window._RDR_BWWRAP){ window._RDR_BWWRAP=true; var ob=window.renderBreakoutWatch; window.renderBreakoutWatch=function(){ var x=ob.apply(this,arguments); try{ renderRadar(); }catch(e){} return x; }; }
+  window.addEventListener('resize', function(){ try{ var c=document.getElementById('rdr-cv'); if(c){ rdrSizeCanvas(c); } }catch(e){} });
+  window._RDR_READY=true;
+  try{ renderRadar(); }catch(e){}
+  try{ if(localStorage.getItem('tp_active_tab_v1')==='radar' && typeof showTpTab==='function') showTpTab('radar'); }catch(e){}
+  if (!window._RDR_INT) window._RDR_INT=setInterval(function(){ try{ renderRadar(); }catch(e){} }, 15000);
+}
+rdrSetup();
+setTimeout(rdrSetup, 1300);
+</script>
+
+<!-- ===== BREAKOUT RADAR DEMO MODE — added 2026-06-17 — isolated, off by default ===== -->
+<script>
+(function(){
+  var DEMO_NAMES=[['2222','Aramco'],['1120','Al Rajhi'],['2010','SABIC'],['7010','stc'],['1180','SNB'],['2350','Kayan'],['1211','Maaden'],['2280','Almarai'],['4190','Jarir'],['4002','Mouwasat'],['2310','Sipchem']];
+  function rnd(a,b){ return a+Math.random()*(b-a); }
+  function demoState(ty){ var gap=-ty; if(ty>=6) return 'ext'; if(gap<=0) return 'brk'; if(gap<=1.5) return 'hot'; if(gap<=3) return 'near'; return 'base'; }
+  function seed(){
+    _RDR.pos={};
+    DEMO_NAMES.forEach(function(n){ var vr=rnd(0.6,2.6), pct=rnd(-8,-1);
+      _RDR.pos[n[0]]={ cx:vr, cy:pct, tx:vr, ty:pct, vr:vr, gap:-pct, flash:0, sym:n[0], name:n[1], chg:rnd(-1,3), st:demoState(pct), demo:true };
+    });
+    _RDR.scale={ vrMax:4, pMax:10, pMin:-10 };
+  }
+  function tick(){
+    if(!_RDR.demo) return; var nB=0,nK=0,nE=0;
+    Object.keys(_RDR.pos).forEach(function(k){ var d=_RDR.pos[k];
+      d._vv=(d._vv||0)+rnd(-.06,.06); d._vp=(d._vp||0)+rnd(-.25,.25); d._vv*=.9; d._vp*=.9;
+      d.tx=Math.max(0.4,Math.min(3.8,d.tx+d._vv)); d.ty=Math.max(-9,Math.min(11,d.ty+d._vp));
+      if(d.ty>-2.5 && d.ty<0 && d.tx>1.3 && Math.random()<0.04){ d._vp=rnd(1.5,3); }       // launch toward pivot
+      var wasBelow=(d.gap>0); d.gap=-d.ty; d.vr=d.tx;
+      if(wasBelow && d.gap<=0 && d.tx>=1.5) d.flash=1;                                        // real-style cross on vol
+      d.st=demoState(d.ty);
+      if(d.st==='ext')nE++; else if(d.st==='brk')nK++; else nB++;
+    });
+    var mB=document.getElementById('rdr-m-base'),mK=document.getElementById('rdr-m-brk'),mE=document.getElementById('rdr-m-ext'),c=document.getElementById('rdr-count');
+    if(mB)mB.textContent=nB; if(mK)mK.textContent=nK; if(mE)mE.textContent=nE;
+    if(c)c.textContent='11 tickers (demo) · بيانات تجريبية';
+    if(!_RDR.raf && typeof rdrLoop==='function') rdrLoop();
+  }
+  window.rdrToggleDemo=function(){
+    if(typeof _RDR==='undefined') return; _RDR.demo=!_RDR.demo;
+    var b=document.getElementById('rdr-demo');
+    var msg=document.getElementById('rdr-msg'); if(msg) msg.style.display='none';
+    if(_RDR.demo){ if(b){b.textContent='🟢 Demo ON · إيقاف';} seed(); if(!_RDR.raf&&typeof rdrLoop==='function')rdrLoop();
+      if(!_RDR._demoInt)_RDR._demoInt=setInterval(tick,120); }
+    else { if(b){b.textContent='🧪 Demo data · تجربة';} if(_RDR._demoInt){clearInterval(_RDR._demoInt);_RDR._demoInt=null;} _RDR.pos={}; try{ renderRadar(); }catch(e){} }
+  };
+  function addBtn(){
+    if(document.getElementById('rdr-demo')) return true;
+    var pause=document.getElementById('rdr-pause'); if(!pause) return false;
+    var b=document.createElement('button'); b.className='rdr-btn'; b.id='rdr-demo';
+    b.textContent='🧪 Demo data · تجربة'; b.setAttribute('onclick','rdrToggleDemo()');
+    pause.parentNode.insertBefore(b, pause); return true;
+  }
+  // guard renderRadar so live updates don't fight demo mode
+  function wrapRender(){
+    if(window._RDR_DEMO_WRAP || typeof window.renderRadar!=='function') return;
+    window._RDR_DEMO_WRAP=true; var o=window.renderRadar;
+    window.renderRadar=function(){ if(typeof _RDR!=='undefined' && _RDR.demo) return; return o.apply(this,arguments); };
+  }
+  var tries=0; var iv=setInterval(function(){ tries++; wrapRender(); if(addBtn()||tries>40) clearInterval(iv); }, 400);
+})();
+</script>
 
 </body>
 </html>
