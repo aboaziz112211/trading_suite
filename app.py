@@ -1863,25 +1863,42 @@ def api_chat():
 
     try:
         import requests as _rq
+        import time as _t2
         # Try the configured model first, then fall back to known-good ones so a
         # stale/renamed default never takes the assistant down.
         candidates = []
-        for m in (GEMINI_MODEL, "gemini-2.0-flash", "gemini-1.5-flash"):
+        for m in (GEMINI_MODEL, "gemini-2.0-flash", "gemini-1.5-flash", "gemini-2.5-flash"):
             if m and m not in candidates:
                 candidates.append(m)
-        r = None
+        data = None
+        last_status, last_body = None, ""
         for m in candidates:
             url = (f"https://generativelanguage.googleapis.com/v1beta/models/"
                    f"{m}:generateContent?key={GEMINI_API_KEY}")
-            r = _rq.post(url, json=payload, timeout=30)
-            if r.status_code == 200:
+            for attempt in range(2):   # one quick retry to ride out transient 429s
+                r = _rq.post(url, json=payload, timeout=30)
+                last_status, last_body = r.status_code, (r.text or "")[:400]
+                if r.status_code == 200:
+                    data = r.json()
+                    break
+                if r.status_code == 429 and attempt == 0:
+                    _t2.sleep(2)
+                    continue
                 break
-            if r.status_code != 404:
-                break  # real error (auth/quota) — don't waste calls on fallbacks
-        if r is None or r.status_code != 200:
-            code = r.status_code if r is not None else "?"
-            return {"ok": False, "error": f"assistant error ({code})"}, 502
-        data = r.json()
+            if data is not None:
+                break
+            if last_status != 404:
+                break  # 429/auth/quota — trying other models won't help
+        if data is None:
+            # Surface the real reason in the server logs (Render → Logs) so quota
+            # vs rate-limit vs auth is diagnosable without guesswork.
+            print(f"[chat] Gemini failed: status={last_status} body={last_body}", flush=True)
+            if last_status == 429:
+                # Quota / rate limit — keep the UX graceful instead of an error.
+                return {"ok": True, "reply": (
+                    "The assistant is at capacity right now — please try again a bit later. "
+                    "· المساعد مشغول حالياً، يرجى المحاولة بعد قليل.")}
+            return {"ok": False, "error": f"assistant error ({last_status})"}, 502
         cands = data.get("candidates") or []
         if not cands:
             # Safety block or empty — give a graceful fallback
