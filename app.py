@@ -1872,23 +1872,29 @@ def api_chat():
                 candidates.append(m)
         data = None
         last_status, last_body = None, ""
+        # Free-tier quota (429) is per-model, so if one model is exhausted another
+        # may still answer — try each candidate before giving up.
         for m in candidates:
             url = (f"https://generativelanguage.googleapis.com/v1beta/models/"
                    f"{m}:generateContent?key={GEMINI_API_KEY}")
-            for attempt in range(2):   # one quick retry to ride out transient 429s
-                r = _rq.post(url, json=payload, timeout=30)
-                last_status, last_body = r.status_code, (r.text or "")[:400]
-                if r.status_code == 200:
-                    data = r.json()
-                    break
-                if r.status_code == 429 and attempt == 0:
-                    _t2.sleep(2)
-                    continue
+            r = _rq.post(url, json=payload, timeout=30)
+            last_status, last_body = r.status_code, (r.text or "")[:400]
+            if r.status_code == 200:
+                data = r.json()
                 break
-            if data is not None:
-                break
-            if last_status != 404:
-                break  # 429/auth/quota — trying other models won't help
+            if r.status_code in (429, 404, 500, 503):
+                continue   # model busy/unavailable — try the next one
+            break          # auth/bad-request etc. — stop, fallbacks won't help
+        if data is None and last_status == 429:
+            # All models rate-limited — one short backoff, then retry the primary.
+            _t2.sleep(2)
+            r = _rq.post(
+                f"https://generativelanguage.googleapis.com/v1beta/models/"
+                f"{candidates[0]}:generateContent?key={GEMINI_API_KEY}",
+                json=payload, timeout=30)
+            last_status, last_body = r.status_code, (r.text or "")[:400]
+            if r.status_code == 200:
+                data = r.json()
         if data is None:
             # Surface the real reason in the server logs (Render → Logs) so quota
             # vs rate-limit vs auth is diagnosable without guesswork.
