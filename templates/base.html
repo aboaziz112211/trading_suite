@@ -138,6 +138,7 @@
       <a href="{{ url_for('rs_rating_latest') }}" class="rs-link nav-bi"><span class="en">🔥 RS Rating</span><span class="ar" dir="rtl" lang="ar">القوة النسبية</span></a>
       <a href="{{ url_for('about') }}" class="nav-bi"><span class="en">About</span><span class="ar" dir="rtl" lang="ar">من نحن</span></a>
       <a href="{{ url_for('contact') }}" class="contact-link nav-bi"><span class="en">Contact</span><span class="ar" dir="rtl" lang="ar">تواصل</span></a>
+      <a href="{{ url_for('assistant_page') }}" class="assistant-link nav-bi"><span class="en">💬 Assistant</span><span class="ar" dir="rtl" lang="ar">💬 المساعد</span></a>
       {# Analyze-a-stock trigger — Arabic-first label in the topbar #}
       <button type="button" class="analyze-navbtn" id="analyzeFab" aria-label="اطلب تحليل سهم">
         <span class="ar" dir="rtl" lang="ar">🔍 اطلب تحليل سهم</span>
@@ -236,6 +237,84 @@
       </div>
     </div>
   </footer>
+
+  {# ── Site assistant — floating chat widget (on every page) ──────────── #}
+  <button type="button" class="ce-chat-fab" id="ceChatFab" aria-label="Open ChartEdge assistant">
+    <svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor" aria-hidden="true"><path d="M12 3C6.48 3 2 6.94 2 11.8c0 2.5 1.2 4.74 3.13 6.33-.13 1.2-.6 2.3-1.36 3.22-.2.24-.05.6.26.6 1.86-.05 3.5-.7 4.74-1.66.98.27 2.02.41 3.13.41 5.52 0 10-3.94 10-8.8S17.52 3 12 3z"/></svg>
+    <span class="ce-chat-fab-x" aria-hidden="true">&times;</span>
+  </button>
+  <div class="ce-chat-widget" id="ceChatWidget" hidden>
+    <div class="ce-chat-head">
+      <div class="ce-chat-title"><span class="ce-chat-dot" aria-hidden="true"></span>
+        <span class="en">ChartEdge Assistant</span><span class="ar" dir="rtl" lang="ar">مساعد ChartEdge</span>
+      </div>
+      <button class="ce-chat-close" id="ceChatClose" type="button" aria-label="Close">&times;</button>
+    </div>
+    <div class="ce-chat-msgs" id="ceChatMsgs" aria-live="polite"></div>
+    <form class="ce-chat-form" id="ceChatForm">
+      <input id="ceChatText" type="text" autocomplete="off" maxlength="1000"
+             placeholder="Ask about ChartEdge… · اسأل عن المنصة">
+      <button type="submit" class="ce-chat-send" aria-label="Send">
+        <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor" aria-hidden="true"><path d="M9.78 18.65l.28-4.23 7.68-6.92c.34-.31-.07-.46-.52-.19L7.74 13.3 3.64 12c-.88-.25-.89-.86.2-1.3l15.97-6.16c.73-.33 1.43.18 1.15 1.3l-2.72 12.81c-.19.91-.74 1.13-1.5.71L12.6 16.3l-1.99 1.93c-.23.23-.42.42-.83.42z"/></svg>
+      </button>
+    </form>
+  </div>
+
+  <script>
+  (function(){
+    // Shared sender — reused by the floating widget AND the /assistant page.
+    window.ceChatSend = function(message, history){
+      return fetch('/api/chat', {
+        method:'POST', headers:{'Content-Type':'application/json'},
+        body: JSON.stringify({ message: message, history: history || [] })
+      }).then(function(r){ return r.json(); })
+        .then(function(j){ if (j && j.ok) return j.reply; throw new Error((j && j.error) || 'error'); });
+    };
+    window.ceChatIsAr = function(s){ return /[؀-ۿ]/.test(s || ''); };
+
+    var fab = document.getElementById('ceChatFab');
+    var widget = document.getElementById('ceChatWidget');
+    if (!fab || !widget) return;
+    var closeB = document.getElementById('ceChatClose');
+    var msgs = document.getElementById('ceChatMsgs');
+    var form = document.getElementById('ceChatForm');
+    var input = document.getElementById('ceChatText');
+    var history = [];
+    var greeted = false;
+
+    function bubble(text, who){
+      var d = document.createElement('div');
+      d.className = 'ce-msg ce-msg-' + who;
+      d.textContent = text;
+      if (window.ceChatIsAr(text)) { d.dir = 'rtl'; d.lang = 'ar'; }
+      msgs.appendChild(d); msgs.scrollTop = msgs.scrollHeight;
+      return d;
+    }
+    function greet(){
+      if (greeted) return; greeted = true;
+      bubble("👋 مرحباً! أنا مساعد ChartEdge. اسألني عن المنصة ومنتجاتها وكيفية استخدامها.\nHi! I'm the ChartEdge assistant — ask me about the platform, its products, and how to use it.", 'bot');
+    }
+    function openW(){ widget.hidden = false; fab.classList.add('is-open'); greet(); setTimeout(function(){ input.focus(); }, 50); }
+    function closeW(){ widget.hidden = true; fab.classList.remove('is-open'); }
+    fab.addEventListener('click', function(){ widget.hidden ? openW() : closeW(); });
+    closeB.addEventListener('click', closeW);
+
+    form.addEventListener('submit', function(e){
+      e.preventDefault();
+      var text = (input.value || '').trim();
+      if (!text) return;
+      bubble(text, 'user'); history.push({ role:'user', text:text });
+      input.value = ''; input.disabled = true;
+      var typing = bubble('…', 'bot'); typing.classList.add('ce-typing');
+      window.ceChatSend(text, history).then(function(reply){
+        typing.remove(); bubble(reply, 'bot'); history.push({ role:'assistant', text:reply });
+      }).catch(function(){
+        typing.remove();
+        bubble('⚠ تعذّر الاتصال — حاول مرة أخرى · Connection error, please try again.', 'bot');
+      }).finally(function(){ input.disabled = false; input.focus(); });
+    });
+  })();
+  </script>
 
   {# ── Analyze-a-stock panel (trigger lives in the topbar nav) ─────────── #}
   <div class="analyze-overlay" id="analyzeOverlay" hidden>

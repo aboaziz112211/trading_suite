@@ -1,0 +1,77 @@
+{% extends "base.html" %}
+{% block title %}المساعد · Assistant · ChartEdge{% endblock %}
+{% block body %}
+
+{# On the dedicated page the inline chat is the main event — hide the floating bubble here #}
+<style>.ce-chat-fab,.ce-chat-widget{display:none !important;}</style>
+
+<section class="rs-hero">
+  <div>
+    <span class="hero-kicker">💬 ChartEdge Assistant · المساعد الذكي</span>
+    <h1>Ask about <span class="grad">ChartEdge</span></h1>
+    <div class="h1-ar" dir="rtl" lang="ar">اسأل المساعد عن المنصّة ومنتجاتها</div>
+    <p class="lede">Questions about the products, the dashboards, or how to use the site? Ask here — answers in Arabic or English.</p>
+  </div>
+</section>
+
+<section class="sec">
+  <div class="asst-chat">
+    <div class="asst-msgs" id="asstMsgs" aria-live="polite"></div>
+    <form class="asst-form" id="asstForm">
+      <input id="asstText" type="text" autocomplete="off" maxlength="1000"
+             placeholder="Ask about ChartEdge… · اسأل عن المنصة">
+      <button type="submit" class="asst-send">
+        <span class="en">Send</span><span class="ar" dir="rtl" lang="ar">إرسال</span>
+      </button>
+    </form>
+    <div class="asst-suggest">
+      <button type="button" class="asst-chip" data-q="ما هي منصة ChartEdge؟">ما هي ChartEdge؟</button>
+      <button type="button" class="asst-chip" data-q="What is the difference between TradePulse TASI and TradePulse US?">TASI vs US</button>
+      <button type="button" class="asst-chip" data-q="How do I request a company analysis?">طلب تحليل سهم</button>
+      <button type="button" class="asst-chip" data-q="What is the RS Rating?">RS Rating</button>
+    </div>
+    <p class="asst-note" dir="rtl" lang="ar">⚠️ المساعد للأغراض التعريفية فقط ولا يقدّم توصيات استثمارية.</p>
+  </div>
+</section>
+
+<script>
+(function(){
+  var msgs = document.getElementById('asstMsgs');
+  var form = document.getElementById('asstForm');
+  var input = document.getElementById('asstText');
+  if (!msgs || !form) return;
+  var history = [];
+
+  function bubble(text, who){
+    var d = document.createElement('div');
+    d.className = 'asst-msg asst-msg-' + who;
+    d.textContent = text;
+    if (window.ceChatIsAr && window.ceChatIsAr(text)) { d.dir='rtl'; d.lang='ar'; }
+    msgs.appendChild(d); msgs.scrollTop = msgs.scrollHeight;
+    return d;
+  }
+  // Opening greeting
+  bubble("👋 مرحباً! أنا مساعد ChartEdge. اسألني عن المنصة ومنتجاتها وكيفية استخدامها.\nHi! I'm the ChartEdge assistant — ask me anything about the platform.", 'bot');
+
+  function ask(text){
+    text = (text || '').trim();
+    if (!text) return;
+    bubble(text, 'user'); history.push({ role:'user', text:text });
+    input.value=''; input.disabled=true;
+    var typing = bubble('…', 'bot'); typing.classList.add('ce-typing');
+    window.ceChatSend(text, history).then(function(reply){
+      typing.remove(); bubble(reply, 'bot'); history.push({ role:'assistant', text:reply });
+    }).catch(function(){
+      typing.remove();
+      bubble('⚠ تعذّر الاتصال — حاول مرة أخرى · Connection error, please try again.', 'bot');
+    }).finally(function(){ input.disabled=false; input.focus(); });
+  }
+
+  form.addEventListener('submit', function(e){ e.preventDefault(); ask(input.value); });
+  document.querySelectorAll('.asst-chip').forEach(function(b){
+    b.addEventListener('click', function(){ ask(b.dataset.q); });
+  });
+})();
+</script>
+
+{% endblock %}

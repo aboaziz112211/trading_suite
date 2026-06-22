@@ -1775,6 +1775,127 @@ ANALYZE_CHAT_ID    = _secret("ANALYZE_CHAT_ID")   # admin's numeric Telegram cha
 _analyze_hits = {}   # ip -> [timestamps]  (simple in-memory rate limit)
 
 
+# ── Site assistant (Gemini-powered Q&A about ChartEdge) ────────────────────
+GEMINI_API_KEY = _secret("GEMINI_API_KEY")
+GEMINI_MODEL   = _secret("GEMINI_MODEL", "gemini-2.0-flash")
+_chat_hits = {}   # ip -> [timestamps]
+
+# Grounding for the assistant. Scope is intentionally narrow: explain the
+# website and its products, never give investment advice. Keep it factual —
+# anything not here, the bot should say it doesn't know rather than invent.
+ASSISTANT_SYSTEM_PROMPT = """You are the ChartEdge assistant — a friendly, concise guide for visitors of the ChartEdge Analytics website. You are bilingual: ALWAYS reply in the same language the visitor writes in (Arabic or English). For Arabic, write natural Modern Standard Arabic.
+
+WHAT CHARTEDGE IS
+ChartEdge Analytics is a live market-analysis platform. It is NOT a signals or recommendations service — it gives traders the tools to read the market themselves, instead of depending on paid analyst alerts or Telegram signals.
+
+PRODUCTS
+1. ChartEdge — a SEPA/VCP scanner that scores stocks out of 10 and surfaces Stage-2 and near-breakout names. The full scanner is a desktop app; the web view is display-only and downloadable.
+2. TradePulse TASI — a live Saudi (Tadawul) dashboard: live watchlist, market breadth, sector rotation, and breakout signals, refreshed about every 30 seconds during the session.
+3. TradePulse US — a live NYSE/NASDAQ dashboard with SEPA scoring, a sector heatmap, and the SPY/QQQ/IWM indices.
+4. RS Rating — a daily Minervini-style relative-strength ranking (M1/M2/M3 sub-scores) that highlights real leaders and pre-breakout candidates.
+5. Daily Closing Brief — an automated end-of-session summary (close, top gainers/losers, strongest sector, breadth), also delivered on Telegram.
+
+TERMS (define briefly only to explain a feature)
+- SEPA = Mark Minervini's Specific Entry Point Analysis. VCP = Volatility Contraction Pattern. Stage 2 = the uptrend/markup phase in stage analysis. RS Rating = relative strength vs the market.
+
+HOW TO USE THE SITE
+- Open the TASI or US dashboard from the top navigation. Dashboards are best viewed on a laptop/desktop (heavy data).
+- "Request a company analysis" (button in the top bar): enter a ticker and your Telegram handle (required) — the analyst replies on Telegram, outside trading hours.
+- Join the Telegram channel for the daily brief: https://t.me/+R_m5lVLFnBJhYWJk . Contact/admin: @chartedgeai .
+
+RULES (important)
+- Only answer questions about the ChartEdge website, its products, and how to use them. If asked something unrelated, politely say you can only help with ChartEdge.
+- This platform is for educational and informational purposes only and is NOT investment advice. NEVER give buy/sell/hold recommendations, price targets, or predictions for any specific security. If asked, politely decline, note it is not investment advice, and suggest the "Request a company analysis" button plus reviewing the site disclaimer.
+- You do NOT have live prices or specific current scores. For live data, point the visitor to the relevant dashboard rather than guessing.
+- Keep answers short (a few sentences). Be warm and professional. Never invent features or facts that aren't above."""
+
+
+@app.route("/assistant")
+def assistant_page():
+    return render_template("assistant.html")
+
+
+@app.route("/api/chat", methods=["POST"])
+def api_chat():
+    """Site assistant: relay a visitor question to Gemini with ChartEdge
+    grounding. Scope-limited + rate-limited to keep cost and liability low."""
+    import time as _t
+
+    if not GEMINI_API_KEY:
+        return {"ok": False, "error": "assistant is not configured yet"}, 503
+
+    # Rate limit: 30 messages / 10 min per IP
+    ip = (request.headers.get("X-Forwarded-For", "") or request.remote_addr or "?").split(",")[0].strip()
+    now = _t.time()
+    hits = [t for t in _chat_hits.get(ip, []) if now - t < 600]
+    if len(hits) >= 30:
+        return {"ok": False, "error": "too many messages — please wait a few minutes"}, 429
+    hits.append(now)
+    _chat_hits[ip] = hits
+
+    try:
+        body = request.get_json(force=True, silent=True) or {}
+    except Exception:
+        body = {}
+
+    message = str(body.get("message", "")).strip()[:1000]
+    if not message:
+        return {"ok": False, "error": "empty message"}, 400
+
+    # Optional short history for context: [{role:'user'|'assistant', text:'…'}]
+    contents = []
+    hist = body.get("history")
+    if isinstance(hist, list):
+        for turn in hist[-8:]:
+            if not isinstance(turn, dict):
+                continue
+            role = "model" if str(turn.get("role")) == "assistant" else "user"
+            text = str(turn.get("text", "")).strip()[:1000]
+            if text:
+                contents.append({"role": role, "parts": [{"text": text}]})
+    contents.append({"role": "user", "parts": [{"text": message}]})
+
+    payload = {
+        "system_instruction": {"parts": [{"text": ASSISTANT_SYSTEM_PROMPT}]},
+        "contents": contents,
+        "generationConfig": {"temperature": 0.4, "maxOutputTokens": 600},
+    }
+
+    try:
+        import requests as _rq
+        # Try the configured model first, then fall back to known-good ones so a
+        # stale/renamed default never takes the assistant down.
+        candidates = []
+        for m in (GEMINI_MODEL, "gemini-2.0-flash", "gemini-1.5-flash"):
+            if m and m not in candidates:
+                candidates.append(m)
+        r = None
+        for m in candidates:
+            url = (f"https://generativelanguage.googleapis.com/v1beta/models/"
+                   f"{m}:generateContent?key={GEMINI_API_KEY}")
+            r = _rq.post(url, json=payload, timeout=30)
+            if r.status_code == 200:
+                break
+            if r.status_code != 404:
+                break  # real error (auth/quota) — don't waste calls on fallbacks
+        if r is None or r.status_code != 200:
+            code = r.status_code if r is not None else "?"
+            return {"ok": False, "error": f"assistant error ({code})"}, 502
+        data = r.json()
+        cands = data.get("candidates") or []
+        if not cands:
+            # Safety block or empty — give a graceful fallback
+            return {"ok": True, "reply": "Sorry, I couldn't answer that. Try rephrasing, "
+                    "or use 'Request a company analysis' to reach the analyst."}
+        parts = (cands[0].get("content") or {}).get("parts") or []
+        reply = "".join(p.get("text", "") for p in parts).strip()
+        if not reply:
+            reply = "Sorry, I couldn't answer that one."
+        return {"ok": True, "reply": reply}
+    except Exception as e:
+        return {"ok": False, "error": f"assistant failed: {e}"}, 502
+
+
 @app.route("/api/analyze-request", methods=["POST"])
 def api_analyze_request():
     """Visitor drops a ticker → we relay it to the admin's Telegram DM via a

@@ -2134,3 +2134,82 @@ table.rs-tbl tbody tr:hover { background: rgba(255,255,255,0.02); }
 
 /* ── Analyze panel: required-field marker ──────────────────────────────── */
 .ap-req{color:#ff6b6b;font-weight:700}
+
+/* ── Site assistant: nav link ──────────────────────────────────────────── */
+.assistant-link .en,.assistant-link .ar{color:var(--accent)}
+
+/* ── Site assistant: floating chat widget ──────────────────────────────── */
+.ce-chat-fab{
+  position:fixed;right:22px;bottom:22px;z-index:1200;
+  width:56px;height:56px;border-radius:50%;border:none;cursor:pointer;
+  background:var(--accent);color:#06121f;
+  display:flex;align-items:center;justify-content:center;
+  box-shadow:0 8px 24px rgba(78,161,255,.4);transition:transform .15s,box-shadow .15s;
+}
+.ce-chat-fab:hover{transform:translateY(-2px);box-shadow:0 12px 30px rgba(78,161,255,.5)}
+.ce-chat-fab-x{display:none;font-size:28px;line-height:1;font-weight:300}
+.ce-chat-fab.is-open svg{display:none}
+.ce-chat-fab.is-open .ce-chat-fab-x{display:block}
+
+.ce-chat-widget{
+  position:fixed;right:22px;bottom:88px;z-index:1200;
+  width:370px;max-width:calc(100vw - 32px);height:520px;max-height:calc(100vh - 130px);
+  display:flex;flex-direction:column;
+  background:var(--panel);border:1px solid var(--border);border-radius:16px;
+  box-shadow:0 18px 50px rgba(0,0,0,.55);overflow:hidden;
+}
+.ce-chat-head{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:12px 14px;border-bottom:1px solid var(--border);
+  background:linear-gradient(180deg,rgba(78,161,255,.12),transparent);
+}
+.ce-chat-title{display:flex;align-items:center;gap:8px;font-weight:700;font-size:14px;color:var(--text)}
+.ce-chat-title .ar{font-family:'IBM Plex Sans Arabic','Segoe UI Arabic',Tahoma,sans-serif;margin-inline-start:4px;color:var(--muted);font-weight:600;font-size:12px}
+.ce-chat-dot{width:8px;height:8px;border-radius:50%;background:var(--ok);box-shadow:0 0 0 3px rgba(34,197,94,.2)}
+.ce-chat-close{background:none;border:none;color:var(--muted);font-size:24px;line-height:1;cursor:pointer;padding:0 4px}
+.ce-chat-close:hover{color:var(--text)}
+
+.ce-chat-msgs{flex:1;overflow-y:auto;padding:14px;display:flex;flex-direction:column;gap:10px}
+.ce-msg{
+  max-width:85%;padding:9px 13px;border-radius:14px;font-size:13.5px;line-height:1.55;
+  white-space:pre-wrap;word-wrap:break-word;
+}
+.ce-msg[dir="rtl"]{font-family:'IBM Plex Sans Arabic','Segoe UI Arabic',Tahoma,sans-serif}
+.ce-msg-user{align-self:flex-end;background:var(--accent);color:#06121f;border-bottom-right-radius:4px}
+.ce-msg-bot{align-self:flex-start;background:#1c232b;color:var(--text);border:1px solid var(--border);border-bottom-left-radius:4px}
+.ce-msg-user[dir="rtl"]{align-self:flex-start;border-bottom-right-radius:14px;border-bottom-left-radius:4px}
+.ce-typing{opacity:.6;font-size:18px;letter-spacing:2px}
+
+.ce-chat-form{display:flex;gap:8px;padding:10px;border-top:1px solid var(--border);background:var(--bg)}
+.ce-chat-form input{
+  flex:1;background:var(--panel);border:1px solid var(--border);border-radius:10px;
+  padding:10px 12px;color:var(--text);font-size:13.5px;outline:none;
+}
+.ce-chat-form input:focus{border-color:var(--accent)}
+.ce-chat-send{
+  flex:0 0 auto;width:40px;border:none;border-radius:10px;cursor:pointer;
+  background:var(--accent);color:#06121f;display:flex;align-items:center;justify-content:center;
+}
+.ce-chat-send:hover{filter:brightness(1.08)}
+
+@media (max-width:560px){
+  .ce-chat-widget{right:12px;left:12px;width:auto;bottom:84px;height:70vh}
+}
+
+/* ── Site assistant: dedicated /assistant page ─────────────────────────── */
+.asst-chat{max-width:760px;margin:0 auto;background:var(--panel);border:1px solid var(--border);border-radius:16px;overflow:hidden}
+.asst-msgs{height:46vh;min-height:300px;overflow-y:auto;padding:18px;display:flex;flex-direction:column;gap:12px}
+.asst-msg{max-width:80%;padding:11px 15px;border-radius:14px;font-size:14.5px;line-height:1.6;white-space:pre-wrap;word-wrap:break-word}
+.asst-msg[dir="rtl"]{font-family:'IBM Plex Sans Arabic','Segoe UI Arabic',Tahoma,sans-serif}
+.asst-msg-user{align-self:flex-end;background:var(--accent);color:#06121f;border-bottom-right-radius:4px}
+.asst-msg-user[dir="rtl"]{align-self:flex-start;border-bottom-right-radius:14px;border-bottom-left-radius:4px}
+.asst-msg-bot{align-self:flex-start;background:#1c232b;color:var(--text);border:1px solid var(--border);border-bottom-left-radius:4px}
+.asst-form{display:flex;gap:10px;padding:14px;border-top:1px solid var(--border);background:var(--bg)}
+.asst-form input{flex:1;background:var(--panel);border:1px solid var(--border);border-radius:10px;padding:12px 14px;color:var(--text);font-size:14.5px;outline:none}
+.asst-form input:focus{border-color:var(--accent)}
+.asst-send{flex:0 0 auto;border:none;border-radius:10px;cursor:pointer;background:var(--accent);color:#06121f;font-weight:700;padding:0 20px}
+.asst-send:hover{filter:brightness(1.08)}
+.asst-suggest{display:flex;flex-wrap:wrap;gap:8px;padding:0 14px 14px}
+.asst-chip{background:#1c232b;border:1px solid var(--border);color:var(--text);border-radius:20px;padding:7px 14px;font-size:12.5px;cursor:pointer;font-family:'IBM Plex Sans Arabic','Segoe UI Arabic',Tahoma,sans-serif}
+.asst-chip:hover{border-color:var(--accent);color:var(--accent)}
+.asst-note{max-width:760px;margin:12px auto 0;color:var(--muted);font-size:12.5px;text-align:center;font-family:'IBM Plex Sans Arabic','Segoe UI Arabic',Tahoma,sans-serif}
