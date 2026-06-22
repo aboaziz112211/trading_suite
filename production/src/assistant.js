@@ -43,7 +43,7 @@ export async function chat(messages) {
           contents,
           config: {
             systemInstruction: SYSTEM_PROMPT, // الحواجز + قاعدة المعرفة
-            maxOutputTokens: 1500,
+            maxOutputTokens: 2048,
             temperature: 0.6,
           },
         });

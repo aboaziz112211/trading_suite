@@ -12,11 +12,25 @@ function renderProducts(products) {
     .join("\n");
 }
 
+function renderTools(tools) {
+  return tools
+    .map((t, i) => {
+      const cat = t.category ? ` [${t.category}]` : "";
+      const price = t.from ? `يبدأ من ${t.price_sar}` : `${t.price_sar}`;
+      const note = t.note ? ` — ${t.note}` : "";
+      return `${i + 1}. ${t.name_ar}${cat} — السعر: ${price} ر.س${note} — الرابط: ${t.product_url}`;
+    })
+    .join("\n");
+}
+
 export function buildSystemPrompt(cfg) {
   const rules = (cfg.rules || []).map((r, i) => `${i + 1}. ${r}`).join("\n");
   const knowledge = (cfg.knowledge || []).map((s) => `### ${s.title}\n${s.content}`).join("\n\n");
   const products = cfg.products?.length
     ? `\n\n### قائمة المنتجات (ضمن المصدر الوحيد)\n${renderProducts(cfg.products)}`
+    : "";
+  const tools = cfg.tools?.length
+    ? `\n\n### أدوات التحضير (ضمن المصدر الوحيد)\n${renderTools(cfg.tools)}`
     : "";
   const esc = cfg.escalation;
 
@@ -36,6 +50,6 @@ ${rules}
 
 ---
 ## قاعدة المعرفة (المصدر الوحيد للحقائق — لا تخترج عنها)
-${knowledge}${products}
+${knowledge}${products}${tools}
 `;
 }
