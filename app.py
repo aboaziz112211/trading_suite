@@ -1789,7 +1789,7 @@ WHAT CHARTEDGE IS
 ChartEdge Analytics is a live market-analysis platform. It is NOT a signals or recommendations service — it gives traders the tools to read the market themselves, instead of depending on paid analyst alerts or Telegram signals.
 
 PRODUCTS
-1. ChartEdge — a SEPA/VCP scanner that scores stocks out of 10 and surfaces Stage-2 and near-breakout names. The full scanner is a desktop app; the web view is display-only and downloadable.
+1. ChartEdge — a SEPA/VCP scanner that scores stocks out of 10 and surfaces Stage-2 and near-breakout names. The full scanner is a desktop app; the web view is display-only. To download the desktop app, share this link: https://drive.google.com/drive/folders/1FiRXYRO-rrrlVlMBc3ly-fsPPwYmM4FA?usp=drive_link
 2. TradePulse TASI — a live Saudi (Tadawul) dashboard: live watchlist, market breadth, sector rotation, and breakout signals, refreshed about every 30 seconds during the session.
 3. TradePulse US — a live NYSE/NASDAQ dashboard with SEPA scoring, a sector heatmap, and the SPY/QQQ/IWM indices.
 4. RS Rating — a daily Minervini-style relative-strength ranking (M1/M2/M3 sub-scores) that highlights real leaders and pre-breakout candidates.
