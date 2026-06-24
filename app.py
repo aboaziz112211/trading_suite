@@ -1810,6 +1810,30 @@ RULES (important)
 - Keep answers short (a few sentences). Be warm and professional. Never invent features or facts that aren't above."""
 
 
+# Fold the official PDF manuals (extracted to data/kb_chartedge.md) into the
+# system prompt at startup, so the assistant answers detailed how-to / feature
+# questions from the real ChartEdge & TradePulse guides — not just the summary.
+def _load_assistant_kb():
+    try:
+        p = DATA_DIR / "kb_chartedge.md"
+        if p.exists():
+            return p.read_text(encoding="utf-8")
+    except Exception:
+        pass
+    return ""
+
+
+_ASSISTANT_KB = _load_assistant_kb()
+if _ASSISTANT_KB:
+    ASSISTANT_SYSTEM_PROMPT += (
+        "\n\n## REFERENCE MANUALS — المصدر الموثوق للأسئلة التفصيلية\n"
+        "Use the manuals below to answer detailed how-to and feature questions about "
+        "ChartEdge and TradePulse. Quote the steps faithfully; if something isn't "
+        "covered, say so and point the user to the Read-Guide button or Contact.\n\n"
+        + _ASSISTANT_KB
+    )
+
+
 @app.route("/assistant")
 def assistant_page():
     return render_template("assistant.html")
@@ -1858,7 +1882,7 @@ def api_chat():
     payload = {
         "system_instruction": {"parts": [{"text": ASSISTANT_SYSTEM_PROMPT}]},
         "contents": contents,
-        "generationConfig": {"temperature": 0.4, "maxOutputTokens": 600},
+        "generationConfig": {"temperature": 0.4, "maxOutputTokens": 1024},
     }
 
     try:
