@@ -2139,8 +2139,10 @@ table.rs-tbl tbody tr:hover { background: rgba(255,255,255,0.02); }
 .assistant-link .en,.assistant-link .ar{color:var(--accent)}
 
 /* ── Site assistant: floating chat widget ──────────────────────────────── */
+.ce-chat-launcher{position:fixed;right:22px;bottom:22px;z-index:1200}
+.ce-chat-launcher[hidden]{display:none !important}
 .ce-chat-fab{
-  position:fixed;right:22px;bottom:22px;z-index:1200;
+  position:relative;
   width:56px;height:56px;border-radius:50%;border:none;cursor:pointer;
   background:var(--accent);color:#06121f;
   display:flex;align-items:center;justify-content:center;
@@ -2151,6 +2153,42 @@ table.rs-tbl tbody tr:hover { background: rgba(255,255,255,0.02); }
 .ce-chat-fab.is-open svg{display:none}
 .ce-chat-fab.is-open .ce-chat-fab-x{display:block}
 
+/* Small "hide" badge on the bubble — dismiss it entirely while browsing */
+.ce-chat-hide{
+  position:absolute;top:-6px;right:-6px;width:22px;height:22px;border-radius:50%;
+  border:1px solid var(--border);background:var(--panel);color:var(--muted);
+  font-size:18px;line-height:1;cursor:pointer;display:flex;align-items:center;justify-content:center;
+  box-shadow:0 2px 8px rgba(0,0,0,.35);opacity:0;transform:scale(.7);
+  transition:opacity .15s,transform .15s,color .15s,border-color .15s;
+}
+.ce-chat-launcher:hover .ce-chat-hide,
+.ce-chat-hide:focus-visible{opacity:1;transform:scale(1)}
+.ce-chat-hide:hover{color:var(--text);border-color:var(--muted)}
+@media (hover:none){ .ce-chat-hide{opacity:1;transform:scale(1)} }
+
+/* One-time discovery hint above the bubble */
+.ce-chat-hint{
+  position:absolute;right:0;bottom:70px;width:236px;max-width:64vw;
+  background:var(--panel);color:var(--text);border:1px solid var(--border);border-radius:14px;
+  padding:11px 30px 11px 13px;box-shadow:0 14px 34px rgba(0,0,0,.5);
+  font-size:13px;line-height:1.5;cursor:pointer;animation:ceHintIn .25s ease;
+}
+.ce-chat-hint[hidden]{display:none !important}
+.ce-chat-hint::after{
+  content:"";position:absolute;right:21px;bottom:-7px;width:13px;height:13px;
+  background:var(--panel);border-right:1px solid var(--border);border-bottom:1px solid var(--border);
+  transform:rotate(45deg);
+}
+.ce-chat-hint .en{display:block;font-weight:600}
+.ce-chat-hint .ar{display:block;margin-top:3px;color:var(--muted);font-size:12px;
+  font-family:'IBM Plex Sans Arabic','Segoe UI Arabic',Tahoma,sans-serif}
+.ce-chat-hint-x{
+  position:absolute;top:5px;right:8px;background:none;border:none;cursor:pointer;
+  color:var(--muted);font-size:17px;line-height:1;padding:2px;
+}
+.ce-chat-hint-x:hover{color:var(--text)}
+@keyframes ceHintIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+
 .ce-chat-widget{
   position:fixed;right:22px;bottom:88px;z-index:1200;
   width:370px;max-width:calc(100vw - 32px);height:520px;max-height:calc(100vh - 130px);
@@ -2158,6 +2196,7 @@ table.rs-tbl tbody tr:hover { background: rgba(255,255,255,0.02); }
   background:var(--panel);border:1px solid var(--border);border-radius:16px;
   box-shadow:0 18px 50px rgba(0,0,0,.55);overflow:hidden;
 }
+.ce-chat-widget[hidden]{display:none !important}
 .ce-chat-head{
   display:flex;align-items:center;justify-content:space-between;
   padding:12px 14px;border-bottom:1px solid var(--border);
@@ -2195,6 +2234,21 @@ table.rs-tbl tbody tr:hover { background: rgba(255,255,255,0.02); }
 @media (max-width:560px){
   .ce-chat-widget{right:12px;left:12px;width:auto;bottom:84px;height:70vh}
 }
+
+/* Restore tab — peeks from the edge once the assistant has been hidden */
+.ce-chat-restore{
+  position:fixed;right:0;bottom:80px;z-index:1200;
+  display:flex;align-items:center;gap:7px;
+  background:var(--accent);color:#06121f;border:none;cursor:pointer;
+  padding:9px 13px 9px 11px;border-radius:14px 0 0 14px;
+  box-shadow:0 8px 24px rgba(0,0,0,.4);
+  transform:translateX(calc(100% - 36px));transition:transform .2s ease;
+}
+.ce-chat-restore[hidden]{display:none !important}
+.ce-chat-restore:hover,.ce-chat-restore:focus-visible{transform:translateX(0)}
+.ce-chat-restore-tip{font-size:13px;font-weight:700;white-space:nowrap}
+.ce-chat-restore-tip .ar{margin-inline-start:5px;
+  font-family:'IBM Plex Sans Arabic','Segoe UI Arabic',Tahoma,sans-serif}
 
 /* ── Site assistant: dedicated /assistant page ─────────────────────────── */
 .asst-chat{max-width:760px;margin:0 auto;background:var(--panel);border:1px solid var(--border);border-radius:16px;overflow:hidden}

@@ -238,11 +238,20 @@
     </div>
   </footer>
 
-  {# ── Site assistant — floating chat widget (on every page) ──────────── #}
-  <button type="button" class="ce-chat-fab" id="ceChatFab" aria-label="Open ChartEdge assistant">
-    <svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor" aria-hidden="true"><path d="M12 3C6.48 3 2 6.94 2 11.8c0 2.5 1.2 4.74 3.13 6.33-.13 1.2-.6 2.3-1.36 3.22-.2.24-.05.6.26.6 1.86-.05 3.5-.7 4.74-1.66.98.27 2.02.41 3.13.41 5.52 0 10-3.94 10-8.8S17.52 3 12 3z"/></svg>
-    <span class="ce-chat-fab-x" aria-hidden="true">&times;</span>
-  </button>
+  {# ── Site assistant — floating chat launcher (on every page) ──────────── #}
+  <div class="ce-chat-launcher" id="ceChatLauncher">
+    <div class="ce-chat-hint" id="ceChatHint" hidden>
+      <button type="button" class="ce-chat-hint-x" id="ceChatHintX" aria-label="Dismiss">&times;</button>
+      <span class="en">👋 Need help? Ask the ChartEdge assistant.</span>
+      <span class="ar" dir="rtl" lang="ar">👋 محتاج مساعدة؟ اسأل مساعد ChartEdge.</span>
+    </div>
+    <button type="button" class="ce-chat-fab" id="ceChatFab" aria-label="Open ChartEdge assistant">
+      <svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor" aria-hidden="true"><path d="M12 3C6.48 3 2 6.94 2 11.8c0 2.5 1.2 4.74 3.13 6.33-.13 1.2-.6 2.3-1.36 3.22-.2.24-.05.6.26.6 1.86-.05 3.5-.7 4.74-1.66.98.27 2.02.41 3.13.41 5.52 0 10-3.94 10-8.8S17.52 3 12 3z"/></svg>
+      <span class="ce-chat-fab-x" aria-hidden="true">&times;</span>
+    </button>
+    <button type="button" class="ce-chat-hide" id="ceChatHide"
+            aria-label="Hide assistant" title="إخفاء المساعد · Hide">&minus;</button>
+  </div>
   <div class="ce-chat-widget" id="ceChatWidget" hidden>
     <div class="ce-chat-head">
       <div class="ce-chat-title"><span class="ce-chat-dot" aria-hidden="true"></span>
@@ -260,6 +269,12 @@
     </form>
   </div>
 
+  {# Restore tab — only shown after the visitor hides the assistant #}
+  <button type="button" class="ce-chat-restore" id="ceChatRestore" hidden aria-label="Show ChartEdge assistant">
+    <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor" aria-hidden="true"><path d="M12 3C6.48 3 2 6.94 2 11.8c0 2.5 1.2 4.74 3.13 6.33-.13 1.2-.6 2.3-1.36 3.22-.2.24-.05.6.26.6 1.86-.05 3.5-.7 4.74-1.66.98.27 2.02.41 3.13.41 5.52 0 10-3.94 10-8.8S17.52 3 12 3z"/></svg>
+    <span class="ce-chat-restore-tip"><span class="en">Assistant</span><span class="ar" dir="rtl" lang="ar">المساعد</span></span>
+  </button>
+
   <script>
   (function(){
     // Shared sender — reused by the floating widget AND the /assistant page.
@@ -275,12 +290,22 @@
     var fab = document.getElementById('ceChatFab');
     var widget = document.getElementById('ceChatWidget');
     if (!fab || !widget) return;
+    var launcher = document.getElementById('ceChatLauncher');
+    var hint = document.getElementById('ceChatHint');
+    var hintX = document.getElementById('ceChatHintX');
+    var hideBtn = document.getElementById('ceChatHide');
+    var restore = document.getElementById('ceChatRestore');
     var closeB = document.getElementById('ceChatClose');
     var msgs = document.getElementById('ceChatMsgs');
     var form = document.getElementById('ceChatForm');
     var input = document.getElementById('ceChatText');
     var history = [];
     var greeted = false;
+    var hintTimer = null;
+
+    // Remember the visitor's choice across pages (degrade gracefully if blocked)
+    function store(k, v){ try { v === null ? localStorage.removeItem(k) : localStorage.setItem(k, v); } catch (e) {} }
+    function read(k){ try { return localStorage.getItem(k); } catch (e) { return null; } }
 
     function bubble(text, who){
       var d = document.createElement('div');
@@ -294,10 +319,34 @@
       if (greeted) return; greeted = true;
       bubble("👋 مرحباً! أنا مساعد ChartEdge. اسألني عن المنصة ومنتجاتها وكيفية استخدامها.\nHi! I'm the ChartEdge assistant — ask me about the platform, its products, and how to use it.", 'bot');
     }
-    function openW(){ widget.hidden = false; fab.classList.add('is-open'); greet(); setTimeout(function(){ input.focus(); }, 50); }
+    function openW(){ dismissHint(); widget.hidden = false; fab.classList.add('is-open'); greet(); setTimeout(function(){ input.focus(); }, 50); }
     function closeW(){ widget.hidden = true; fab.classList.remove('is-open'); }
+
+    // Fully hide the launcher while browsing; leave a small tab to bring it back.
+    function hideLauncher(){ closeW(); dismissHint(); launcher.hidden = true; restore.hidden = false; store('ceChatHidden', '1'); }
+    function showLauncher(openChat){ store('ceChatHidden', null); restore.hidden = true; launcher.hidden = false; if (openChat) openW(); }
+
+    // One-time discovery hint so visitors know the assistant is there.
+    function dismissHint(){ if (hintTimer) { clearTimeout(hintTimer); hintTimer = null; } if (hint && !hint.hidden) hint.hidden = true; store('ceChatHintSeen', '1'); }
+    function showHint(){
+      if (!hint || read('ceChatHintSeen') === '1') return;
+      hintTimer = setTimeout(function(){
+        if (!widget.hidden || launcher.hidden) return;   // skip if already opened or hidden
+        hint.hidden = false;
+        hintTimer = setTimeout(dismissHint, 9000);        // auto-dismiss so it isn't sticky
+      }, 1200);
+    }
+
+    // Restore the visitor's last choice on every page.
+    if (read('ceChatHidden') === '1') { launcher.hidden = true; restore.hidden = false; }
+    else { showHint(); }
+
     fab.addEventListener('click', function(){ widget.hidden ? openW() : closeW(); });
     closeB.addEventListener('click', closeW);
+    hideBtn.addEventListener('click', function(e){ e.stopPropagation(); hideLauncher(); });
+    restore.addEventListener('click', function(){ showLauncher(true); });
+    if (hintX) hintX.addEventListener('click', function(e){ e.stopPropagation(); dismissHint(); });
+    if (hint) hint.addEventListener('click', openW);
 
     form.addEventListener('submit', function(e){
       e.preventDefault();
