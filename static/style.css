@@ -2267,3 +2267,359 @@ table.rs-tbl tbody tr:hover { background: rgba(255,255,255,0.02); }
 .asst-chip{background:#1c232b;border:1px solid var(--border);color:var(--text);border-radius:20px;padding:7px 14px;font-size:12.5px;cursor:pointer;font-family:'IBM Plex Sans Arabic','Segoe UI Arabic',Tahoma,sans-serif}
 .asst-chip:hover{border-color:var(--accent);color:var(--accent)}
 .asst-note{max-width:760px;margin:12px auto 0;color:var(--muted);font-size:12.5px;text-align:center;font-family:'IBM Plex Sans Arabic','Segoe UI Arabic',Tahoma,sans-serif}
+
+/* ════════════════════════════════════════════════════════════════════════
+   ▌ TERMINAL LUXE — 2026 redesign layer  (shell + home)
+   ────────────────────────────────────────────────────────────────────────
+   A premium "Bloomberg-reimagined" identity: warm near-black canvas, gold
+   as the primary accent (replaces the old blue), editorial Fraunces serif
+   for headlines, Hanken Grotesk for body, tabular mono for all numerics.
+   This block intentionally lives LAST so it cascades over the legacy rules
+   without surgical edits — remove it to fully revert.
+   ════════════════════════════════════════════════════════════════════════ */
+
+:root{
+  /* Canvas — warm-neutral near-black, not cool slate */
+  --bg:        #0a0a0b;
+  --bg-2:      #060607;
+  --panel:     #131316;
+  --panel-2:   #1a1a1f;
+  --text:      #ededf2;
+  --text-2:    #c3c3cc;
+  --muted:     #8a8a95;
+  /* Gold is the new identity colour (was #4ea1ff blue) */
+  --accent:    #d4a829;
+  --accent-2:  #f4d06a;
+  --accent-3:  #b8862a;
+  --gold-soft: rgba(212,168,41,.12);
+  --gold-line: rgba(212,168,41,.34);
+  --ok:        #22c55e;
+  --err:       #ef4444;
+  --warn:      #f59e0b;
+  --border:    #23232b;
+  --border-2:  #2e2e38;
+  /* Type system */
+  --font-display:'Fraunces','Hanken Grotesk',Georgia,serif;
+  --font-sans:'Hanken Grotesk',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+  --font-mono:'JetBrains Mono',ui-monospace,Menlo,monospace;
+  --font-ar:'IBM Plex Sans Arabic','Segoe UI Arabic',Tahoma,sans-serif;
+}
+
+/* ── Canvas: warm vignette + faint film grain for atmosphere ──────────── */
+body{
+  font-family:var(--font-sans);
+  background:var(--bg);
+  -webkit-font-smoothing:antialiased;
+  text-rendering:optimizeLegibility;
+}
+body::before{
+  content:"";position:fixed;inset:0;z-index:-2;pointer-events:none;
+  background:
+    radial-gradient(120% 80% at 78% -8%, rgba(212,168,41,.10), transparent 55%),
+    radial-gradient(90% 60% at 8% 102%, rgba(212,168,41,.05), transparent 60%),
+    var(--bg);
+}
+body::after{
+  content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;opacity:.05;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+::selection{ background:rgba(212,168,41,.28); color:#fff; }
+* { scrollbar-color: #2e2e38 transparent; }
+
+/* ── Global type mapping for the redesigned surfaces ──────────────────── */
+.brand,
+.hero-v2 h1, .sec-head h2, .tile-v2-title, .tg-cta-text h3,
+.brief-summary, .hv-tasi-big{
+  font-family:var(--font-display);
+  font-optical-sizing:auto;
+  letter-spacing:-.01em;
+  font-weight:600;
+}
+.topbar nav, .nav-bi, .footer-brand, .footer-tag{ font-family:var(--font-sans); }
+.market-pill,.hero-kicker,.tile-v2-tag,.hv-title,.mc-left .lbl,.mc-stat .l,
+.hero-stats .l,.tile-v2-meta .l,.hv-time,.markets-foot,.beta-chip,.mc-asof{
+  font-family:var(--font-mono);
+}
+[lang="ar"],.ar,.h1-ar,.lede-ar,.tile-v2-title-ar,.tile-v2-desc-ar,
+.brief-summary-ar,.tg-cta-text .ar{ font-family:var(--font-ar); letter-spacing:0; }
+
+/* ── Topbar ───────────────────────────────────────────────────────────── */
+.topbar{
+  gap:22px;padding:13px 26px;
+  background:rgba(10,10,11,.82);
+  backdrop-filter:saturate(140%) blur(12px);
+  border-bottom:1px solid var(--border);
+}
+.brand{ font-weight:600;font-size:19px;letter-spacing:-.02em;color:var(--text); }
+.brand-logo{
+  width:30px;height:30px;border-radius:8px;
+  box-shadow:0 0 0 1px var(--gold-line), 0 4px 14px rgba(212,168,41,.18);
+}
+.beta-chip{
+  font-family:var(--font-mono);font-size:9px;font-weight:700;
+  background:var(--gold-soft);color:var(--accent-2);
+  border:1px solid var(--gold-line);padding:2px 6px;border-radius:5px;
+  letter-spacing:1px;
+}
+.topbar nav a{ color:var(--muted);font-weight:500;transition:color .14s; }
+.topbar nav a:hover{ color:var(--text); }
+.nav-bi .en{ font-size:13.5px;font-weight:500; }
+.nav-bi .ar{ font-family:var(--font-ar);color:var(--muted);opacity:.8; }
+.nav-bi:hover .ar{ color:var(--accent-2);opacity:1; }
+
+/* X / contact / report / rs pills — unify on the warm shell */
+.x-link,.footer-social{
+  background:rgba(255,255,255,.035);border:1px solid var(--border);
+}
+.x-link:hover,.footer-social:hover{
+  background:rgba(212,168,41,.10);border-color:var(--gold-line);
+}
+.contact-link{
+  background:rgba(255,255,255,.04);border:1px solid var(--border);color:var(--text)!important;
+}
+.contact-link:hover{ background:var(--gold-soft);border-color:var(--gold-line); }
+
+/* ── Market live pills (kept green/amber, refined chrome) ─────────────── */
+.market-pill{
+  font-family:var(--font-mono);background:rgba(255,255,255,.035);
+  border-color:var(--border);
+}
+
+/* ── HERO ─────────────────────────────────────────────────────────────── */
+.hero-v2{ padding:74px 28px 56px;gap:56px; }
+.hero-v2::before{
+  background:radial-gradient(closest-side, rgba(212,168,41,.20), transparent 70%);
+  width:760px;height:560px;top:-90px;right:-240px;
+}
+.hero-kicker{
+  font-family:var(--font-mono);font-size:10.5px;letter-spacing:1.4px;
+  color:var(--accent-2);background:var(--gold-soft);
+  border:1px solid var(--gold-line);text-transform:uppercase;
+}
+.hero-v2 h1{
+  font-size:clamp(40px,5.6vw,66px);font-weight:600;line-height:1.02;
+  letter-spacing:-.025em;margin:0 0 14px;color:var(--text);
+}
+.hero-v2 h1 .grad{
+  font-style:italic;font-weight:500;
+  background:linear-gradient(96deg,#f6dd8e,#d4a829 58%,#b8862a);
+  -webkit-background-clip:text;background-clip:text;color:transparent;
+}
+.h1-ar{ font-family:var(--font-ar);color:var(--text-2);font-weight:700; }
+.hero-v2 .lede{ font-size:16.5px;color:var(--text-2);line-height:1.65;max-width:500px; }
+.hero-v2 .lede-ar{ color:var(--muted); }
+
+/* Buttons — gold primary, hairline ghost */
+.btn,.btn-primary{
+  background:linear-gradient(180deg,var(--accent-2),var(--accent));
+  color:#1a1405;font-weight:700;border:none;
+  box-shadow:0 1px 0 rgba(255,255,255,.3) inset, 0 8px 22px rgba(212,168,41,.26);
+}
+.btn:hover,.btn-primary:hover{
+  transform:translateY(-1px);
+  box-shadow:0 1px 0 rgba(255,255,255,.35) inset, 0 12px 30px rgba(212,168,41,.4);
+}
+.btn.ghost,.btn-ghost{
+  background:rgba(255,255,255,.035);color:var(--text);
+  border:1px solid var(--border-2);box-shadow:none;font-weight:600;
+}
+.btn.ghost:hover,.btn-ghost:hover{ background:rgba(212,168,41,.08);border-color:var(--gold-line); }
+
+.hero-stats{ margin-top:40px;gap:30px; }
+.hero-stats .n{
+  font-family:var(--font-display);font-weight:600;font-size:30px;
+  color:var(--text);font-variant-numeric:tabular-nums;
+}
+.hero-stats .l{ font-family:var(--font-mono);letter-spacing:.6px;color:var(--muted); }
+
+/* Staggered, single page-load reveal (one orchestrated moment) */
+.hero-left>*{ animation:tlRise .7s cubic-bezier(.2,.7,.2,1) both; }
+.hero-left>*:nth-child(1){animation-delay:.02s}
+.hero-left>*:nth-child(2){animation-delay:.09s}
+.hero-left>*:nth-child(3){animation-delay:.16s}
+.hero-left>*:nth-child(4){animation-delay:.23s}
+.hero-left>*:nth-child(5){animation-delay:.30s}
+.hero-left>*:nth-child(6){animation-delay:.37s}
+.hero-viz{ animation:tlRise .8s cubic-bezier(.2,.7,.2,1) .22s both; }
+@keyframes tlRise{ from{opacity:0;transform:translateY(16px)} to{opacity:1;transform:none} }
+
+/* ── Hero "Markets at a glance" terminal panel ────────────────────────── */
+.hero-viz{
+  background:linear-gradient(180deg,#15150f,#0c0c0a);
+  border:1px solid var(--border-2);
+  border-radius:18px;
+  box-shadow:0 34px 70px rgba(0,0,0,.6), 0 0 0 1px rgba(212,168,41,.07) inset;
+}
+.hero-viz::before{
+  background:radial-gradient(circle at 100% 0%, rgba(212,168,41,.16), transparent 60%);
+}
+/* gold ticker hairline across the top of the panel */
+.hero-viz::after{
+  content:"";position:absolute;left:0;right:0;top:0;height:2px;z-index:2;
+  background:linear-gradient(90deg,transparent,var(--accent),transparent);
+  opacity:.7;
+}
+.hv-title{ font-family:var(--font-mono);color:var(--muted);letter-spacing:1.6px; }
+.markets-grid{ gap:9px; }
+.market-cell{
+  background:rgba(255,255,255,.02);border:1px solid var(--border);
+}
+.market-cell:hover{
+  border-color:var(--gold-line);background:rgba(212,168,41,.06);
+}
+.market-cell-lg{
+  background:linear-gradient(135deg, rgba(212,168,41,.12), rgba(255,255,255,.02));
+  border-color:var(--gold-line);
+}
+.mc-sym,.mc-price{ font-family:var(--font-display);font-weight:600; }
+.mc-chg{ font-family:var(--font-mono); }
+.markets-foot{ font-family:var(--font-mono); }
+
+/* ── Section heads — editorial with a gold tick ───────────────────────── */
+.sec-head h2{
+  font-weight:600;font-size:30px;letter-spacing:-.02em;
+  position:relative;padding-left:18px;
+}
+.sec-head h2::before{
+  content:"";position:absolute;left:0;top:.18em;bottom:.18em;width:4px;
+  border-radius:3px;background:linear-gradient(180deg,var(--accent-2),var(--accent-3));
+}
+.sec-head h2 .ar{ font-family:var(--font-ar);color:var(--muted);font-weight:400; }
+.sec-head a{ color:var(--accent);font-weight:600; }
+.sec-head a:hover{ color:var(--accent-2); }
+
+/* ── Product tiles ────────────────────────────────────────────────────── */
+.tile-v2{ background:var(--panel);border:1px solid var(--border);border-radius:16px; }
+.tile-v2:hover{
+  border-color:var(--gold-line);
+  box-shadow:0 16px 40px rgba(0,0,0,.5), 0 0 0 1px rgba(212,168,41,.08) inset;
+}
+.tile-v2.featured{
+  background:linear-gradient(150deg,#1c1810 0%, var(--panel) 60%);
+  border-color:var(--gold-line);
+  box-shadow:0 0 0 1px rgba(212,168,41,.12) inset, 0 16px 44px rgba(0,0,0,.5);
+}
+.tile-v2.featured::before{
+  background:radial-gradient(circle, rgba(212,168,41,.20), transparent 70%);
+}
+.tile-v2-tag{ font-family:var(--font-mono);color:var(--muted); }
+.tile-v2.featured .tile-v2-tag{ color:var(--accent-2); }
+.tile-v2-title{ font-weight:600;letter-spacing:-.02em; }
+.tile-v2-title-ar{ font-family:var(--font-ar); }
+.tile-v2-desc{ color:var(--text-2); }
+.tile-v2-meta .n{ font-family:var(--font-display);font-weight:600; }
+.tile-v2.featured .tile-v2-meta .n{ color:var(--accent-2); }
+.tile-v2-cta{ color:var(--accent); }
+.tile-v2:hover .tile-v2-cta{ color:var(--accent-2); }
+
+/* ── Today's-market card ──────────────────────────────────────────────── */
+.market-card{
+  background:linear-gradient(135deg, #16140e 0%, #0c0c0a 100%);
+  border:1px solid var(--border-2);border-radius:18px;
+}
+.brief-summary{ font-family:var(--font-display);font-weight:600;color:var(--text); }
+.mc-stat{ background:rgba(255,255,255,.02);border-color:var(--border); }
+.mc-stat .v{ font-family:var(--font-display);font-weight:600; }
+.brief-scan .bn{ font-family:var(--font-display);font-weight:600; }
+
+/* ── Telegram CTA (keeps Telegram blue, reframed for the dark canvas) ──── */
+.tg-cta{
+  background:linear-gradient(135deg,#10243a 0%, #0a141f 100%);
+  border:1px solid rgba(42,171,238,.30);border-radius:18px;
+}
+.tg-cta-text h3{ font-family:var(--font-display);font-weight:600; }
+.tg-cta-text p{ color:var(--text-2); }
+
+/* ── Footer ───────────────────────────────────────────────────────────── */
+.site-footer{ background:var(--bg-2);border-top:1px solid var(--border); }
+.footer-brand{ font-weight:700;letter-spacing:.02em; }
+.footer-tag{ font-family:var(--font-mono);color:var(--accent);letter-spacing:2px; }
+.footer-social b{ color:var(--accent); }
+
+/* ── Analyze panel + assistant inherit the gold token automatically;
+      just warm their surfaces to match the new canvas ─────────────────── */
+.analyze-panel{ background:linear-gradient(180deg,var(--panel),#0c0c0a);border-color:var(--border-2); }
+.ce-chat-widget,.asst-chat{ background:var(--panel);border-color:var(--border); }
+.ce-chat-head{ background:linear-gradient(180deg,var(--gold-soft),transparent); }
+.ce-chat-fab{ color:#1a1405;box-shadow:0 8px 24px rgba(212,168,41,.4); }
+.ce-chat-fab:hover{ box-shadow:0 12px 30px rgba(212,168,41,.5); }
+.ce-msg-user,.asst-msg-user,.ce-chat-send,.asst-send,.ce-chat-restore{ color:#1a1405; }
+
+/* ── Laptop notice — gold instead of blue ─────────────────────────────── */
+@media (max-width:900px){
+  .laptop-notice{
+    background:var(--gold-soft);border:1px solid var(--gold-line);
+    border-left:3px solid var(--accent);color:var(--accent-2);
+  }
+}
+
+/* ── Reduced-data / mobile hero tightening ────────────────────────────── */
+@media (max-width:880px){
+  .hero-v2{ padding:46px 22px 30px; }
+}
+
+/* ════════════════════════════════════════════════════════════════════════
+   ▌ TERMINAL LUXE — follow-up pages sweep
+   (product · brief/report · RS rating · about · contact · assistant · admin)
+   Maps legacy display type to Fraunces and converts the last hardcoded blues
+   to the gold system. Genuine brand colours (Telegram #2AABEE, X/Twitter
+   #1d9bf0) are intentionally preserved.
+   ════════════════════════════════════════════════════════════════════════ */
+
+/* Editorial headings everywhere (was Manrope / system) */
+.hero h1, .product-head h1, .report-section h2, .live-head h2,
+.rs-hero h1, .leader-tk, .alert-tk, .about-card h3,
+.contact-card h2, .stat-num, .rh-price{
+  font-family:var(--font-display);font-optical-sizing:auto;
+  font-weight:600;letter-spacing:-.02em;
+}
+.hero p{ color:var(--text-2); }
+
+/* Guide button (product pages) — blue → gold */
+.guide-btn{
+  background:var(--gold-soft);border:1px solid var(--gold-line);color:var(--accent-2);
+}
+.guide-btn:hover{ background:rgba(212,168,41,.2);border-color:var(--accent); }
+
+/* RS-rating hero gradient keyword */
+.rs-hero h1 .grad{
+  background:linear-gradient(96deg,#f6dd8e,#d4a829 60%,#b8862a);
+  -webkit-background-clip:text;background-clip:text;color:transparent;
+}
+
+/* Methodology panel — blue → warm gold */
+.methodology{
+  background:linear-gradient(135deg,#1c1810,var(--panel));
+  border:1px solid var(--gold-line);
+}
+.m-col .m-key{
+  font-family:var(--font-display);
+  background:var(--gold-soft);color:var(--accent-2);
+}
+
+/* RS search active filter chip */
+.rs-search .btn.active{
+  background:var(--gold-soft);border-color:var(--accent);color:var(--accent-2);
+}
+
+/* Analyze-panel market toggle */
+.az-mkt-btn.active{
+  background:var(--gold-soft);border-color:var(--accent);color:var(--accent-2);
+}
+
+/* Admin pills / tools / dropzone — blue → gold (operator surfaces) */
+.admin-pill-agent{
+  background:rgba(212,168,41,.16);border-color:var(--gold-line);color:var(--accent-2)!important;
+}
+.admin-pill-agent:hover{ background:rgba(212,168,41,.26); }
+.admin-tool:hover{ background:var(--gold-soft);border-color:var(--gold-line); }
+.admin-tool.active{ background:var(--gold-soft);border-color:var(--accent); }
+.drop-zone.drag{ background:var(--gold-soft); }
+
+/* Contact "Message Admin" icon — off-palette purple → gold */
+.contact-icon-admin{ background:linear-gradient(135deg,#f4d06a 0%, #b8862a 100%); }
+.contact-card:hover{ border-color:var(--gold-line); }
+
+/* Stat blocks / report hero accents inherit gold via var(--accent);
+   just warm their value colour */
+.stat-num{ color:var(--accent); }
