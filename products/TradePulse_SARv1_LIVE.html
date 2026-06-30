@@ -1248,6 +1248,7 @@ document.addEventListener('drop',      function(e){
         <th onclick="so('rs')" title="القوة النسبية مقارنة بالتاسي — انقر للترتيب">⬍ RS</th>
         <th onclick="so('score')" title="درجة ChartEdge الخام — انقر للترتيب">⬍ CE</th>
         <th onclick="so('total')" title="درجة Boss المركّبة من 5 وكلاء — انقر للترتيب">⬍ Boss ▼</th>
+        <th onclick="so('vcp')" title="درجة VCP من نظام الترتيب (Yahoo) — انقر للترتيب">⬍ VCP</th>
         <th onclick="so('breakout_level')" title="نقطة الاختراق (المقاومة الرئيسية) — انقر للترتيب">🚀 Pivot · الاختراق</th>
         <th title="منطقة الشراء المثلى بالقرب من نقطة الاختراق">Buy Zone · منطقة الشراء</th>
         <th title="سعر وقف الخسارة المقترح">Stop · وقف</th>
@@ -1256,7 +1257,7 @@ document.addEventListener('drop',      function(e){
         <th title="التوصية بناءً على درجة Boss والسعر">Action · الإجراء</th>
       </tr></thead>
       <tbody id="tbody">
-        <tr><td colspan="14"><div class="empty">
+        <tr><td colspan="15"><div class="empty">
           <div class="ei">📁</div>
           <div class="et">No scan loaded · لا يوجد فحص</div>
           <div class="es">Drop your ChartEdge CSV above.<br>Agents run instantly. · أسقط ملف ChartEdge أعلاه<br>الوكلاء يعملون فوراً.</div>
@@ -2966,7 +2967,7 @@ function renderTop3() {
       <div class="pk-tags">
         <span class="ptg pt-rs">RS ${s.rs}</span>
         <span class="ptg pt-sc">Score ${s.score}/8</span>
-        <span class="ptg pt-bs">Boss ${s.total}</span>
+        <span class="ptg pt-bs">Boss ${s.total}</span>${vcpChipFor(s.ticker)}
         ${bqTag}${sq}${baseTag}${nearTag}${brkTag}
       </div>`;
   });
@@ -3034,9 +3035,9 @@ function updateBreadth() {
   const newHi = stocks.filter(s => s.dayHigh && s.high52 && s.dayHigh >= s.high52 * 0.998).length;
   const newLo = stocks.filter(s => s.dayLow && s.low52 && s.dayLow <= s.low52 * 1.002).length;
 
-  // ── Above 50MA / 200MA ──
-  const has50  = stocks.filter(s => s.ma50 != null);
-  const abv50  = has50.filter(s => s.price > s.ma50).length;
+  // ── Above 50MA / 200MA (both from ChartEdge STOCKS for a reliable, symmetric read) ──
+  const has50  = STOCKS.filter(s => s.ma50 > 0);
+  const abv50  = has50.filter(s => (s.livePrice || s.price) > s.ma50).length;
   const pct50  = has50.length  ? Math.round(abv50  / has50.length  * 100) : null;
   // v5.1 — 200MA breadth from ChartEdge STOCKS (Bloomberg Saudi feed lacks 200DMA col)
   const has200 = STOCKS.filter(s => s.ma200 > 0);
@@ -3420,7 +3421,7 @@ function renderBreakoutWatch() {
       <div class="bw-metrics">
         <span class="bw-m" style="background:#EAF3DE;color:#3B6D11">RS ${s.rs}</span>
         <span class="bw-m">Score ${s.score}/8</span>
-        <span class="bw-m" style="background:#E6F1FB;color:#185FA5">Boss ${s.total}</span>
+        <span class="bw-m" style="background:#E6F1FB;color:#185FA5">Boss ${s.total}</span>${vcpChipFor(s.ticker)}
         <span class="bw-m" style="background:${s.liq>=50?'#E0F7FA':'#F4F3EF'};color:${s.liq>=50?'#0077B6':'#6b6b65'}">💧 ${s.liq}</span>
         ${s.liveVol&&s.avgVol30 ? '<span class="bw-m">Vol ' + (s.liveVol/s.avgVol30).toFixed(1) + 'x</span>' : s.liveVol ? '<span class="bw-m">Vol ' + fv(s.liveVol) + '</span>' : ''}
         <span class="bw-m" style="color:#A32D2D">Stop ${s.stop_loss?.toFixed(2) || '—'}</span>
@@ -3513,7 +3514,7 @@ function renderPullbackWatch() {
       </div>
       <div class="pb-metrics">
         <span class="pb-m" style="background:#E6F1FB;color:#185FA5">RS ${s.rs}</span>
-        <span class="pb-m" style="background:#EAF3DE;color:#3B6D11">Boss ${s.total}</span>
+        <span class="pb-m" style="background:#EAF3DE;color:#3B6D11">Boss ${s.total}</span>${vcpChipFor(s.ticker)}
         <span class="pb-m">12m +${s.pct12}%</span>
         ${risk ? '<span class="pb-m" style="background:#FDE8E8;color:#A32D2D">Risk ' + risk.toFixed(2) + '</span>' : ''}
         ${rr   ? '<span class="pb-m" style="background:#EAF3DE;color:#3B6D11">R:R ' + rr + ':1</span>' : ''}
@@ -3592,7 +3593,7 @@ function renderScout() {
     return '<div class="sc-card ' + tier + '" onclick="openCardModal(\''+s.ticker+'\')" style="cursor:pointer" title="Click for full detail">' +
       '<div class="sc-card-hdr">' +
         '<span class="sc-tk" title="' + numId + '">' + coName + '</span>' +
-        '<span class="sc-chip ' + chipCls + '">' + chipLbl + '</span>' +
+        '<span class="sc-chip ' + chipCls + '">' + chipLbl + '</span>' + vcpChipFor(s.ticker) +
       '</div>' +
       '<div class="sc-sector">' + numId + ' · ' + sector + '</div>' +
       '<div class="sc-price-row">' +
@@ -3618,8 +3619,53 @@ function renderScout() {
 // ══════════════════════════════════════════════
 // TABLE RENDER
 // ══════════════════════════════════════════════
+// ── VCP scores from the ranker (Phase 1 handoff via tp_hub.py) ──────────────
+// Polls /vcp_scores.json, merges by 4-digit code, re-renders when it changes.
+// No-op when opened as a plain file (fetch fails silently → dashboard unchanged).
+window.VCP_SCORES = window.VCP_SCORES || {};
+let _vcpStamp = null;
+function applyVcpToStocks(){
+  if (typeof STOCKS === 'undefined' || !STOCKS.length) return;
+  STOCKS.forEach(s => {
+    const code = String(s.ticker||'').replace(/\.SR$/i,'');
+    const v = window.VCP_SCORES[code];
+    s.vcp = (v && typeof v.vcp === 'number') ? v.vcp : null;
+    s.vcpSub = v || null;
+  });
+}
+function vcpCell(v){
+  if (v == null) return '<span style="color:#c9c7c0;font-size:11px">—</span>';
+  const c = v>=80?'#3B6D11':v>=65?'#BA7517':'#A32D2D';
+  return '<span style="background:'+c+'1f;color:'+c+';font-weight:700;font-size:11px;padding:2px 7px;border-radius:9px">'+v+'</span>';
+}
+function vcpChip(v){
+  if (v == null) return '';
+  var c = v>=80?'#3B6D11':v>=65?'#BA7517':'#A32D2D';
+  return '<span style="display:inline-block;background:'+c+'1f;color:'+c+';font-weight:700;font-size:9px;padding:1px 6px;border-radius:6px;margin-left:4px;vertical-align:middle">VCP '+v+'</span>';
+}
+function vcpChipFor(ticker){
+  try { var code=String(ticker||'').replace(/\.SR$/i,''); var o=window.VCP_SCORES&&window.VCP_SCORES[code]; return vcpChip(o&&typeof o.vcp==='number'?o.vcp:null); } catch(e){ return ''; }
+}
+function pollVcpScores(){
+  fetch('/vcp_scores.json', {cache:'no-store'})
+    .then(r => r.ok ? r.json() : null)
+    .then(d => {
+      if (!d || !d.scores || d._updated === _vcpStamp) return;
+      _vcpStamp = d._updated;
+      window.VCP_SCORES = d.scores;
+      applyVcpToStocks();
+      if (typeof render === 'function') render();
+      ['renderTop3','renderBreakoutWatch','renderPullbackWatch','renderScout','renderAgg','renderFocusList'].forEach(function(fn){ try{ if(typeof window[fn]==='function') window[fn](); }catch(e){} });
+      console.log('[VCP] loaded ' + Object.keys(d.scores).length + ' scores @ ' + d._updated);
+    })
+    .catch(() => {});
+}
+pollVcpScores();
+setInterval(pollVcpScores, 20000);
+
 function render() {
   if (!STOCKS.length) return;
+  applyVcpToStocks();
   const q=el('srch').value.trim().toLowerCase();
   let rows=STOCKS.filter(s=>{
     if(tab!=='all'&&s.action!==tab) return false;
@@ -3694,6 +3740,7 @@ function render() {
         </div>
         <span class="boss" style="color:${bc}">${s.total}</span>
       </div></td>
+      <td>${vcpCell(s.vcp)}</td>
       <td><span class="piv">${s.breakout_level?.toFixed(2)||'—'}</span></td>
       <td><span class="bz"><b>${s.buy_zone_low?.toFixed(2)||'—'}</b>–<b>${s.buy_zone_high?.toFixed(2)||'—'}</b></span></td>
       <td><span class="stp">${s.stop_loss?.toFixed(2)||'—'}</span></td>
@@ -3701,8 +3748,15 @@ function render() {
       <td><span class="vol">${fv(s.liveVol||0)}</span></td>
       <td><span class="sbg ${ac}">${s.action}</span></td>
     </tr>
-    <tr id="det-${gi}" style="display:none"><td colspan="14" style="padding:0">
+    <tr id="det-${gi}" style="display:none"><td colspan="15" style="padding:0">
       <div class="det open">
+        ${s.vcpSub ? `<div class="dbox"><div class="dh"><span class="dt">🎯 VCP Breakdown · تحليل</span><span class="ds2" style="color:${s.vcp>=80?'#3B6D11':s.vcp>=65?'#BA7517':'#A32D2D'}">${s.vcp} / 100</span></div>
+          <div style="display:flex;gap:12px;flex-wrap:wrap;font-size:11px;padding:6px 2px;color:#4a4a45">
+            <span>Pivot <b>${s.vcpSub.pivot}</b></span><span>Tight <b>${s.vcpSub.tight}</b></span>
+            <span>Vol <b>${s.vcpSub.volume}</b></span><span>R/R <b>${s.vcpSub.rr}</b></span>
+            <span>RS <b>${s.vcpSub.rs}</b></span>
+            <span style="color:#A32D2D">Risk ${s.vcpSub.riskPct}%</span><span style="color:#3B6D11">Reward ${s.vcpSub.rewardPct}%</span>
+          </div></div>` : ''}
         <div class="dbox">
           <div class="dh">
             <span class="dt">🚀 Breakout Levels</span>
@@ -4221,7 +4275,7 @@ function renderAggNearMiss(){
     return '<div class="agg-nm-card" onclick="openCardModal(\''+s.ticker+'\')" title="' + rLabel + ' - click for full detail">' +
       '<div class="agg-card-top">' +
         '<span class="agg-tk">' + (s.ticker||'').replace('.SR','') + '</span>' +
-        '<span class="agg-nm-reason ' + rCls + '">' + rLabel + '</span>' +
+        '<span class="agg-nm-reason ' + rCls + '">' + rLabel + '</span>' + vcpChipFor(s.ticker) +
       '</div>' +
       (cName ? '<div class="agg-nm-ar">' + cName + '</div>' : '') +
       '<div class="agg-row"><span style="color:' + (chg>=0?'#3B6D11':'#A32D2D') + ';font-weight:700">' + (chg!=null?(chg>=0?'+':'')+chg.toFixed(2)+'%':'-') + '</span><b>' + price.toFixed(2) + '</b></div>' +
@@ -4270,7 +4324,7 @@ function renderAgg(){
     return '<div class="agg-card" onclick="openCardModal(\''+s.ticker+'\')" title="Click for full detail">' +
       '<div class="agg-card-top">' +
         '<span class="agg-tk">' + (s.ticker||'').replace('.SR','') + '</span>' +
-        '<span class="agg-score" title="' + scoreTip.replace(/"/g,'&quot;') + '" style="cursor:help">' + score + '</span>' +
+        '<span class="agg-score" title="' + scoreTip.replace(/"/g,'&quot;') + '" style="cursor:help">' + score + '</span>' + vcpChipFor(s.ticker) +
       '</div>' +
       (cName ? '<div class="agg-nm-ar">' + cName + '</div>' : '') +
       '<div class="agg-row"><span style="color:#3B6D11;font-weight:700">' + (chg>=0?'+':'') + chg.toFixed(2) + '%</span><b>' + price.toFixed(2) + '</b></div>' +
@@ -4706,7 +4760,7 @@ function renderFocusList(){
       '<button class="focus-remove" onclick="removeFromFocus(\''+t+'\', event)" title="Remove from Focus List">✕</button>' +
       '<div class="focus-card-top">' +
         '<span class="focus-tk">' + tk + '</span>' +
-        '<span class="focus-status ' + st.cls + '">' + st.label + '</span>' +
+        '<span class="focus-status ' + st.cls + '">' + st.label + '</span>' + vcpChipFor(t) +
       '</div>' +
       (cName ? '<div class="agg-nm-ar">' + cName + '</div>' : '') +
       (function(){ var n = getFocusNote(t); return '<div class="focus-card-note" onclick="editFocusNote(\''+t+'\', event)" title="Click to edit reason">' + (n ? '📝 ' + n.replace(/</g,'&lt;') : '<span class="fcn-empty">+ add reason</span>') + '</div>'; })() +
@@ -5181,7 +5235,7 @@ setTimeout(jrnSetup, 1200);
 
 <!-- ===== BREAKOUT RADAR TAB — added 2026-06-17 — NAMESPACED rdr-* / RDR_ — isolated ===== -->
 <script>
-var RDR_COL = { base:'#8a8a93', near:'#E0A93B', hot:'#EF9F27', brk:'#8FD14F', ext:'#34C8A0' };
+var RDR_COL = { base:'#8a8a93', near:'#E0A93B', hot:'#EF9F27', brk:'#8FD14F', ext:'#34C8A0', scout:'#A78BFA' };
 function rdrCfg(k, d){ try { return (typeof TP_BRK_CFG==='object' && TP_BRK_CFG[k]!=null) ? TP_BRK_CFG[k] : d; } catch(e){ return d; } }
 function rdrGap(s){ return (s.liveGap != null ? s.liveGap : s.dist_to_breakout); }
 function rdrVR(s){ return (s.liveVol && s.avgVol30) ? (s.liveVol / s.avgVol30) : null; }
@@ -5201,14 +5255,26 @@ function rdrWatch(){
     .filter(function(s){ return s.rs >= 60; })
     .filter(function(s){ var g = rdrGap(s); return g != null && g <= wg; });
 }
-var _RDR = { pos:{}, scale:null, raf:null, hover:null, paused:false };
+function rdrScoutSet(){
+  if (typeof STOCKS==='undefined' || !STOCKS.length || typeof calcScout!=='function') return [];
+  var wg = rdrCfg('watchGap',5);
+  return STOCKS.filter(function(s){
+    if (s.stage!=='stage4') return false;
+    var price=s.livePrice||s.price; if (!s.breakout_level||!price) return false;
+    var sc=calcScout(s); if (!sc || sc.score<55) return false;
+    var gap=(s.breakout_level-price)/price*100;
+    return gap<=wg && gap>=-2;
+  });
+}
+var _RDR = { pos:{}, scale:null, raf:null, hover:null, paused:false, scout:false };
 function renderRadar(){
   var wrap = document.getElementById('tab-radar'); if (!wrap) return;
   var cv = document.getElementById('rdr-cv'); if (!cv) return;
   var watch = rdrWatch();
+  var scoutArr = _RDR.scout ? rdrScoutSet() : [];
   var msg = document.getElementById('rdr-msg');
   var ctx = cv.getContext('2d');
-  if (!watch.length){
+  if (!watch.length && !scoutArr.length){
     if (msg){ msg.style.display='block';
       msg.textContent = (typeof STOCKS==='undefined' || !STOCKS.length) ? 'Load the market feed CSV to populate the radar - حمّل ملف السوق' : 'No Stage 2 stocks within pivot range right now - لا توجد أسهم قريبة من نقطة الاختراق'; }
     ctx.clearRect(0,0,cv.width,cv.height);
@@ -5232,11 +5298,21 @@ function renderRadar(){
     prev.tx = vrv; prev.ty = pct; prev.gap = gap; prev.vr = vrv; prev.st = st;
     prev.sym = rdrSym(s); prev.name = rdrName(s); prev.chg = s.liveChg; prev.flash = flash;
   });
+  scoutArr.forEach(function(s){
+    var price=s.livePrice||s.price; var gap=(s.breakout_level-price)/price*100;
+    var vr=rdrVR(s); var vrv=(vr==null?1:vr); var pct=-gap;
+    if (vrv>vrMax) vrMax=vrv; if (pct>pMax) pMax=pct; if (pct<pMin) pMin=pct;
+    var tk='SCOUT:'+s.ticker; seen[tk]=1;
+    var prev=_RDR.pos[tk]; if(!prev){ _RDR.pos[tk]={cx:vrv,cy:pct}; prev=_RDR.pos[tk]; }
+    prev.tx=vrv; prev.ty=pct; prev.gap=gap; prev.vr=vrv; prev.st='scout'; prev.flash=0;
+    prev.sym=rdrSym(s); prev.name=rdrName(s)+' · Scout'; prev.chg=s.liveChg;
+    prev.obs=(typeof TASI_STAGE!=='undefined' && TASI_STAGE===4);
+  });
   Object.keys(_RDR.pos).forEach(function(tk){ if(!seen[tk]) delete _RDR.pos[tk]; });
   _RDR.scale = { vrMax: Math.max(3, Math.ceil(vrMax)), pMax: Math.max(8, Math.ceil(pMax)), pMin: Math.min(-(rdrCfg('watchGap',5)+1), Math.floor(pMin)) };
   var mB=document.getElementById('rdr-m-base'), mK=document.getElementById('rdr-m-brk'), mE=document.getElementById('rdr-m-ext');
   if(mB) mB.textContent=nB; if(mK) mK.textContent=nK; if(mE) mE.textContent=nE;
-  var cnt=document.getElementById('rdr-count'); if(cnt) cnt.textContent=watch.length+' tickers on watch';
+  var cnt=document.getElementById('rdr-count'); if(cnt) cnt.textContent=watch.length+' tickers on watch'+(scoutArr.length?(' · '+scoutArr.length+' Stage 4 scout'):'');
   if (!_RDR.raf) rdrLoop();
 }
 function rdrSizeCanvas(cv){
@@ -5280,6 +5356,10 @@ function rdrDraw(){
     if (d.flash > 0) d.flash -= 0.02;
     var x=px(Math.max(0,Math.min(sc.vrMax,d.cx))), y=py(Math.max(sc.pMin,Math.min(sc.pMax,d.cy)));
     var c=RDR_COL[d.st];
+    if (d.st==='scout'){ ctx.save(); ctx.globalAlpha=d.obs?0.45:1; var rr=7;
+      ctx.beginPath(); ctx.moveTo(x,y-rr); ctx.lineTo(x+rr,y); ctx.lineTo(x,y+rr); ctx.lineTo(x-rr,y); ctx.closePath();
+      ctx.fillStyle='rgba(167,139,250,0.15)'; ctx.fill(); ctx.strokeStyle=RDR_COL.scout; ctx.lineWidth=2; ctx.stroke();
+      ctx.fillStyle='#c4b5fd'; ctx.font='10px sans-serif'; ctx.textAlign='left'; ctx.fillText(d.sym+(d.obs?' (OBS)':''), x+10, y+3); ctx.restore(); return; }
     if (d.flash > 0){ ctx.beginPath(); ctx.arc(x,y, 10+24*(1-d.flash), 0, 6.283); ctx.strokeStyle='rgba(143,208,79,'+(d.flash*0.8)+')'; ctx.lineWidth=2; ctx.stroke(); }
     ctx.beginPath(); ctx.arc(x,y, d.st==='base'?5:6.5, 0, 6.283); ctx.fillStyle=c; ctx.fill();
     ctx.fillStyle='#e6edf3'; ctx.font='10px sans-serif'; ctx.textAlign='left'; ctx.fillText(d.sym, x+8, y+3);
@@ -5329,7 +5409,7 @@ var RDR_SCAFFOLD = ''
  +   '<div style="display:flex;align-items:center;gap:8px;margin-bottom:12px;flex-wrap:wrap">'
  +     '<span style="font-size:16px;font-weight:700;color:#BA7517">🎯 Breakout Radar · رادار الاختراقات</span>'
  +     '<span class="rdr-mut" style="font-size:12px">live · x: volume vs avg · y: % from pivot · تحديث مباشر</span>'
- +     '<span style="margin-left:auto;display:flex;gap:8px"><button class="rdr-btn" id="rdr-pause" onclick="rdrTogglePause()">⏸ Pause motion</button></span>'
+ +     '<span style="margin-left:auto;display:flex;gap:8px"><button class="rdr-btn" id="rdr-scout" onclick="rdrToggleScout()">🌱 Scout (Stage 4 VCP)</button><button class="rdr-btn" id="rdr-pause" onclick="rdrTogglePause()">⏸ Pause motion</button></span>'
  +   '</div>'
  +   '<div id="rdr-score" style="display:flex;gap:10px;margin-bottom:12px;flex-wrap:wrap">'
  +     '<div class="rdr-card"><div class="rdr-lbl">Basing / coiling · متراوح</div><div class="rdr-num" id="rdr-m-base" style="color:#8a8a93">0</div></div>'
@@ -5341,6 +5421,7 @@ var RDR_SCAFFOLD = ''
  +   '<div class="rdr-mut" id="rdr-count" style="font-size:11px;margin-top:6px">0 tickers on watch</div>'
  + '</div>';
 function rdrTogglePause(){ _RDR.paused=!_RDR.paused; var b=document.getElementById('rdr-pause'); if(b) b.textContent=_RDR.paused?'▶ Resume motion':'⏸ Pause motion'; }
+function rdrToggleScout(){ _RDR.scout=!_RDR.scout; var b=document.getElementById('rdr-scout'); if(b) b.textContent=_RDR.scout?'🌱 Scout ON · إيقاف':'🌱 Scout (Stage 4 VCP)'; try{ renderRadar(); }catch(e){} }
 function rdrSetup(){
   if (window._RDR_READY) return;
   var bar=document.getElementById('tp-tabbar'), wl=document.getElementById('tab-watchlist');
@@ -5358,7 +5439,7 @@ function rdrSetup(){
   }
   if (!document.getElementById('rdr-style')){ var stl=document.createElement('style'); stl.id='rdr-style'; stl.textContent=RDR_CSS; document.head.appendChild(stl); }
   var lg=document.getElementById('rdr-legend');
-  if (lg){ var L=[['base','Basing'],['near','Coiling'],['hot','Hot'],['brk','Breaking out'],['ext','Extended']];
+  if (lg){ var L=[['base','Basing'],['near','Coiling'],['hot','Hot'],['brk','Breaking out'],['ext','Extended'],['scout','Stage 4 VCP']];
     lg.innerHTML=L.map(function(k){ return '<span style="display:flex;align-items:center;gap:5px"><span style="width:10px;height:10px;border-radius:50%;background:'+RDR_COL[k[0]]+'"></span>'+k[1]+'</span>'; }).join(''); }
   var cv=document.getElementById('rdr-cv'); if (cv) rdrHoverInit(cv);
   if (typeof window.showTpTab==='function' && !window._RDR_TABWRAP){ window._RDR_TABWRAP=true; var o=window.showTpTab; window.showTpTab=function(n){ o(n); if(n==='radar'){ try{ rdrSizeCanvas(document.getElementById('rdr-cv')); renderRadar(); }catch(e){} } }; }
