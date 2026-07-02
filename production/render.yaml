@@ -1,8 +1,9 @@
-# Render Blueprint — A2A AI assistant service.
-# In Render: New → Blueprint → connect this repo. Then set ANTHROPIC_API_KEY (secret) in the dashboard.
+# Render Blueprint — A2A AI assistant services (one service per client site).
+# In Render: New → Blueprint → connect this repo. Then set GEMINI_API_KEY (secret)
+# for EACH service in the dashboard — ideally a separate key per client.
 services:
   - type: web
-    name: a2a-assistant
+    name: sulalat-assistant
     runtime: node
     rootDir: production
     plan: free            # ملاحظة: الخطة المجانية تنام بعد خمول → بداية باردة ~30-50ث. للإنتاج استخدم خطة مدفوعة.
@@ -12,6 +13,21 @@ services:
       - key: GEMINI_API_KEY
         sync: false        # سرّي — تضيفه يدوياً في لوحة Render (لا يُرفع على git)
       - key: SITE
-        value: chartedge   # أو roasting_house
+        value: sulalat
+      - key: MODEL
+        value: gemini-2.5-flash
+
+  - type: web
+    name: roasting-house-assistant
+    runtime: node
+    rootDir: production
+    plan: free
+    buildCommand: npm install
+    startCommand: npm start
+    envVars:
+      - key: GEMINI_API_KEY
+        sync: false
+      - key: SITE
+        value: roasting_house
       - key: MODEL
         value: gemini-2.5-flash

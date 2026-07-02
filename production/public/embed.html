@@ -51,8 +51,8 @@
   </div>
 <script>
 const chat=document.getElementById('chat'),inp=document.getElementById('inp'),sendBtn=document.getElementById('send'),history=[];
-const esc=s=>s.replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));
-const linkify=s=>esc(s).replace(/(https?:\/\/[^\s]+)/g,'<a href="$1" target="_blank" rel="noopener">$1</a>');
+const esc=s=>s.replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const linkify=s=>esc(s).replace(/(https?:\/\/[^\s"'<>]+)/g,'<a href="$1" target="_blank" rel="noopener">$1</a>');
 function addMsg(text,who){const d=document.createElement('div');d.className='msg '+who;d.innerHTML=(who==='bot'?'<div class="mav">✦</div>':'')+'<div class="b">'+(who==='bot'?linkify(text):esc(text))+'</div>';chat.appendChild(d);chat.scrollTop=chat.scrollHeight;return d;}
 function typing(){const d=document.createElement('div');d.className='msg bot';d.innerHTML='<div class="mav">✦</div><div class="b typing"><span></span><span></span><span></span></div>';chat.appendChild(d);chat.scrollTop=chat.scrollHeight;return d;}
 async function send(text){if(!text.trim())return;addMsg(text,'user');history.push({role:'user',content:text});inp.value='';sendBtn.disabled=true;const t=typing();

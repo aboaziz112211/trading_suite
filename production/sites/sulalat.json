@@ -47,235 +47,392 @@
     },
     {
       "title": "التشكيلة الكاملة",
-      "content": "نوفّر قهوة مختصة (سنجل أوريجن، خلطات، مزادات) وأدوات تحضير (مطاحن، أدوات تقطير، مكائن إسبريسو، أكواب، قطع غيار). أبرز المنتجات والأسعار في القوائم أدناه. للتشكيلة الكاملة تصفّح المتجر: https://sulalat.com/en — ولأي منتج غير مذكور أو سعر/توفّر محدّث وجّه العميل للمتجر أو واتساب 0564400407."
+      "content": "نوفّر قهوة مختصة (سنجل أوريجن، خلطات، مزادات) وأدوات تحضير (مطاحن، أدوات تقطير، مكائن إسبريسو، أكواب، قطع غيار). أبرز المنتجات والأسعار في القوائم أدناه. للتشكيلة الكاملة تصفّح المتجر: https://sulalat.com — ولأي منتج غير مذكور أو سعر/توفّر محدّث وجّه العميل للمتجر أو واتساب 0564400407."
     }
   ],
   "products": [
     {
-      "name_ar": "إل بورو 0104 قيشا مجفف - بنما",
-      "origin": "",
-      "region": "",
-      "processing": "",
-      "flavor_notes": "يفضل تحضيرها بعد 20 يوم من التحميص وصفة تقطير: الأداة: عين تايمور V60 كمية القهوة: 18 جرام الطحنة: متوسطة النعومة درجة الحرارة: 93",
-      "brew_method": "",
-      "price_sar": 86.09,
-      "size": "",
-      "product_url": "https://sulalat.com/en/products/el-burro-0104-geisha-panama"
-    },
-    {
-      "name_ar": "فينكا فو مجفف - كأس النخبة كوستاريكا",
-      "origin": "",
-      "region": "",
-      "processing": "",
-      "flavor_notes": "الترتيب: 2 اسم المزرعة: فينكا فو المزارعين: سوليس - كورديرو النقاط: 91:00 العام: 2023 الدولة: كوستاريكا الحمضية: واضحة، حمض اللاكت",
-      "brew_method": "",
-      "price_sar": 55.66,
-      "size": "",
-      "product_url": "https://sulalat.com/en/products/finca-voo-natural-cup-of-excellence-costa-rica"
-    },
-    {
-      "name_ar": "الضباب مجفف - السعودية",
-      "origin": "",
-      "region": "",
-      "processing": "",
-      "flavor_notes": "فاز هذا المحصول بالمركز الأول بمسابقة محصول التميز السعودي بالمعرض الدولي للبن في جازان وصفات مقترحة: يفضّل تحضيرها بعد 20 يوم من ",
-      "brew_method": "",
-      "price_sar": 555.66,
-      "size": "",
-      "product_url": "https://sulalat.com/en/products/al-dhabab-natural-saudi-arabia"
-    },
-    {
-      "name_ar": "أظرف الرحيق مجفف - السعودية",
-      "origin": "",
-      "region": "",
-      "processing": "",
-      "flavor_notes": "تحتوي العلبة على 5 أظرف للاستمتاع بأفضل تجربة، حضر هذه القهوة بـ 260 مل من الماء بدرجة حرارة 93 درجة مئوية",
-      "brew_method": "",
-      "price_sar": 55.66,
-      "size": "",
-      "product_url": "https://sulalat.com/en/products/drip-bag-alraheeq-natural-saudi-arabia"
-    },
-    {
-      "name_ar": "أظرف تيكو بيبي مجفف - كولومبيا",
-      "origin": "",
-      "region": "",
-      "processing": "",
-      "flavor_notes": "تحتوي العلبة على 5 أظرف للاستمتاع بأفضل تجربة، حضر هذه القهوة بـ 260 مل من الماء بدرجة حرارة 93 درجة مئوية",
-      "brew_method": "",
-      "price_sar": 38.26,
-      "size": "",
-      "product_url": "https://sulalat.com/en/products/drip-bag-tico-pepe-natural-colombia"
-    },
-    {
-      "name_ar": "كبسولات شلشلي مجفف - إثيوبيا",
+      "name_ar": "كبسولات إسبرسو مركب الهند",
       "origin": "",
       "region": "",
       "processing": "",
       "flavor_notes": "قهوة مختصة",
       "brew_method": "",
-      "price_sar": 36.53,
+      "price_sar": 30.43,
       "size": "",
-      "product_url": "https://sulalat.com/en/products/chelchele-capsules"
+      "product_url": "https://sulalat.com/products/indiasails-capsules"
     },
     {
-      "name_ar": "اليدا توري قيشا مجفف - بنما",
+      "name_ar": "كبسولات مخرج 13",
       "origin": "",
       "region": "",
       "processing": "",
-      "flavor_notes": "يُزرع هذا المحصول في مرتفعات بنما الشاهقة ضمن تربة بركانية غنية ومناخ بارد. وتساهم هذه البيئة الفريدة ووفرة الضباب في إبطاء عملية ",
+      "flavor_notes": "قهوة مختصة",
       "brew_method": "",
-      "price_sar": 193.92,
+      "price_sar": 31.3,
       "size": "",
-      "product_url": "https://sulalat.com/en/products/elida-torre-geisha-natural-panama"
+      "product_url": "https://sulalat.com/products/exit13-capsules"
+    },
+    {
+      "name_ar": "كبسولات شلشلي مجفف - إثيوبيا",
+      "origin": "إثيوبيا",
+      "region": "",
+      "processing": "مجففة (طبيعية)",
+      "flavor_notes": "قهوة مختصة",
+      "brew_method": "",
+      "price_sar": 36.53,
+      "size": "",
+      "product_url": "https://sulalat.com/products/chelchele-capsules"
+    },
+    {
+      "name_ar": "أظرف تيكو بيبي مجفف - كولومبيا",
+      "origin": "كولومبيا",
+      "region": "",
+      "processing": "مجففة (طبيعية)",
+      "flavor_notes": "قهوة مختصة",
+      "brew_method": "",
+      "price_sar": 38.26,
+      "size": "",
+      "product_url": "https://sulalat.com/products/drip-bag-tico-pepe-natural-colombia"
+    },
+    {
+      "name_ar": "أظرف شلشلي مجفف - إثيوبيا",
+      "origin": "إثيوبيا",
+      "region": "",
+      "processing": "مجففة (طبيعية)",
+      "flavor_notes": "قهوة مختصة",
+      "brew_method": "",
+      "price_sar": 38.26,
+      "size": "",
+      "product_url": "https://sulalat.com/products/chelchele-natural-drip-coffee-bags"
+    },
+    {
+      "name_ar": "أظرف إليدا مجفف - بنما",
+      "origin": "بنما",
+      "region": "",
+      "processing": "مجففة (طبيعية)",
+      "flavor_notes": "قهوة مختصة",
+      "brew_method": "",
+      "price_sar": 42.61,
+      "size": "",
+      "product_url": "https://sulalat.com/products/elida-natural-drip-coffee-bags"
+    },
+    {
+      "name_ar": "فينكا فو مجفف - كأس النخبة كوستاريكا",
+      "origin": "كوستاريكا",
+      "region": "",
+      "processing": "مجففة (طبيعية)",
+      "flavor_notes": "حائزة كأس النخبة (Cup of Excellence) · يُفضّل تحضيرها بعد 20 يوماً من التحميص",
+      "brew_method": "مقطر (V60، كيمكس)",
+      "price_sar": 55.66,
+      "size": "100 جرام",
+      "product_url": "https://sulalat.com/products/finca-voo-natural-cup-of-excellence-costa-rica"
+    },
+    {
+      "name_ar": "أظرف الرحيق مجفف - السعودية",
+      "origin": "السعودية",
+      "region": "",
+      "processing": "مجففة (طبيعية)",
+      "flavor_notes": "قهوة مختصة",
+      "brew_method": "",
+      "price_sar": 55.66,
+      "size": "",
+      "product_url": "https://sulalat.com/products/drip-bag-alraheeq-natural-saudi-arabia"
+    },
+    {
+      "name_ar": "ميستي ڤالي - إثيوبيا",
+      "origin": "إثيوبيا",
+      "region": "",
+      "processing": "",
+      "flavor_notes": "يُفضّل تحضيرها بعد 20 يوماً من التحميص",
+      "brew_method": "مقطر (V60، كيمكس، إسبريسو)",
+      "price_sar": 58.26,
+      "size": "250 جرام",
+      "product_url": "https://sulalat.com/products/misty-valley-ethiopia"
     },
     {
       "name_ar": "بانتي كوربا مجفف - إثيوبيا",
-      "origin": "",
+      "origin": "إثيوبيا",
       "region": "",
-      "processing": "",
-      "flavor_notes": "يفضل تحضيرها بعد 20 يوم من التحميص وصفة تقطير: الأداة: عين تايمورV60 كمية القهوة: 21 جرام الطحنة: متوسطة النعومة حرارة الماء: 91 د",
-      "brew_method": "",
+      "processing": "مجففة (طبيعية)",
+      "flavor_notes": "يُفضّل تحضيرها بعد 20 يوماً من التحميص",
+      "brew_method": "مقطر (V60، كيمكس)",
       "price_sar": 60.0,
-      "size": "",
-      "product_url": "https://sulalat.com/en/products/banti-korba-natrual-ethiopia"
+      "size": "100 جرام",
+      "product_url": "https://sulalat.com/products/banti-korba-natrual-ethiopia"
     },
     {
-      "name_ar": "أسقوري مجفف - إثيوبيا",
-      "origin": "",
+      "name_ar": "دون إلياس مجفف - كولومبيا",
+      "origin": "كولومبيا",
       "region": "",
-      "processing": "",
-      "flavor_notes": "يفضل تحضيرها بعد 20 يوم من التحميص وصفة تقطير: الأداة: عين تايمور V60 كمية القهوة: 20 جرام الطحنة: متوسطة النعومة درجة الحرارة: 93",
-      "brew_method": "",
-      "price_sar": 81.74,
-      "size": "",
-      "product_url": "https://sulalat.com/en/products/asgori-natural-ethiopia"
+      "processing": "مجففة (طبيعية)",
+      "flavor_notes": "يُفضّل تحضيرها بعد 20 يوماً من التحميص",
+      "brew_method": "مقطر (V60، كيمكس)",
+      "price_sar": 60.0,
+      "size": "250 جرام",
+      "product_url": "https://sulalat.com/products/don-elias-natural-colombia"
+    },
+    {
+      "name_ar": "بورسا كيبيلي مجفف - إثيوبيا",
+      "origin": "إثيوبيا",
+      "region": "",
+      "processing": "مجففة (طبيعية)",
+      "flavor_notes": "قهوة مختصة",
+      "brew_method": "مقطر (V60، كيمكس)",
+      "price_sar": 60.0,
+      "size": "100 جرام",
+      "product_url": "https://sulalat.com/products/bursa-kebele-natural-ethiopia"
+    },
+    {
+      "name_ar": "هالو باريتي مجفف - إثيوبيا",
+      "origin": "إثيوبيا",
+      "region": "",
+      "processing": "مجففة (طبيعية)",
+      "flavor_notes": "يُفضّل تحضيرها بعد 20 يوماً من التحميص",
+      "brew_method": "مقطر (V60، كيمكس)",
+      "price_sar": 68.7,
+      "size": "250 جرام",
+      "product_url": "https://sulalat.com/products/halo-beriti-natural-ethiopia"
+    },
+    {
+      "name_ar": "إل سيلي مجفف - كأس النخبة هندوراس",
+      "origin": "هندوراس",
+      "region": "",
+      "processing": "مجففة (طبيعية)",
+      "flavor_notes": "حائزة كأس النخبة (Cup of Excellence)",
+      "brew_method": "مقطر (V60، كيمكس)",
+      "price_sar": 68.7,
+      "size": "100 جرام",
+      "product_url": "https://sulalat.com/products/el-sile-natural-cup-of-excellence-honduras"
+    },
+    {
+      "name_ar": "اسمان قايو مجفف - إندونيسيا",
+      "origin": "إندونيسيا",
+      "region": "",
+      "processing": "مجففة (طبيعية)",
+      "flavor_notes": "يُفضّل تحضيرها بعد 20 يوماً من التحميص",
+      "brew_method": "مقطر (V60، كيمكس)",
+      "price_sar": 72.18,
+      "size": "250 جرام",
+      "product_url": "https://sulalat.com/products/asman-gayo-natural-indonesia"
     },
     {
       "name_ar": "خلطة بلاسيبو - منزوعة الكافيين",
       "origin": "",
       "region": "",
       "processing": "",
-      "flavor_notes": "تقنية الماء السويسرية هي عبارة عن عملية تنزع الكافيين من القهوة بدون أي تدخل كيميائي للحفاظ على خصائص القهوة الأساسية، وتتم باستخد",
-      "brew_method": "",
+      "flavor_notes": "يُفضّل تحضيرها بعد 20 يوماً من التحميص",
+      "brew_method": "مقطر (V60، كيمكس، إسبريسو)",
       "price_sar": 74.79,
       "size": "",
-      "product_url": "https://sulalat.com/en/products/placebo-blend-decaf"
+      "product_url": "https://sulalat.com/products/placebo-blend-decaf"
+    },
+    {
+      "name_ar": "ال تيرا عسلي - كوستاريكا",
+      "origin": "كوستاريكا",
+      "region": "",
+      "processing": "عسلية",
+      "flavor_notes": "يُفضّل تحضيرها بعد 20 يوماً من التحميص",
+      "brew_method": "مقطر (V60، كيمكس)",
+      "price_sar": 75.0,
+      "size": "250 جرام",
+      "product_url": "https://sulalat.com/products/el-tirra-honey-costa-rica"
+    },
+    {
+      "name_ar": "ثاقيني مجفف - كينيا",
+      "origin": "كينيا",
+      "region": "",
+      "processing": "مجففة (طبيعية)",
+      "flavor_notes": "يُفضّل تحضيرها بعد 20 يوماً من التحميص",
+      "brew_method": "مقطر (V60)",
+      "price_sar": 77.39,
+      "size": "250 جرام",
+      "product_url": "https://sulalat.com/products/thageini-natural-kenya"
+    },
+    {
+      "name_ar": "لوس سوياتس مجفف - كأس النخبة نيكاراقوا",
+      "origin": "",
+      "region": "",
+      "processing": "مجففة (طبيعية)",
+      "flavor_notes": "حائزة كأس النخبة (Cup of Excellence) · يُفضّل تحضيرها بعد 20 يوماً من التحميص",
+      "brew_method": "مقطر (V60، كيمكس)",
+      "price_sar": 78.27,
+      "size": "100 جرام",
+      "product_url": "https://sulalat.com/products/los-suyates-natural-cup-of-excellence-nicaragua"
+    },
+    {
+      "name_ar": "أسقوري مجفف - إثيوبيا",
+      "origin": "إثيوبيا",
+      "region": "",
+      "processing": "مجففة (طبيعية)",
+      "flavor_notes": "يُفضّل تحضيرها بعد 20 يوماً من التحميص",
+      "brew_method": "مقطر (V60، كيمكس)",
+      "price_sar": 81.74,
+      "size": "250 جرام",
+      "product_url": "https://sulalat.com/products/asgori-natural-ethiopia"
+    },
+    {
+      "name_ar": "اليدا مجفف #15 - بنما",
+      "origin": "بنما",
+      "region": "",
+      "processing": "مجففة (طبيعية)",
+      "flavor_notes": "قهوة مختصة",
+      "brew_method": "",
+      "price_sar": 85.0,
+      "size": "250 جرام",
+      "product_url": "https://sulalat.com/products/elida-natural-panama"
     },
     {
       "name_ar": "ميتيكو مجفف - كأس النخبة إثيوبيا",
-      "origin": "",
-      "region": "",
-      "processing": "",
-      "flavor_notes": "الترتيب: 6 اسم المزرعة: ميتيكو المزارع: ميتيكو كاويسو نونا النقاط: 89.33 الارتفاع: 1950 العام: 2024 الدولة: إثيوبيا المنطقة: سيدام",
-      "brew_method": "",
+      "origin": "إثيوبيا",
+      "region": "سيداما",
+      "processing": "مجففة (طبيعية)",
+      "flavor_notes": "حائزة كأس النخبة (Cup of Excellence) · يُفضّل تحضيرها بعد 20 يوماً من التحميص",
+      "brew_method": "مقطر (كيمكس)",
       "price_sar": 86.09,
-      "size": "",
-      "product_url": "https://sulalat.com/en/products/mitiku-natural-cup-of-excellence-ethiopia"
+      "size": "100 جرام",
+      "product_url": "https://sulalat.com/products/mitiku-natural-cup-of-excellence-ethiopia"
     },
     {
-      "name_ar": "ميستي ڤالي - إثيوبيا",
-      "origin": "",
+      "name_ar": "فولكان أزول - كأس النخبة كوستاريكا 2022",
+      "origin": "كوستاريكا",
       "region": "",
       "processing": "",
-      "flavor_notes": "يفضل تحضيرها بعد 20 يوم من تاريخ الحمص وصفة تقطير: الأداة: عين تايمور V60 كمية القهوة: 18g الطحنة: متوسطة النعومة درجة الحرارة: 92",
-      "brew_method": "",
-      "price_sar": 58.26,
-      "size": "",
-      "product_url": "https://sulalat.com/en/products/misty-valley-ethiopia"
+      "flavor_notes": "حائزة كأس النخبة (Cup of Excellence) · يُفضّل تحضيرها بعد 20 يوماً من التحميص",
+      "brew_method": "مقطر (V60، كيمكس)",
+      "price_sar": 103.48,
+      "size": "100 جرام",
+      "product_url": "https://sulalat.com/products/volcanazul"
     },
     {
-      "name_ar": "دون إلياس مجفف - كولومبيا",
-      "origin": "",
+      "name_ar": "الرحيق مجفف - السعودية",
+      "origin": "السعودية",
       "region": "",
-      "processing": "",
-      "flavor_notes": "يفضل تحضيرها بعد 20 يوم من التحميص وصفة تقطير: الأداة: عين تايمور V60 كمية القهوة: 20 جرام الطحنة: متوسطة النعومة درجة الحرارة: 93",
-      "brew_method": "",
-      "price_sar": 60.0,
-      "size": "",
-      "product_url": "https://sulalat.com/en/products/don-elias-natural-colombia"
+      "processing": "مجففة (طبيعية)",
+      "flavor_notes": "قهوة مختصة",
+      "brew_method": "مقطر (V60، كيمكس)",
+      "price_sar": 155.65,
+      "size": "250 جرام",
+      "product_url": "https://sulalat.com/products/alraheeq-natural-saudi-arabia"
     },
     {
-      "name_ar": "هالو باريتي مجفف - إثيوبيا",
-      "origin": "",
+      "name_ar": "الضباب مجفف - السعودية",
+      "origin": "السعودية",
       "region": "",
-      "processing": "",
-      "flavor_notes": "يفضل تحضيرها بعد 20 يوم من التحميص وصفة تقطير: الأداة: عين تايمور V60 كمية القهوة: 19 جرام الطحنة: متوسطة النعومة درجة الحرارة: 93",
-      "brew_method": "",
-      "price_sar": 68.7,
-      "size": "",
-      "product_url": "https://sulalat.com/en/products/halo-beriti-natural-ethiopia"
+      "processing": "مجففة (طبيعية)",
+      "flavor_notes": "قهوة مختصة",
+      "brew_method": "مقطر (V60، كيمكس)",
+      "price_sar": 164.35,
+      "size": "250 جرام",
+      "product_url": "https://sulalat.com/products/al-dhabab-natural-saudi-arabia"
+    },
+    {
+      "name_ar": "اليدا توري قيشا مجفف - بنما",
+      "origin": "بنما",
+      "region": "",
+      "processing": "مجففة (طبيعية)",
+      "flavor_notes": "سلالة قيشا الفاخرة · يُفضّل تحضيرها بعد 20 يوماً من التحميص",
+      "brew_method": "مقطر (V60، كيمكس)",
+      "price_sar": 193.92,
+      "size": "100 جرام",
+      "product_url": "https://sulalat.com/products/elida-torre-geisha-natural-panama"
+    },
+    {
+      "name_ar": "ماجد مطهر مجفف - مزاد نخبة اليمن",
+      "origin": "اليمن",
+      "region": "الحمية الخارجية",
+      "processing": "مجففة (طبيعية)",
+      "flavor_notes": "قهوة مزادات نادرة",
+      "brew_method": "مقطر (كيمكس)",
+      "price_sar": 434.78,
+      "size": "100 جرام",
+      "product_url": "https://sulalat.com/products/majid-mather-natural-best-of-yemen"
     }
   ],
   "tools": [
     {
+      "name_ar": "Sage Green Mug from La Marzocco",
+      "category": "إكسسوار",
+      "price_sar": 173.04,
+      "note": "Material: Porcelain. Capacity: 300cc / 10oz.",
+      "product_url": "https://sulalat.com/products/sage-green-mug-from-la-marzocco"
+    },
+    {
       "name_ar": "ماكينة القهوة لوكس بروير ثيرمال من سيج و طاحونة باراتزا أنكور",
       "category": "أداة تحضير",
       "price_sar": 1303.48,
-      "note": "تحضير بلمسة واحدة: تحضير كوب أو إبريق كامل من القهوة وفق معايير SCA، بجودة متسقة دون تعقيد",
-      "product_url": "https://sulalat.com/en/products/sage-precision-brewer-baratza-encore"
+      "note": "تحضير بلمسة واحدة: تحضير كوب أو إبريق كامل من القهوة وفق معايير SCA، بجودة متسقة دون تعقيد. تحضير بارد: إعداد مخصص…",
+      "product_url": "https://sulalat.com/products/sage-precision-brewer-baratza-encore"
     },
     {
       "name_ar": "مجموعة ماركو F60 - ماكينة قهوة مع ترمس (2 في واحد)",
       "category": "أداة تحضير",
       "price_sar": 2239.13,
-      "note": "صانعة القهوة الفورية من ماركو مع وعاء ليفر لحفظ القهوة الساخنة من بسعة 2.2 لتر المواصفات ص",
-      "product_url": "https://sulalat.com/en/products/marco-f60-set"
+      "note": "صانعة القهوة الفورية من ماركو مع وعاء ليفر لحفظ القهوة الساخنة من بسعة 2.2 لتر المواصفات صانعة قهوة احترافية إمكانة…",
+      "product_url": "https://sulalat.com/products/marco-f60-set"
     },
     {
-      "name_ar": "طاحونة أنكور  إي إس بي برو من باراتزا",
+      "name_ar": "طاحونة أنكور إي إس بي برو من باراتزا",
       "category": "مطحنة",
       "price_sar": 1360.0,
-      "note": "نظام تعديل درجة طحن غير متدرج بدقة لا متناهية وحرية كاملة للوصول إلى حجم الحبيبات المثالي ",
-      "product_url": "https://sulalat.com/en/products/encore-esp-pro-from-baratza"
+      "note": "نظام تعديل درجة طحن غير متدرج بدقة لا متناهية وحرية كاملة للوصول إلى حجم الحبيبات المثالي لكافة أدوات التحضير، من…",
+      "product_url": "https://sulalat.com/products/encore-esp-pro-from-baratza"
+    },
+    {
+      "name_ar": "Old School Espresso Cup La Marzocco",
+      "category": "إكسسوار",
+      "price_sar": 60.0,
+      "note": "Material: Porcelain. Capacity: 65cc / 2oz.",
+      "product_url": "https://sulalat.com/products/old-school-espresso-cup-la-marzocco"
+    },
+    {
+      "name_ar": "كوب إسبرسو بشعار كلاسيكي من لامارزوكو",
+      "category": "إكسسوار",
+      "price_sar": 60.0,
+      "note": "المادة: بورسلان عالي الجودة. السعة: 65 مل / 2 أونصة.",
+      "product_url": "https://sulalat.com/products/la-marzocco-vintage-logo-espresso-cup-1"
     },
     {
       "name_ar": "Lion Cappuccino Cup from La Marzocco",
       "category": "إكسسوار",
       "price_sar": 68.7,
       "note": "Material: Porcelain. Capacity: 167cc.",
-      "product_url": "https://sulalat.com/en/products/lion-cappuccino-cup-from-la-marzocco"
+      "product_url": "https://sulalat.com/products/lion-cappuccino-cup-from-la-marzocco"
     },
     {
       "name_ar": "أداة تقطير القهوة سيمبل دريب من تايمور",
       "category": "أداة تحضير",
       "price_sar": 70.0,
-      "note": "المميزات الأساسية: توزيع متساوي: تصميم الهيكل يحتوي على 13 فتحة موزعة بطريقة علمية لضمان ت",
-      "product_url": "https://sulalat.com/en/products/simple-drip-coffee-dripper-from-timemore"
+      "note": "المميزات الأساسية: توزيع متساوي: تصميم الهيكل يحتوي على 13 فتحة موزعة بطريقة علمية لضمان تدفق الماء واستخلاص القهوة…",
+      "product_url": "https://sulalat.com/products/simple-drip-coffee-dripper-from-timemore"
     },
     {
       "name_ar": "كوب أفوجاتو من تايمور",
       "category": "إكسسوار",
       "price_sar": 50.0,
-      "note": "المميزات الأساسية: التصميم: يتميز بفوهة واسعة وقاعدة محفورة بنمط دقيق يحسن من إحكام القبضة",
-      "product_url": "https://sulalat.com/en/products/affogato-glass-from-timemore"
+      "note": "المميزات الأساسية: التصميم: يتميز بفوهة واسعة وقاعدة محفورة بنمط دقيق يحسن من إحكام القبضة على الكوب. المواد: مصنوع من…",
+      "product_url": "https://sulalat.com/products/affogato-glass-from-timemore"
     },
     {
-      "name_ar": "طاحونة  بريكس 01S من تايمور",
+      "name_ar": "طاحونة بريكس 01S من تايمور",
       "category": "مطحنة",
       "price_sar": 990.0,
-      "note": "تروس متعددة الاستخدامات: تعتمد على تروس مخروطية (S2C-040-EI) مصنوعة من الفولاذ المقاوم للص",
-      "product_url": "https://sulalat.com/en/products/brix-01s-coffee-grinder-from-timemore"
+      "note": "تروس متعددة الاستخدامات: تعتمد على تروس مخروطية (S2C-040-EI) مصنوعة من الفولاذ المقاوم للصدأ (SUS 420) بصلابة 55-58 HRC…",
+      "product_url": "https://sulalat.com/products/brix-01s-coffee-grinder-from-timemore"
+    },
+    {
+      "name_ar": "كوب إسبرسو رمادي من لامارزوكو",
+      "category": "إكسسوار",
+      "price_sar": 60.0,
+      "note": "المادة: بورسلين. السعة: 65 مل / 2 أونصة.",
+      "product_url": "https://sulalat.com/products/grey-espresso-cup-from-la-marzocco"
     },
     {
       "name_ar": "كوب إسبريسو إيطاليا من لامارزوكو",
       "category": "إكسسوار",
       "price_sar": 60.0,
       "note": "المادة: بورسلين. السعة: 65 مل / 2 أونصة.",
-      "product_url": "https://sulalat.com/en/products/italia-espresso-cup-from-la-marzoco"
-    },
-    {
-      "name_ar": "كوب كابتشينو لينيا ليقسي من لامارزوكو",
-      "category": "إكسسوار",
-      "price_sar": 68.7,
-      "note": "",
-      "product_url": "https://sulalat.com/en/products/la-marzocco-linea-mini-legacy-cappuccino-cup"
-    },
-    {
-      "name_ar": "وعاء تصريف لغلاية MIX من ماركو",
-      "category": "أداة تحضير",
-      "price_sar": 594.0,
-      "note": "حافظ على نظافة وترتيب مساحة تحضير القهوة الخاصة بك مع وعاء التصريف (Driptray Kit) المخصص ل",
-      "product_url": "https://sulalat.com/en/products/mix-driptray-kit"
+      "product_url": "https://sulalat.com/products/italia-espresso-cup-from-la-marzoco"
     }
   ]
 }

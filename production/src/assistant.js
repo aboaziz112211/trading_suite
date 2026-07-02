@@ -16,8 +16,10 @@ const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 // Active site config + system prompt are built once and reused.
 export const site = loadSiteConfig();
 const SYSTEM_PROMPT = buildSystemPrompt(site);
-const esc = site.escalation;
-const FALLBACK = `أعتذر، ما قدرت أكمل الطلب الحين. تقدر تتواصل معنا عبر ${esc.label}: ${esc.value}.`;
+const esc = site.escalation || {};
+const FALLBACK = esc.label && esc.value
+  ? `أعتذر، ما قدرت أكمل الطلب الحين. تقدر تتواصل معنا عبر ${esc.label}: ${esc.value}.`
+  : "أعتذر، ما قدرت أكمل الطلب الحين. حاول مرة ثانية بعد قليل.";
 
 // Map our history (role: 'user' | 'assistant') → Gemini contents (role: 'user' | 'model').
 function toContents(messages) {
@@ -55,12 +57,17 @@ export async function chat(messages) {
         const msg = String(err?.message || err);
         // 503 high-demand / 429 rate-limit / 500 are transient → retry then fall back.
         const transient = /\b(429|500|503)\b|UNAVAILABLE|RESOURCE_EXHAUSTED|overloaded|high demand/i.test(msg);
+        const modelMissing = /\b404\b|NOT_FOUND/i.test(msg);
         console.error(`gemini error [${model} #${attempt}]:`, msg.slice(0, 180));
         if (transient && attempt === 0) {
           await sleep(1200);
           continue; // retry the same model once
         }
-        break; // give up on this model, try the next in the chain
+        if (transient || modelMissing) break; // model busy/gone → next in chain
+        // Non-transient (bad request, auth, safety): every model fails the same
+        // way — don't burn the rest of the chain on a doomed request.
+        console.error("gemini non-transient failure, aborting chain:", msg.slice(0, 180));
+        return { text: FALLBACK };
       }
     }
   }
