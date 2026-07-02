@@ -182,6 +182,42 @@ h1{font-size:18px;font-weight:700;}
 
 /* USv2.2 — Version pill + Card Zoom Modal */
 .ver-pill{display:inline-block;font-size:11px;font-weight:700;color:#fff;background:#185FA5;padding:3px 9px;border-radius:10px;letter-spacing:.02em;font-variant-numeric:tabular-nums;}
+/* SCOUT — STAGE 4 PHASE-C WATCH (USv2.6 port) */
+.sc-wrap{background:#fff;border:1.5px solid #E8C98C;border-radius:12px;padding:14px 16px;margin-bottom:12px;display:none;}
+.sc-wrap.show{display:block;}
+.sc-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;flex-wrap:wrap;gap:8px;}
+.sc-title{font-size:13px;font-weight:800;color:#BA7517;}
+.sc-tasi-pill{font-size:10px;font-weight:700;padding:2px 8px;border-radius:10px;border:0.5px solid;}
+.sc-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:10px;}
+.sc-stat{background:#FAEEDA;border-radius:8px;padding:8px 10px;text-align:left;}
+.sc-stat-lbl{font-size:10px;font-weight:700;color:#854F0B;}
+.sc-stat-val{font-size:20px;font-weight:800;color:#633806;line-height:1.1;margin-top:2px;direction:ltr;}
+.sc-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;}
+.sc-card{background:#fff;border:1px solid #E8C98C;border-left:4px solid #BA7517;border-radius:8px;padding:10px 12px;}
+.sc-card.imminent{border-left-color:#A32D2D;background:#FCEBEB;}
+.sc-card.watchplus{border-left-color:#BA7517;}
+.sc-card.watch{border-left-color:#185FA5;}
+.sc-card-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;}
+.sc-tk{font-size:13px;font-weight:800;color:#1a1a18;max-width:140px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.sc-chip{font-size:9px;font-weight:700;padding:2px 7px;border-radius:9px;}
+.sc-chip-imminent{background:#FCEBEB;color:#A32D2D;border:0.5px solid #F3C2C2;}
+.sc-chip-watchplus{background:#FAEEDA;color:#BA7517;border:0.5px solid #E8C98C;}
+.sc-chip-watch{background:#E6F1FB;color:#185FA5;border:0.5px solid #B5D4F4;}
+.sc-sector{font-size:10px;color:#6b6b65;margin-bottom:6px;}
+.sc-price-row{display:flex;align-items:baseline;gap:6px;margin-bottom:4px;}
+.sc-price{font-size:14px;font-weight:800;color:#1a1a18;direction:ltr;}
+.sc-price-live{color:#3B6D11;}
+.sc-live-dot{font-size:8px;color:#3B6D11;font-weight:700;}
+.sc-chg{font-size:10px;font-weight:700;direction:ltr;margin-left:auto;}
+.sc-score-row{display:flex;align-items:baseline;gap:6px;margin-bottom:6px;}
+.sc-score{font-size:22px;font-weight:800;direction:ltr;}
+.sc-score.imminent{color:#A32D2D;}
+.sc-score.watchplus{color:#BA7517;}
+.sc-score.watch{color:#185FA5;}
+.sc-comp{font-size:10px;color:#6b6b65;line-height:1.45;direction:ltr;}
+.sc-comp b{color:#1a1a18;font-weight:700;}
+.sc-empty{text-align:center;padding:16px;color:#6b6b65;font-size:11px;background:#F4F3EF;border-radius:8px;}
+.sc-footer{margin-top:10px;padding:8px 10px;background:#FAEEDA;border-radius:6px;font-size:10px;color:#854F0B;line-height:1.5;}
 /* USv2.3 — Collapsible panels (Sector / Breakout Watch / Drop Zone) */
 .sec-hdr{cursor:pointer;user-select:none;}
 .sec-hdr:hover .sec-title{color:#B8841F;}
@@ -962,6 +998,7 @@ body.dark-mode .tp-filter-bar .tp-fb-label{color:#fff;}
   <button data-tab="setups" onclick="showTpTab('setups')">🎯 Setups · الإعدادات<span class="tcount">agg · focus · top 3 · هجومي · مفضّل · أفضل 3</span></button>
   <button data-tab="movers" onclick="showTpTab('movers')">📈 Movers · المحرّكون<span class="tcount">agents · leaderboard · الوكلاء · المتصدّرون</span></button>
   <button data-tab="watchlist" onclick="showTpTab('watchlist')">📋 Watchlist · قائمة المراقبة<span class="tcount">scan · breakouts · الفحص · الاختراقات</span></button>
+  <button data-tab="scout" onclick="showTpTab('scout')">🌱 Scout · الكشّاف<span class="tcount">stage-4 phase-C · المرحلة 4-C</span></button>
 </div>
 
 <div class="tp-tab tp-tab-on" id="tab-pulse">
@@ -1116,6 +1153,23 @@ body.dark-mode .tp-filter-bar .tp-fb-label{color:#fff;}
 <!-- BREAKOUT WATCH -->
 </div> <!-- end tab-movers -->
 
+<div class="tp-tab" id="tab-scout">
+  <div class="sc-wrap show" id="sc-wrap">
+    <div class="sc-hdr">
+      <span class="sc-title">🌱 Scout — Stage 4 Phase-C Watch · الكشّاف — مراقبة المرحلة 4-C</span>
+      <span class="sc-tasi-pill" id="sc-regime-pill">US Market · —</span>
+    </div>
+    <div class="sc-stats">
+      <div class="sc-stat"><div class="sc-stat-lbl">Stage 4 Universe</div><div class="sc-stat-val" id="sc-stage4">0</div></div>
+      <div class="sc-stat"><div class="sc-stat-lbl">🔴 Imminent ≥70</div><div class="sc-stat-val" id="sc-imm">0</div></div>
+      <div class="sc-stat"><div class="sc-stat-lbl">🟡 Watch+ ≥55</div><div class="sc-stat-val" id="sc-wp">0</div></div>
+      <div class="sc-stat"><div class="sc-stat-lbl">🔵 Watch ≥40</div><div class="sc-stat-val" id="sc-w">0</div></div>
+    </div>
+    <div class="sc-grid" id="sc-grid"></div>
+    <div class="sc-footer">🌱 Scout builds a forward watchlist of Stage 4 names approaching a Wyckoff Phase-C transition. <b>Observation-only</b> while the US market regime reads Stage 4 (bear). Regime is auto-derived from market breadth (% of names above 50MA / 200MA). · الكشّاف يبني قائمة مراقبة استباقية لأسهم المرحلة 4 القريبة من التحول.</div>
+  </div>
+</div>
+
 <div class="tp-tab" id="tab-watchlist">
 <div class="bw-wrap" id="bw-wrap">
   <div class="bw-hdr">
@@ -1127,6 +1181,8 @@ body.dark-mode .tp-filter-bar .tp-fb-label{color:#fff;}
               style="padding:4px 10px;border-radius:6px;border:1.5px solid #A32D2D;background:#fff;color:#A32D2D;font-size:11px;font-weight:700;cursor:pointer;">📏 Hide Extended · إخفاء المُمتد</button>
       <button id="brk-filter-btn" type="button" onclick="toggleBreakoutFilter()"
               style="padding:4px 10px;border-radius:6px;border:1.5px solid #D4912E;background:#fff;color:#633806;font-size:11px;font-weight:700;cursor:pointer;">🚀 Breakouts Only · الاختراقات فقط</button>
+      <button id="brk-fresh-btn" type="button" onclick="toggleFreshToday()" title="Show only breakouts that fired in today's session (within EXT% band) · إظهار اختراقات جلسة اليوم فقط"
+              style="padding:4px 10px;border-radius:6px;border:1.5px solid #2E7D32;background:#fff;color:#2E7D32;font-size:11px;font-weight:700;cursor:pointer;">🌅 Fresh Today · اختراقات اليوم</button>
       <button id="brk-sound-btn" type="button" onclick="toggleBreakoutSound()" title="Toggle breakout sound alert · تبديل صوت الاختراق"
               style="padding:4px 8px;border-radius:6px;border:1.5px solid #aaa;background:#fff;color:#333;font-size:13px;cursor:pointer;">🔔</button>
     </span>
@@ -1226,7 +1282,7 @@ body.dark-mode .tp-filter-bar .tp-fb-label{color:#fff;}
 </div>
 
 <div class="footer">
-  <span>🇺🇸 TradePulse USv2.5 · NYSE/NASDAQ · 10-SEPA · VCP Pivot · ⚡ Aggressive + 👀 Near-Miss + ⭐ Focus List · ChartEdge + Polygon.io Live</span>
+  <span>🇺🇸 TradePulse USv2.7 · NYSE/NASDAQ · 10-SEPA · VCP Pivot · ⚡ Aggressive + 👀 Near-Miss + ⭐ Focus List + 🌅 Fresh Today · ChartEdge + Polygon.io Live</span>
   <span class="fl" id="ft">—</span>
   <span id="tp-ver" style="color:#bbb;font-size:9px"></span>
 </div>
@@ -1248,7 +1304,7 @@ body.dark-mode .tp-filter-bar .tp-fb-label{color:#fff;}
 // ══════════════════════════════════════════════
 // VERSION — used to verify which build is running
 // ══════════════════════════════════════════════
-const TP_VERSION = 'USv2.5-2026-06-10';
+const TP_VERSION = 'USv2.7-2026-07-01';
 console.log('%c[TradePulse] ' + TP_VERSION + ' loaded', 'color:#3B6D11;font-weight:bold;font-size:13px');
 
 // ══════════════════════════════════════════════
@@ -1404,6 +1460,7 @@ brkCfgInit();
 // v5 — Breakout filter + sound preferences
 let BREAKOUT_FILTER_ONLY    = false;
 let BREAKOUT_HIDE_EXTENDED  = false;   // hide stocks >5% above pivot (chase zone)
+let BREAKOUT_FRESH_TODAY    = false;   // v2.7 — only breakouts that fired in today's session state (ph==='broken'), within EXT% band
 let BREAKOUT_SOUND_ON       = localStorage.getItem('tp-us-sound-on') !== '0'; // v6.5 persisted
 let _breakoutAudioCtx       = null;
 
@@ -1458,6 +1515,24 @@ function toggleBreakoutFilter() {
     } else {
       btn.style.background = '#fff'; btn.style.color = '#633806';
       btn.textContent = '🚀 Breakouts Only';
+    }
+  }
+  try { renderBreakoutWatch(); } catch (e) { console.warn('[TradePulse] re-render failed:', e); }
+}
+
+// v2.7 — Fresh Today: only stocks that registered a breakout in today's per-day
+// state (BRK_STATE ph==='broken') and are still within the EXT% band (not extended,
+// not failed). BRK_STATE is keyed by date and auto-resets each trading day.
+function toggleFreshToday() {
+  BREAKOUT_FRESH_TODAY = !BREAKOUT_FRESH_TODAY;
+  const btn = document.getElementById('brk-fresh-btn');
+  if (btn) {
+    if (BREAKOUT_FRESH_TODAY) {
+      btn.style.background = '#2E7D32'; btn.style.color = '#fff';
+      btn.textContent = '🌅 Fresh Today ✓';
+    } else {
+      btn.style.background = '#fff'; btn.style.color = '#2E7D32';
+      btn.textContent = '🌅 Fresh Today · اختراقات اليوم';
     }
   }
   try { renderBreakoutWatch(); } catch (e) { console.warn('[TradePulse] re-render failed:', e); }
@@ -1603,6 +1678,164 @@ function calcBoss(s) {
     (s.rev || 0) * 0.10 +
     (s.sec || 0) * 0.20
   );
+}
+
+// AGENT 6: STAGE 4 VCP SCOUT — Wyckoff Phase-C Proximity (USv2.6 port)
+// Identifies Stage 4 names approaching transition. OBSERVATION-ONLY while
+// the US market regime itself reads Stage 4 (auto-derived from breadth).
+let US_STAGE = 4;  // safe default = observation-only until breadth says otherwise
+
+function computeUsRegimeStage() {
+  let abv50=0, has50=0, abv200=0, has200=0;
+  for (const s of STOCKS) {
+    const p = s.livePrice || s.price || 0;
+    if (p>0 && s.ma50>0)  { has50++;  if (p>=s.ma50)  abv50++; }
+    if (p>0 && s.ma200>0) { has200++; if (p>=s.ma200) abv200++; }
+  }
+  const pct50  = has50  ? Math.round(abv50 /has50 *100) : null;
+  const pct200 = has200 ? Math.round(abv200/has200*100) : null;
+  let stage = 4;
+  if (pct200 != null && pct50 != null) {
+    const shortBull = pct50>=60, shortBear = pct50<40, longBull = pct200>=60, longBear = pct200<40;
+    if (longBull && shortBull)      stage = 2; // STRONG BULL    -> markup
+    else if (longBear && shortBear) stage = 4; // BEAR TREND     -> markdown (gate locks)
+    else if (longBear && shortBull) stage = 1; // EARLY RECOVERY -> accumulation
+    else if (longBull && shortBear) stage = 3; // DISTRIBUTION
+    else                            stage = 4; // MIXED -> conservative, observation-only
+  }
+  US_STAGE = stage;
+  return stage;
+}
+
+function calcScout(s) {
+  if (s.stage !== 'stage4') {
+    return { score: 0, status: 'N/A', promotable: false, components: null };
+  }
+  const price = s.livePrice || s.price || 0;
+  const ma50  = s.ma50  || 0;
+  const ma200 = s.ma200 || 0;
+  const h52   = s.high52 || 0;
+  const rs    = s.rs || 0;
+  const ceScore = s.score || 0;
+
+  let score = 0;
+  const c = {};
+
+  // Volume Dry-Up (25) — quiet base = absorption
+  if (s.liveVol && s.avgVol30 && s.avgVol30 > 0) {
+    const vr = s.liveVol / s.avgVol30;
+    if (vr < 0.10)      { score += 25; c.volDryup = 25; }
+    else if (vr < 0.25) { score += 20; c.volDryup = 20; }
+    else if (vr < 0.50) { score += 15; c.volDryup = 15; }
+    else if (vr < 0.75) { score += 10; c.volDryup = 10; }
+    else if (vr < 1.00) { score +=  5; c.volDryup =  5; }
+    else c.volDryup = 0;
+  } else c.volDryup = null;
+
+  // MA Slope (20) — true 22d slope if history exists, else MA50/MA200 proxy
+  const trueSlope = tpGetMA200Slope22d(s.ticker, ma200);
+  if (trueSlope !== null) {
+    if (trueSlope > -0.5 && trueSlope < 1.0)        { score += 20; c.maSlope = 20; }
+    else if (trueSlope > -1.5 && trueSlope <= -0.5) { score += 15; c.maSlope = 15; }
+    else if (trueSlope > -3.0 && trueSlope <= -1.5) { score += 10; c.maSlope = 10; }
+    else if (trueSlope >= 1.0)                      { score += 12; c.maSlope = 12; }
+    else c.maSlope = 0;
+    c.slopeMode = 'true';
+  } else if (ma50 > 0 && ma200 > 0) {
+    const spread = (ma50 - ma200) / ma200 * 100;
+    if (spread > -1 && spread < 3)         { score += 18; c.maSlope = 18; }
+    else if (spread >= 3 && spread < 8)    { score += 14; c.maSlope = 14; }
+    else if (spread >= -3 && spread <= -1) { score += 12; c.maSlope = 12; }
+    else if (spread >= -6 && spread < -3)  { score +=  7; c.maSlope =  7; }
+    else c.maSlope = 0;
+    c.slopeMode = 'proxy';
+  } else c.maSlope = null;
+
+  // MA Compression (20) — |50MA - 200MA| narrowing
+  if (ma50 > 0 && ma200 > 0) {
+    const compression = Math.abs(ma50 - ma200) / ma200 * 100;
+    if (compression > 30) {
+      return { score: 0, status: 'DATA QUALITY', promotable: false, components: c };
+    }
+    if (compression < 3)       { score += 20; c.maCompression = 20; }
+    else if (compression < 6)  { score += 15; c.maCompression = 15; }
+    else if (compression < 10) { score += 10; c.maCompression = 10; }
+    else if (compression < 15) { score +=  5; c.maCompression =  5; }
+    else c.maCompression = 0;
+  } else c.maCompression = null;
+
+  // ChartEdge / SEPA score proxy (15)
+  if (ceScore > 0) { const pts = Math.min(ceScore * 1.5, 15); score += pts; c.ceScore = pts; }
+  else c.ceScore = 0;
+
+  // RS Rank (10)
+  if (rs >= 70)      { score += 10; c.rs = 10; }
+  else if (rs >= 50) { score +=  7; c.rs =  7; }
+  else if (rs >= 30) { score +=  4; c.rs =  4; }
+  else c.rs = 0;
+
+  // Depth-from-Peak sweet spot 25-50% (10)
+  if (h52 > 0 && price > 0) {
+    const depth = (h52 - price) / h52 * 100;
+    if (depth >= 25 && depth <= 50) { score += 10; c.depth = 10; }
+    else if ((depth >= 20 && depth < 25) || (depth > 50 && depth <= 60)) { score += 6; c.depth = 6; }
+    else if ((depth >= 15 && depth < 20) || (depth > 60 && depth <= 70)) { score += 3; c.depth = 3; }
+    else c.depth = 0;
+  } else c.depth = null;
+
+  let status;
+  if (score >= 70)      status = 'IMMINENT';
+  else if (score >= 55) status = 'Watch+';
+  else if (score >= 40) status = 'Watch';
+  else                  status = 'Early';
+
+  // Hard discipline gate: no promotion while US market regime is Stage 4
+  const bear = (typeof US_STAGE !== 'undefined' && US_STAGE === 4);
+  const promotable = !bear && score >= 70;
+
+  return {
+    score: Math.min(100, score),
+    status: bear ? status + ' (OBS)' : status,
+    promotable,
+    components: c
+  };
+}
+
+// MA200 history helpers (Scout slope-tracking) — US namespace
+function tpStoreMA200(ticker, ma200Today) {
+  try {
+    if (!ticker || !ma200Today || ma200Today <= 0) return;
+    const PREFIX = 'tp-us-ma200-' + ticker + '-';
+    const today = new Date();
+    const todayKey = PREFIX + today.getFullYear() + '-' +
+      String(today.getMonth()+1).padStart(2,'0') + '-' +
+      String(today.getDate()).padStart(2,'0');
+    localStorage.setItem(todayKey, String(ma200Today));
+    const keys = [];
+    for (let i = 0; i < localStorage.length; i++) {
+      const k = localStorage.key(i);
+      if (k && k.startsWith(PREFIX)) keys.push(k);
+    }
+    keys.sort();
+    if (keys.length > 30) keys.slice(0, keys.length - 30).forEach(k => localStorage.removeItem(k));
+  } catch(e) { console.warn('[Scout] MA200 store err for ' + ticker, e); }
+}
+
+function tpGetMA200Slope22d(ticker, ma200Today) {
+  try {
+    if (!ticker || !ma200Today || ma200Today <= 0) return null;
+    const PREFIX = 'tp-us-ma200-' + ticker + '-';
+    const keys = [];
+    for (let i = 0; i < localStorage.length; i++) {
+      const k = localStorage.key(i);
+      if (k && k.startsWith(PREFIX)) keys.push(k);
+    }
+    if (keys.length < 22) return null;
+    keys.sort();
+    const oldVal = parseFloat(localStorage.getItem(keys[keys.length - 22]));
+    if (isNaN(oldVal) || oldVal <= 0) return null;
+    return (ma200Today - oldVal) / oldVal * 100;
+  } catch(e) { return null; }
 }
 
 function reAction(s) {
@@ -2352,6 +2585,7 @@ function parseChartEdge(text, filename) {
   render(); renderTop3(); updateSummary(); updateBreadth(); renderSectors(); try{renderIndustries();}catch(e){console.error('renderIndustries:',e);}
   try { renderFocusList(); } catch(e) { console.error('renderFocusList:', e); }
   try { renderBreakoutWatch(); } catch(e) { console.error('[TradePulse] ❌ renderBreakoutWatch error:', e); }
+  try { renderScout(); } catch(e) { console.error('[TradePulse] ❌ renderScout error:', e); }
   try { renderLeaderboard(); } catch(e){ console.error('renderLeaderboard:',e); }
   try { checkVolSpikes(); } catch(e){ console.error('checkVolSpikes:',e); }
   try { showShareBtn(); } catch(e){ console.error('showShareBtn:',e); }
@@ -2663,6 +2897,7 @@ function parseBloomberg(text, filename) {
   // ── Step 5: Update UI ──────────────────────────────────────────────────
   updateSummary(); render(); renderTop3(); updateBreadth(); renderSectors(); try{renderIndustries();}catch(e){console.error('renderIndustries:',e);}
   try { renderBreakoutWatch(); } catch(e) { console.error('[TradePulse] ❌ renderBreakoutWatch error (bbg):', e); }
+  try { renderScout(); } catch(e) { console.error('[TradePulse] ❌ renderScout error (bbg):', e); }
   try { renderLeaderboard(); } catch(e){ console.error('renderLeaderboard:',e); }
   try { checkVolSpikes(); } catch(e){ console.error('checkVolSpikes:',e); }
   try { showShareBtn(); } catch(e){ console.error('showShareBtn:',e); }
@@ -3132,6 +3367,91 @@ function renderSectors() {
 // BREAKOUT WATCH
 // Stage 2 momentum stocks within 5% of pivot
 // ══════════════════════════════════════════════
+// SCOUT PANEL — Stage 4 VCP Phase-C Watch (USv2.6). Self-computes scores each refresh.
+function renderScout() {
+  const wrap = el('sc-wrap'); if (!wrap) return;
+  if (!STOCKS.length) return;
+
+  computeUsRegimeStage();
+
+  const stage4 = STOCKS.filter(s => s.stage === 'stage4');
+  stage4.forEach(s => { try { tpStoreMA200(s.ticker, s.ma200); } catch(e){} s.scout = calcScout(s); });
+
+  const all = stage4.filter(s => s.scout && s.scout.score > 0);
+  const stage4Total = stage4.length;
+  const imminent  = all.filter(s => s.scout.score >= 70);
+  const watchPlus = all.filter(s => s.scout.score >= 55 && s.scout.score < 70);
+  const watch     = all.filter(s => s.scout.score >= 40 && s.scout.score < 55);
+
+  const stageLabels = {1:'Stage 1 Accumulation',2:'Stage 2 Markup',3:'Stage 3 Distribution',4:'Stage 4 Markdown'};
+  const stageColors = {
+    1:{bg:'#FAEEDA',fg:'#BA7517',bd:'#E8C98C'},
+    2:{bg:'#EAF3DE',fg:'#3B6D11',bd:'#C0DD97'},
+    3:{bg:'#E6F1FB',fg:'#185FA5',bd:'#B5D4F4'},
+    4:{bg:'#FCEBEB',fg:'#A32D2D',bd:'#F3C2C2'}
+  };
+  const pill = el('sc-regime-pill');
+  if (pill) {
+    const sg = US_STAGE || 4;
+    const colors = stageColors[sg] || stageColors[4];
+    pill.textContent = 'US Market · ' + (stageLabels[sg] || ('Stage '+sg));
+    pill.style.background = colors.bg; pill.style.color = colors.fg; pill.style.borderColor = colors.bd;
+  }
+
+  el('sc-stage4').textContent = stage4Total;
+  el('sc-imm').textContent = imminent.length;
+  el('sc-wp').textContent = watchPlus.length;
+  el('sc-w').textContent = watch.length;
+
+  const top = [...imminent, ...watchPlus, ...watch].sort((a,b)=>b.scout.score-a.scout.score).slice(0,9);
+  if (!top.length) {
+    el('sc-grid').innerHTML = '<div class="sc-empty">No Stage 4 candidates above Watch threshold (40). Stage 4 universe: ' + stage4Total + '</div>';
+    return;
+  }
+
+  const bear = (US_STAGE === 4);
+  el('sc-grid').innerHTML = top.map(s => {
+    const sc = s.scout, score = sc.score;
+    let tier, chipCls, chipLbl;
+    if (score >= 70)      { tier='imminent';  chipCls='sc-chip-imminent';  chipLbl='IMMINENT'; }
+    else if (score >= 55) { tier='watchplus'; chipCls='sc-chip-watchplus'; chipLbl='Watch+'; }
+    else                  { tier='watch';     chipCls='sc-chip-watch';     chipLbl='Watch'; }
+    if (bear) chipLbl += ' (OBS)';
+
+    const sector = s.gics_ig || s.industry || s.sector || '—';
+    const ce = (s.score != null) ? s.score : '—';
+    const rs = s.rs || 0;
+    const px = s.livePrice || s.price || 0;
+    const depth = (s.high52 && px) ? Math.round((s.high52 - px)/s.high52*100) + '%' : '—';
+    const volr  = (s.liveVol && s.avgVol30) ? Math.round(s.liveVol/s.avgVol30*100) + '%' : '—';
+    const slope = (sc.components && sc.components.slopeMode) ? sc.components.slopeMode : '—';
+    const coName = s.company || s.ticker;
+    return '<div class="sc-card ' + tier + '" onclick="openCardModal(\'' + s.ticker + '\')" style="cursor:pointer" title="Click for full detail">' +
+      '<div class="sc-card-hdr">' +
+        '<span class="sc-tk" title="' + s.ticker + '">' + coName + '</span>' +
+        '<span class="sc-chip ' + chipCls + '">' + chipLbl + '</span>' +
+      '</div>' +
+      '<div class="sc-sector">' + s.ticker + ' · ' + sector + '</div>' +
+      '<div class="sc-price-row">' +
+        '<span class="sc-price' + (s.isLive ? ' sc-price-live' : '') + '">' + px.toFixed(2) + '</span>' +
+        (s.isLive ? '<span class="sc-live-dot">● LIVE</span>' : '') +
+        (s.liveChg != null ? '<span class="sc-chg" style="color:' + (s.liveChg>=0?'#3B6D11':'#A32D2D') + '">' + (s.liveChg>=0?'+':'') + s.liveChg.toFixed(2) + '%</span>' : '') +
+      '</div>' +
+      '<div class="sc-score-row">' +
+        '<span class="sc-score ' + tier + '">' + score.toFixed(1) + '</span>' +
+        '<span style="font-size:10px;color:#888">/100</span>' +
+      '</div>' +
+      '<div class="sc-comp">' +
+        '<b>RS ' + rs + '</b> · CE ' + ce + '/10<br>' +
+        'Depth <b>' + depth + '</b> · Vol <b>' + volr + '</b><br>' +
+        '<span style="color:#aaa;font-size:9px">slope: ' + slope + '</span>' +
+      '</div>' +
+    '</div>';
+  }).join('');
+
+  console.log('[TradePulse] 🌱 Scout: ' + top.length + ' cards | Imm:' + imminent.length + ' WP:' + watchPlus.length + ' W:' + watch.length + ' | US_STAGE:' + US_STAGE);
+}
+
 function renderBreakoutWatch() {
   console.log('[TradePulse] 🎯 renderBreakoutWatch called | STOCKS:', STOCKS.length);
   if (!STOCKS.length) { console.log('[TradePulse] ⚠ No STOCKS — skipping Breakout Watch'); return; }
@@ -3143,6 +3463,11 @@ function renderBreakoutWatch() {
     const gap = s.liveGap ?? s.dist_to_breakout;
     if (gap == null) return false;
     if (BREAKOUT_HIDE_EXTENDED && s.breakout_type === 'extended') return false;
+    if (BREAKOUT_FRESH_TODAY) {
+      // v2.7.1 — key off breakout_type (works in static-scan mode, not just live alerts):
+      // at/above pivot within EXT% band. 'extended' & below-pivot excluded by detectBreakout.
+      return s.breakout_type === 'confirmed' || s.breakout_type === 'unconfirmed';
+    }
     if (BREAKOUT_FILTER_ONLY) return gap <= 0;
     return gap <= TP_BRK_CFG.watchGap;
   }).sort((a, b) => {
@@ -3626,6 +3951,7 @@ function applyIbkrRows(rows) {
   try { renderSectors(); try{renderIndustries();}catch(e){console.error('renderIndustries:',e);} } catch(e){ console.error('renderSectors:',e); }
   try { renderAgg(); } catch(e){ console.error('renderAgg:',e); }
   try { renderBreakoutWatch(); } catch(e){ console.error('renderBreakoutWatch:',e); }
+  try { renderScout(); } catch(e){ console.error('renderScout:',e); }
   try { render(); } catch(e){ console.error('render:',e); }
   try { renderTop3(); } catch(e){ console.error('renderTop3:',e); }
   try { updateSummary(); } catch(e){ console.error('updateSummary:',e); }
