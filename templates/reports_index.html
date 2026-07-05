@@ -22,6 +22,7 @@
     </div>
     <div class="report-card-meta">
       {% if r.date %}<span class="report-card-date">{{ r.date }}</span>{% endif %}
+      {% if r.pdf_ar_static %}<span class="report-card-pdf">⬇ PDF عربي</span>{% endif %}
       <span class="report-card-open">Open&nbsp;→</span>
     </div>
   </a>
@@ -39,6 +40,7 @@
 .report-card-tag{opacity:.7;font-size:.9rem;margin-top:6px}
 .report-card-meta{display:flex;flex-direction:column;align-items:flex-end;gap:6px;white-space:nowrap}
 .report-card-date{font-family:"JetBrains Mono",monospace;font-size:.8rem;opacity:.6}
+.report-card-pdf{font-size:.78rem;font-weight:600;opacity:.75}
 .report-card-open{font-weight:600;font-size:.9rem}
 .reports-empty{text-align:center;opacity:.6;padding:40px}
 @media (prefers-color-scheme:dark){.report-card{background:rgba(255,255,255,.03);border-color:rgba(255,255,255,.14)}.report-card:hover{border-color:rgba(255,255,255,.3)}}

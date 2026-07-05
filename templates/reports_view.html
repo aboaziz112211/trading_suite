@@ -9,9 +9,16 @@
       {% if report.date %}<p>{{ report.date }}</p>{% endif %}
     </div>
   </div>
-  <a href="{{ url_for('report_file', slug=report.slug) }}" target="_blank" rel="noopener" class="btn guide-btn" title="Open the full report in a new tab">
-    ↗ <span>Open full report · فتح التقرير</span>
-  </a>
+  <div class="report-actions">
+    <a href="{{ url_for('report_file', slug=report.slug) }}" target="_blank" rel="noopener" class="btn guide-btn" title="Open the full report in a new tab">
+      ↗ <span>Open full report · فتح التقرير</span>
+    </a>
+    {% if report.pdf_ar_static %}
+    <a href="{{ url_for('static', filename=report.pdf_ar_static) }}" target="_blank" rel="noopener" class="btn guide-btn" title="Download the Arabic PDF">
+      ⬇ <span>PDF عربي · Arabic PDF</span>
+    </a>
+    {% endif %}
+  </div>
 </section>
 
 <div class="disclaimer">
@@ -26,4 +33,8 @@
 </div>
 
 <iframe id="reportFrame" class="product-frame" src="{{ url_for('report_file', slug=report.slug) }}" title="{{ report.title }}"></iframe>
+
+<style>
+.report-actions{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+</style>
 {% endblock %}

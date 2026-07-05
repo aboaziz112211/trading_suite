@@ -45,6 +45,8 @@ REPORTS = [
         "tagline": "High-conviction earnings preview across 20 TASI companies for Q2 2026.",
         "tagline_ar": "معاينة أرباح عالية القناعة لـ20 شركة سعودية عن الربع الثاني 2026.",
         "file": "tasi_q2_2026_earnings_preview.html",
+        # Optional Arabic PDF, served straight from static/ (path relative to static/).
+        "pdf_ar_static": "reports/tasi_q2_2026_earnings_preview_ar.pdf",
     },
 ]
 
