@@ -28,7 +28,7 @@ PRODUCTS = {
         "tagline": "Saudi market live dashboard",
         "tagline_ar": "لوحة السوق السعودي المباشرة",
         "dir": PRODUCTS_DIR,
-        "file": "TradePulse_SARv1_LIVE.html",
+        "file": "TradePulse_SARv2_LIVE.html",
     },
 }
 
