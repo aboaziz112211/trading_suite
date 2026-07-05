@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% block title %}{{ report.title }}{% endblock %}
+{% block body %}
+<section class="product-head">
+  <div class="product-head-left">
+    <div>
+      <h1>{{ report.title }}</h1>
+      {% if report.title_ar %}<div class="product-title-ar" dir="rtl" lang="ar">{{ report.title_ar }}</div>{% endif %}
+      {% if report.date %}<p>{{ report.date }}</p>{% endif %}
+    </div>
+  </div>
+  <a href="{{ url_for('report_file', slug=report.slug) }}" target="_blank" rel="noopener" class="btn guide-btn" title="Open the full report in a new tab">
+    ↗ <span>Open full report · فتح التقرير</span>
+  </a>
+</section>
+
+<div class="disclaimer">
+  <div class="disc-ar" dir="rtl" lang="ar">
+    <strong>إخلاء مسؤولية:</strong>
+    هذا التقرير لأغراض إعلامية وتعليمية فقط. لا يُعد ما ورد فيه توصية مالية أو نصيحة استثمارية أو عرضاً لشراء أو بيع الأوراق المالية. التداول ينطوي على مخاطر خسارة. استشر مستشاراً مالياً مرخصاً قبل اتخاذ أي قرارات استثمارية.
+  </div>
+  <div class="disc-en" lang="en">
+    <strong>Disclaimer:</strong>
+    This report is for informational and educational purposes only. Nothing herein constitutes a financial recommendation, investment advice, or an offer to buy or sell securities. Trading involves risk of loss. Consult a licensed financial advisor before making any investment decisions.
+  </div>
+</div>
+
+<iframe id="reportFrame" class="product-frame" src="{{ url_for('report_file', slug=report.slug) }}" title="{{ report.title }}"></iframe>
+{% endblock %}

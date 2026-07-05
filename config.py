@@ -4,6 +4,7 @@ from pathlib import Path
 HERE = Path(__file__).resolve().parent
 PRODUCTS_DIR = HERE / "products"
 DATA_DIR = HERE / "data"
+REPORTS_DIR = HERE / "reports"
 
 PRODUCTS = {
     "chartedge": {
@@ -31,6 +32,21 @@ PRODUCTS = {
         "file": "TradePulse_SARv2_LIVE.html",
     },
 }
+
+# ── Research reports (shown under the "Reports" tab) ──────────────────────────
+# Newest first. To add a report: drop its self-contained .html into reports/,
+# add an entry here, then commit + deploy.
+REPORTS = [
+    {
+        "slug": "tasi-q2-2026-earnings-preview",
+        "title": "TASI Q2 2026 — High-Conviction Earnings Preview (20 Companies)",
+        "title_ar": "معاينة أرباح الربع الثاني 2026 — السوق السعودي (20 شركة)",
+        "date": "2026-07-05",
+        "tagline": "High-conviction earnings preview across 20 TASI companies for Q2 2026.",
+        "tagline_ar": "معاينة أرباح عالية القناعة لـ20 شركة سعودية عن الربع الثاني 2026.",
+        "file": "tasi_q2_2026_earnings_preview.html",
+    },
+]
 
 LIVE_XLSX_PATH = DATA_DIR / "all.xlsx"
 LIVE_XLSX_SHEET = "Sheet 1"

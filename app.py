@@ -5,7 +5,7 @@ import os
 import base64
 from datetime import datetime
 from pathlib import Path
-from config import PRODUCTS, LIVE_XLSX_PATH, LIVE_XLSX_SHEET, REFRESH_SECONDS, DATA_DIR
+from config import PRODUCTS, LIVE_XLSX_PATH, LIVE_XLSX_SHEET, REFRESH_SECONDS, DATA_DIR, REPORTS, REPORTS_DIR
 
 app = Flask(__name__)
 
@@ -415,6 +415,35 @@ def contact():
 @app.route("/about")
 def about():
     return render_template("about.html")
+
+
+# ── Research reports ──────────────────────────────────────────────────────────
+def _find_report(slug):
+    for r in REPORTS:
+        if r["slug"] == slug:
+            return r
+    return None
+
+
+@app.route("/reports")
+def reports_index():
+    return render_template("reports_index.html", reports=REPORTS)
+
+
+@app.route("/reports/<slug>")
+def report_page(slug):
+    r = _find_report(slug)
+    if not r:
+        abort(404)
+    return render_template("reports_view.html", report=r)
+
+
+@app.route("/reports/<slug>/file")
+def report_file(slug):
+    r = _find_report(slug)
+    if not r:
+        abort(404)
+    return send_from_directory(REPORTS_DIR, r["file"])
 
 
 def _compute_brief_data(for_date: str = None):

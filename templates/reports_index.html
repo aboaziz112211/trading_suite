@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+{% block title %}Reports · التقارير{% endblock %}
+{% block body %}
+<section class="product-head">
+  <div class="product-head-left">
+    <div>
+      <h1>Reports</h1>
+      <div class="product-title-ar" dir="rtl" lang="ar">التقارير</div>
+      <p>Research reports &amp; earnings previews.</p>
+      <p class="product-tagline-ar" dir="rtl" lang="ar">تقارير بحثية ومعاينات أرباح.</p>
+    </div>
+  </div>
+</section>
+
+<div class="reports-list">
+  {% for r in reports %}
+  <a class="report-card" href="{{ url_for('report_page', slug=r.slug) }}">
+    <div class="report-card-main">
+      <div class="report-card-title">{{ r.title }}</div>
+      {% if r.title_ar %}<div class="report-card-title-ar" dir="rtl" lang="ar">{{ r.title_ar }}</div>{% endif %}
+      {% if r.tagline %}<div class="report-card-tag">{{ r.tagline }}</div>{% endif %}
+    </div>
+    <div class="report-card-meta">
+      {% if r.date %}<span class="report-card-date">{{ r.date }}</span>{% endif %}
+      <span class="report-card-open">Open&nbsp;→</span>
+    </div>
+  </a>
+  {% else %}
+  <p class="reports-empty">No reports yet · لا توجد تقارير بعد.</p>
+  {% endfor %}
+</div>
+
+<style>
+.reports-list{max-width:920px;margin:0 auto;padding:8px 16px 48px;display:flex;flex-direction:column;gap:14px}
+.report-card{display:flex;justify-content:space-between;align-items:center;gap:16px;padding:18px 20px;border:1px solid rgba(0,0,0,.12);border-radius:14px;text-decoration:none;color:inherit;background:#fff;transition:border-color .15s,transform .15s,box-shadow .15s}
+.report-card:hover{border-color:rgba(0,0,0,.28);transform:translateY(-1px);box-shadow:0 6px 20px rgba(0,0,0,.06)}
+.report-card-title{font-weight:700;font-size:1.05rem;line-height:1.3}
+.report-card-title-ar{font-weight:600;opacity:.85;margin-top:2px}
+.report-card-tag{opacity:.7;font-size:.9rem;margin-top:6px}
+.report-card-meta{display:flex;flex-direction:column;align-items:flex-end;gap:6px;white-space:nowrap}
+.report-card-date{font-family:"JetBrains Mono",monospace;font-size:.8rem;opacity:.6}
+.report-card-open{font-weight:600;font-size:.9rem}
+.reports-empty{text-align:center;opacity:.6;padding:40px}
+@media (prefers-color-scheme:dark){.report-card{background:rgba(255,255,255,.03);border-color:rgba(255,255,255,.14)}.report-card:hover{border-color:rgba(255,255,255,.3)}}
+</style>
+{% endblock %}
