@@ -5981,5 +5981,151 @@ setTimeout(rdrSetup, 1300);
 })();
 </script>
 
+<!-- ===== VCP BREAKOUTS (ALL) TAB — added 2026-07-05 ===================
+     Shows EVERY VCP breakout the alert pipeline catches — no SEPA filter,
+     no stage filter (Stage 4 included, e.g. 6004). Display + existing alerts;
+     the discipline gate is untouched: nothing here promotes to the pipeline.
+     Namespaced vbk-* / VBK_ — isolated like the Journal tab.
+     Daily list persists to hub /brk_log for future edge audits.
+====================================================================== -->
+<script>
+(function(){
+function vbkEsc(x){ return String(x == null ? '' : x).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+var VBK_CSS = '#tab-vcpbrk .vbk-wrap{padding:14px}'
+ + '#tab-vcpbrk table{width:100%;border-collapse:collapse;font-size:12px}'
+ + '#tab-vcpbrk th{text-align:left;padding:7px 8px;background:#F4F3EF;color:#6b6b65;font-size:10px;text-transform:uppercase;letter-spacing:.4px;position:sticky;top:0}'
+ + '#tab-vcpbrk td{padding:7px 8px;border-bottom:1px solid #ECEAE4}'
+ + '#tab-vcpbrk tr:hover td{background:#FAF9F6;cursor:pointer}'
+ + '.vbk-tag{display:inline-block;padding:2px 8px;border-radius:10px;font-size:10px;font-weight:700}'
+ + '.vbk-brk{background:#DCEFC9;color:#3B6D11}.vbk-unc{background:#FFF3CD;color:#856404}'
+ + '.vbk-ext{background:#F7DDD9;color:#A32D2D}.vbk-fail{background:#F4F3EF;color:#8a8a93;text-decoration:line-through}'
+ + '.vbk-stg{display:inline-block;padding:1px 7px;border-radius:9px;font-size:10px;font-weight:700;background:#EDEBFB;color:#6D4FC4}'
+ + '.vbk-stg2{background:#DCEFC9;color:#3B6D11}'
+ + '.vbk-empty{padding:22px;text-align:center;color:#856404;background:#FFF3CD;border-radius:10px;font-size:12px;margin:14px}';
+
+function vbkTypeTag(s, ph){
+  if (s.breakout_type === 'confirmed')   return '<span class="vbk-tag vbk-brk">💥 CONFIRMED</span>';
+  if (s.breakout_type === 'unconfirmed') return '<span class="vbk-tag vbk-unc">⚡ UNCONFIRMED</span>';
+  if (s.breakout_type === 'extended')    return '<span class="vbk-tag vbk-ext">⚠ EXTENDED</span>';
+  if (ph === 'failed')                   return '<span class="vbk-tag vbk-fail">FAILED</span>';
+  if (ph === 'armed')                    return '<span class="vbk-tag vbk-unc">RE-ARM</span>';
+  if (ph === 'broken')                   return '<span class="vbk-tag vbk-brk">BROKE</span>';
+  return '<span class="vbk-tag" style="background:#F4F3EF;color:#6b6b65">ABOVE PIVOT</span>';
+}
+
+function vbkRows(){
+  if (typeof STOCKS === 'undefined' || !STOCKS.length) return [];
+  var rows = [];
+  STOCKS.forEach(function(s){
+    if (!s.breakout_level || s.breakout_level <= 0) return;
+    var price = s.livePrice || s.price || 0;
+    if (!price) return;
+    var gap = (s.liveGap != null ? s.liveGap : s.dist_to_breakout);
+    var ph = 'idle';
+    try { if (typeof BRK_STATE !== 'undefined' && BRK_STATE[s.ticker]) ph = BRK_STATE[s.ticker].ph || 'idle'; } catch(e) {}
+    var active = (s.breakout_type === 'confirmed' || s.breakout_type === 'unconfirmed' || s.breakout_type === 'extended');
+    var above = (gap != null && gap <= 0);
+    if (!active && !above && ph === 'idle') return;   // only actual breakouts — near-pivot stays in Breakout Watch
+    var volR = null;
+    try { if (s.liveVol && s.avgVol30 > 0) volR = (s.liveVol / s.avgVol30) / sessionFraction(); } catch(e) {}
+    rows.push({ s: s, price: price, ph: ph, volR: volR,
+                pctAbove: +(((price - s.breakout_level) / s.breakout_level) * 100).toFixed(2) });
+  });
+  rows.sort(function(a, b){ return b.pctAbove - a.pctAbove; });
+  return rows;
+}
+
+function vbkRender(){
+  var host = document.getElementById('vbk-body');
+  if (!host) return;
+  var rows = vbkRows();
+  var cnt = document.getElementById('vbk-count');
+  if (cnt) cnt.textContent = rows.length ? (rows.length + ' breakout' + (rows.length > 1 ? 's' : '') + ' today') : 'no breakouts yet today';
+  if (!rows.length) {
+    host.innerHTML = '<div class="vbk-empty">No VCP breakouts detected yet today.<br>This tab shows every pivot cross the alert system fires — no SEPA or stage filter.</div>';
+    return;
+  }
+  host.innerHTML = '<table><thead><tr><th>Ticker</th><th>Name</th><th>Stage</th><th>Type</th>'
+    + '<th>Price</th><th>Pivot</th><th>% vs Pivot</th><th>Vol× (paced)</th><th>RS</th><th>SEPA</th></tr></thead><tbody>'
+    + rows.map(function(r){
+        var s = r.s;
+        var tk = vbkEsc(s.ticker.replace('.SR',''));
+        var stg = vbkEsc((s.stage || '?').replace('stage', 'S'));
+        var stgCls = s.stage === 'stage2' ? 'vbk-stg vbk-stg2' : 'vbk-stg';
+        var nm = vbkEsc((typeof AR_NAMES !== 'undefined' && AR_NAMES[s.ticker.replace('.SR','')]) || s.company || '');
+        return '<tr onclick="openCardModal(\'' + vbkEsc(s.ticker) + '\')">'
+          + '<td style="font-weight:700">' + tk + '</td>'
+          + '<td>' + nm + '</td>'
+          + '<td><span class="' + stgCls + '">' + stg + '</span></td>'
+          + '<td>' + vbkTypeTag(s, r.ph) + '</td>'
+          + '<td style="font-weight:600">' + r.price.toFixed(2) + '</td>'
+          + '<td>' + s.breakout_level.toFixed(2) + '</td>'
+          + '<td style="font-weight:700;color:' + (r.pctAbove >= 0 ? '#3B6D11' : '#A32D2D') + '">'
+          + (r.pctAbove >= 0 ? '+' : '') + r.pctAbove.toFixed(1) + '%</td>'
+          + '<td>' + (r.volR != null ? r.volR.toFixed(2) : '—') + '</td>'
+          + '<td>' + (s.rs != null ? vbkEsc(s.rs) : '—') + '</td>'
+          + '<td>' + (s.sepa_pass ? '✓' : '✗') + '</td></tr>';
+      }).join('')
+    + '</tbody></table>';
+}
+
+// Persist today's breakout list to the hub (audit trail — same pattern as scout_log)
+var _vbkLogLast = 0;
+function vbkLogPost(){
+  if (location.protocol !== 'http:' && location.protocol !== 'https:') return;
+  var now = Date.now();
+  if (now - _vbkLogLast < 240000) return;
+  var rows = vbkRows();
+  if (!rows.length) return;
+  _vbkLogLast = now;
+  try {
+    fetch('/brk_log', { method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ ts: new Date().toISOString(),
+        entries: rows.map(function(r){ return { t: r.s.ticker, pivot: r.s.breakout_level,
+          price: r.price, pct: r.pctAbove, type: r.s.breakout_type || r.ph,
+          stage: r.s.stage, rs: r.s.rs, sepa: !!r.s.sepa_pass }; }) }) });
+  } catch(e) {}
+}
+
+function vbkSetup(){
+  if (window._VBK_READY) return;
+  var bar = document.getElementById('tp-tabbar'), anchor = document.getElementById('tab-watchlist');
+  if (!bar || !anchor) return;
+  if (!document.querySelector('#tp-tabbar button[data-tab="vcpbrk"]')) {
+    var b = document.createElement('button');
+    b.setAttribute('data-tab', 'vcpbrk'); b.setAttribute('onclick', "showTpTab('vcpbrk')");
+    b.innerHTML = '💥 Breakouts+ · الاختراقات<span class="tcount">all VCP · incl. stage 4 · بدون فلتر</span>';
+    bar.appendChild(b);
+  }
+  if (!document.getElementById('tab-vcpbrk')) {
+    var d = document.createElement('div'); d.className = 'tp-tab'; d.id = 'tab-vcpbrk';
+    d.innerHTML = '<div class="vbk-wrap"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">'
+      + '<div style="font-weight:800;font-size:15px">💥 VCP Breakouts — unfiltered · كل اختراقات VCP</div>'
+      + '<div id="vbk-count" style="font-size:11px;color:#6b6b65"></div></div>'
+      + '<div style="font-size:11px;color:#856404;background:#FFF9E8;border-radius:8px;padding:7px 10px;margin-bottom:10px">'
+      + 'Every pivot cross the alert system fires — no SEPA / stage filter. Stage-4 names are shown for observation; the no-promotion discipline gate still applies.</div>'
+      + '<div id="vbk-body"></div></div>';
+    anchor.insertAdjacentElement('afterend', d);
+  }
+  if (!document.getElementById('vbk-style')) {
+    var stl = document.createElement('style'); stl.id = 'vbk-style'; stl.textContent = VBK_CSS;
+    document.head.appendChild(stl);
+  }
+  if (typeof window.showTpTab === 'function' && !window._VBK_TABWRAP) {
+    window._VBK_TABWRAP = true; var o = window.showTpTab;
+    window.showTpTab = function(n){ o(n); if (n === 'vcpbrk') { try { vbkRender(); } catch(e) {} } };
+  }
+  window._VBK_READY = true;
+  try { vbkRender(); } catch(e) {}
+  try { if (localStorage.getItem('tp_active_tab_v2') === 'vcpbrk') showTpTab('vcpbrk'); } catch(e) {}
+  if (!window._VBK_INT) window._VBK_INT = setInterval(function(){
+    try { vbkRender(); vbkLogPost(); } catch(e) {}
+  }, 30000);
+}
+vbkSetup();
+setTimeout(vbkSetup, 1500);
+})();
+</script>
+
 </body>
 </html>
