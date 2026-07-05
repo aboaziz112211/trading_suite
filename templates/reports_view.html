@@ -1,5 +1,6 @@
 {% extends "base.html" %}
 {% block title %}{{ report.title }}{% endblock %}
+{% set use_pdf = (report.default_display == 'pdf_ar' and report.pdf_ar_static) %}
 {% block body %}
 <section class="product-head">
   <div class="product-head-left">
@@ -10,14 +11,14 @@
     </div>
   </div>
   <div class="report-actions">
-    <a href="{{ url_for('report_file', slug=report.slug) }}" target="_blank" rel="noopener" class="btn guide-btn" title="Open the full report in a new tab">
-      ↗ <span>Open full report · فتح التقرير</span>
-    </a>
     {% if report.pdf_ar_static %}
-    <a href="{{ url_for('static', filename=report.pdf_ar_static) }}" target="_blank" rel="noopener" class="btn guide-btn" title="Download the Arabic PDF">
-      ⬇ <span>PDF عربي · Arabic PDF</span>
+    <a href="{{ url_for('static', filename=report.pdf_ar_static) }}" target="_blank" rel="noopener" class="btn guide-btn" title="Open the Arabic PDF in a new tab">
+      ↗ <span>فتح التقرير (عربي) · Open Arabic PDF</span>
     </a>
     {% endif %}
+    <a href="{{ url_for('report_file', slug=report.slug) }}" target="_blank" rel="noopener" class="btn guide-btn" title="Open the English HTML report in a new tab">
+      🌐 <span>English report (HTML)</span>
+    </a>
   </div>
 </section>
 
@@ -32,7 +33,9 @@
   </div>
 </div>
 
-<iframe id="reportFrame" class="product-frame" src="{{ url_for('report_file', slug=report.slug) }}" title="{{ report.title }}"></iframe>
+<iframe id="reportFrame" class="product-frame"
+  src="{{ url_for('static', filename=report.pdf_ar_static) if use_pdf else url_for('report_file', slug=report.slug) }}"
+  title="{{ report.title }}"></iframe>
 
 <style>
 .report-actions{display:flex;flex-wrap:wrap;gap:10px;align-items:center}

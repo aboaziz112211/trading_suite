@@ -47,6 +47,8 @@ REPORTS = [
         "file": "tasi_q2_2026_earnings_preview.html",
         # Optional Arabic PDF, served straight from static/ (path relative to static/).
         "pdf_ar_static": "reports/tasi_q2_2026_earnings_preview_ar.pdf",
+        # Which format the viewer embeds by default: "pdf_ar" or "html".
+        "default_display": "pdf_ar",
     },
 ]
 
