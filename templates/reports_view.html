@@ -16,9 +16,11 @@
       ↗ <span>فتح التقرير (عربي) · Open Arabic PDF</span>
     </a>
     {% endif %}
+    {% if report.file %}
     <a href="{{ url_for('report_file', slug=report.slug) }}" target="_blank" rel="noopener" class="btn guide-btn" title="Open the English HTML report in a new tab">
       🌐 <span>English report (HTML)</span>
     </a>
+    {% endif %}
   </div>
 </section>
 

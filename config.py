@@ -38,15 +38,15 @@ PRODUCTS = {
 # add an entry here, then commit + deploy.
 REPORTS = [
     {
-        "slug": "tasi-q2-2026-earnings-preview",
-        "title": "TASI Q2 2026 — High-Conviction Earnings Preview (20 Companies)",
-        "title_ar": "معاينة أرباح الربع الثاني 2026 — السوق السعودي (20 شركة)",
-        "date": "2026-07-05",
-        "tagline": "High-conviction earnings preview across 20 TASI companies for Q2 2026.",
-        "tagline_ar": "معاينة أرباح عالية القناعة لـ20 شركة سعودية عن الربع الثاني 2026.",
-        "file": "tasi_q2_2026_earnings_preview.html",
-        # Optional Arabic PDF, served straight from static/ (path relative to static/).
-        "pdf_ar_static": "reports/tasi_q2_2026_earnings_preview_ar.pdf",
+        "slug": "tasi-q2-2026-top20",
+        "title": "TASI Q2 2026 — Best 20 Companies: Combined Master Ranking",
+        "title_ar": "تاسي الربع الثاني 2026 — أفضل 20 شركة: التصنيف الشامل الموحّد",
+        "date": "2026-07-06",
+        "tagline": "Combined master ranking of the top 20 TASI companies for Q2 2026 (Arabic).",
+        "tagline_ar": "التصنيف الشامل الموحّد لأفضل 20 شركة في تاسي للربع الثاني 2026.",
+        # Arabic PDF, served straight from static/ (path relative to static/).
+        # No "file" key → this report is PDF-only (no English HTML view).
+        "pdf_ar_static": "reports/tasi_q2_2026_top20_ar.pdf",
         # Which format the viewer embeds by default: "pdf_ar" or "html".
         "default_display": "pdf_ar",
     },
