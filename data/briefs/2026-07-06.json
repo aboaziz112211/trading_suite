@@ -1,0 +1,340 @@
+{
+  "generated_at": "2026-07-06T12:20:29",
+  "index": {
+    "today": {
+      "date": "2026-07-06",
+      "open": 10798.97,
+      "high": 10839.89,
+      "low": 10793.41,
+      "close": 10813.04,
+      "volume": 243066132.0
+    },
+    "prev": {
+      "close": 10798.97
+    },
+    "source": "bloomberg_xlsx"
+  },
+  "stage2_count": 13,
+  "potential_count": 43,
+  "score10_count": 0,
+  "scan_total": 268,
+  "top_picks": [
+    {
+      "Ticker": "7200.SR",
+      "_vol_ratio": null,
+      "Company": "\u0627\u0645 \u0622\u064a \u0627\u0633",
+      "Stage": "stage2",
+      "Score": "9",
+      "RS": "99",
+      "12m%": "70.4"
+    },
+    {
+      "Ticker": "1321.SR",
+      "_vol_ratio": null,
+      "Company": "\u0623\u0646\u0627\u0628\u064a\u0628 \u0627\u0644\u0634\u0631\u0642",
+      "Stage": "stage2",
+      "Score": "9",
+      "RS": "98",
+      "12m%": "80.0"
+    },
+    {
+      "Ticker": "2382.SR",
+      "_vol_ratio": null,
+      "Company": "\u0623\u062f\u064a\u0633",
+      "Stage": "stage2",
+      "Score": "9",
+      "RS": "96",
+      "12m%": "48.5"
+    },
+    {
+      "Ticker": "4190.SR",
+      "_vol_ratio": null,
+      "Company": "\u062c\u0631\u064a\u0631",
+      "Stage": "stage2",
+      "Score": "9",
+      "RS": "96",
+      "12m%": "36.2"
+    },
+    {
+      "Ticker": "8250.SR",
+      "_vol_ratio": null,
+      "Company": "\u062c\u064a \u0622\u064a \u062c\u064a",
+      "Stage": "stage2",
+      "Score": "9",
+      "RS": "95",
+      "12m%": "20.8"
+    },
+    {
+      "Ticker": "1304.SR",
+      "_vol_ratio": null,
+      "Company": "\u0627\u0644\u064a\u0645\u0627\u0645\u0629 \u0644\u0644\u062d\u062f\u064a\u062f",
+      "Stage": "stage2",
+      "Score": "9",
+      "RS": "94",
+      "12m%": "21.9"
+    },
+    {
+      "Ticker": "5110.SR",
+      "_vol_ratio": null,
+      "Company": "\u0627\u0644\u0633\u0639\u0648\u062f\u064a\u0629 \u0644\u0644\u0637\u0627\u0642\u0629",
+      "Stage": "stage2",
+      "Score": "9",
+      "RS": "92",
+      "12m%": "21.7"
+    },
+    {
+      "Ticker": "4344.SR",
+      "_vol_ratio": null,
+      "Company": "\u0633\u062f\u0643\u0648 \u0643\u0627\u0628\u064a\u062a\u0627\u0644 \u0631\u064a\u062a",
+      "Stage": "stage2",
+      "Score": "9",
+      "RS": "92",
+      "12m%": "12.5"
+    },
+    {
+      "Ticker": "2110.SR",
+      "_vol_ratio": null,
+      "Company": "\u0627\u0644\u0643\u0627\u0628\u0644\u0627\u062a \u0627\u0644\u0633\u0639\u0648\u062f\u064a\u0629",
+      "Stage": "stage2",
+      "Score": "9",
+      "RS": "90",
+      "12m%": "22.1"
+    },
+    {
+      "Ticker": "3007.SR",
+      "_vol_ratio": null,
+      "Company": "\u0627\u0644\u0648\u0627\u062d\u0629",
+      "Stage": "stage2",
+      "Score": "9",
+      "RS": "88",
+      "12m%": "10.1"
+    }
+  ],
+  "top_gainers": [
+    {
+      "Ticker": "SPM",
+      "Last Price": 61.1,
+      "%1D": 9.991000175476074,
+      "%1M": 5.5268,
+      "%YTD": -1.531,
+      "Volume": 691126.0,
+      "Avg Vol 30D": 71858.27,
+      "_vol_ratio": 9.617904800658295
+    },
+    {
+      "Ticker": "SFICO",
+      "Last Price": 76.8,
+      "%1D": 9.949899673461914,
+      "%1M": 92.4812,
+      "%YTD": 29.4019,
+      "Volume": 2617565.0,
+      "Avg Vol 30D": 425545.2,
+      "_vol_ratio": 6.151085713104036
+    },
+    {
+      "Ticker": "ASACO",
+      "Last Price": 16.7,
+      "%1D": 6.845799922943115,
+      "%1M": 34.7861,
+      "%YTD": 21.0145,
+      "Volume": 3163878.0,
+      "Avg Vol 30D": 507664.9,
+      "_vol_ratio": 6.232217354400511
+    },
+    {
+      "Ticker": "ALLIANZ",
+      "Last Price": 13.28,
+      "%1D": 5.229800224304199,
+      "%1M": 50.3964,
+      "%YTD": 19.6396,
+      "Volume": 1237373.0,
+      "Avg Vol 30D": 317282.8,
+      "_vol_ratio": null
+    },
+    {
+      "Ticker": "CARE",
+      "Last Price": 111.0,
+      "%1D": 5.11359977722168,
+      "%1M": 4.6183,
+      "%YTD": -22.2144,
+      "Volume": 266592.0,
+      "Avg Vol 30D": 229035.9,
+      "_vol_ratio": null
+    }
+  ],
+  "top_losers": [
+    {
+      "Ticker": "ABDICO",
+      "Last Price": 2.32,
+      "%1D": -5.691100120544434,
+      "%1M": 9.9526,
+      "%YTD": 5.4545,
+      "Volume": 28305351.0,
+      "Avg Vol 30D": 5121896,
+      "_vol_ratio": null
+    },
+    {
+      "Ticker": "BATIC",
+      "Last Price": 2.1,
+      "%1D": -5.405399799346924,
+      "%1M": -5.8296,
+      "%YTD": 8.2474,
+      "Volume": 31491676.0,
+      "Avg Vol 30D": 5866301,
+      "_vol_ratio": null
+    },
+    {
+      "Ticker": "MIS",
+      "Last Price": 222.8,
+      "%1D": -4.786300182342529,
+      "%1M": 20.3024,
+      "%YTD": 28.046,
+      "Volume": 72853.0,
+      "Avg Vol 30D": 76829.23,
+      "_vol_ratio": null
+    },
+    {
+      "Ticker": "ALETIHAD",
+      "Last Price": 7.0,
+      "%1D": -4.761899948120117,
+      "%1M": 11.1111,
+      "%YTD": -12.0603,
+      "Volume": 567329.0,
+      "Avg Vol 30D": 282284.9,
+      "_vol_ratio": null
+    },
+    {
+      "Ticker": "SIECO",
+      "Last Price": 2.41,
+      "%1D": -4.365099906921387,
+      "%1M": 3.4335,
+      "%YTD": 6.6372,
+      "Volume": 5368339.0,
+      "Avg Vol 30D": 3013303,
+      "_vol_ratio": null
+    }
+  ],
+  "vol_leaders": [
+    {
+      "Ticker": "SPM",
+      "Last Price": 61.1,
+      "%1D": 9.991000175476074,
+      "%1M": 5.5268,
+      "%YTD": -1.531,
+      "Volume": 691126.0,
+      "Avg Vol 30D": 71858.27,
+      "_vol_ratio": 9.617904800658295
+    },
+    {
+      "Ticker": "SMARKETI",
+      "Last Price": 13.27,
+      "%1D": -0.07530000060796738,
+      "%1M": 1.5302,
+      "%YTD": -5.2143,
+      "Volume": 354613.0,
+      "Avg Vol 30D": 49460.17,
+      "_vol_ratio": 7.169668037938406
+    },
+    {
+      "Ticker": "TAACO",
+      "Last Price": 8.21,
+      "%1D": 4.055799961090088,
+      "%1M": 31.5705,
+      "%YTD": 7.6016,
+      "Volume": 3984854.0,
+      "Avg Vol 30D": 611689.9,
+      "_vol_ratio": 6.514500239418699
+    },
+    {
+      "Ticker": "ASACO",
+      "Last Price": 16.7,
+      "%1D": 6.845799922943115,
+      "%1M": 34.7861,
+      "%YTD": 21.0145,
+      "Volume": 3163878.0,
+      "Avg Vol 30D": 507664.9,
+      "_vol_ratio": 6.232217354400511
+    },
+    {
+      "Ticker": "SFICO",
+      "Last Price": 76.8,
+      "%1D": 9.949899673461914,
+      "%1M": 92.4812,
+      "%YTD": 29.4019,
+      "Volume": 2617565.0,
+      "Avg Vol 30D": 425545.2,
+      "_vol_ratio": 6.151085713104036
+    }
+  ],
+  "sectors_leading": [
+    {
+      "name": "Pharmaceuticals, Biotechnology & Life Sciences",
+      "count": 3,
+      "avg_pct": 1.2943666676680248,
+      "advancers": 3,
+      "decliners": 0,
+      "top_ticker": "SPIMACO",
+      "top_pct": 2.1542999744415283
+    },
+    {
+      "name": "Transportation",
+      "count": 8,
+      "avg_pct": 1.0329375118017197,
+      "advancers": 6,
+      "decliners": 2,
+      "top_ticker": "SAPTCO",
+      "top_pct": 3.3510000705718994
+    },
+    {
+      "name": "Health Care Equipment & Services",
+      "count": 12,
+      "avg_pct": 0.8915749757240216,
+      "advancers": 8,
+      "decliners": 4,
+      "top_ticker": "CARE",
+      "top_pct": 5.11359977722168
+    }
+  ],
+  "sectors_lagging": [
+    {
+      "name": "Software & Services",
+      "count": 6,
+      "avg_pct": -1.4767500348389149,
+      "advancers": 0,
+      "decliners": 6,
+      "top_ticker": "SOLUTION",
+      "top_pct": -0.09989999979734421
+    },
+    {
+      "name": "Insurance",
+      "count": 26,
+      "avg_pct": -1.3065807486955936,
+      "advancers": 4,
+      "decliners": 22,
+      "top_ticker": "ALLIANZ",
+      "top_pct": 5.229800224304199
+    },
+    {
+      "name": "Capital Goods",
+      "count": 18,
+      "avg_pct": -1.2451110887858603,
+      "advancers": 4,
+      "decliners": 13,
+      "top_ticker": "EIC",
+      "top_pct": 1.7345000505447388
+    }
+  ],
+  "breadth": {
+    "above_ma200": 95,
+    "total_ma200": 263,
+    "above_ma50": 128,
+    "total_ma50": 268,
+    "new_highs": 3,
+    "new_lows": 13,
+    "advancers": 96,
+    "decliners": 156,
+    "unchanged": 17,
+    "ad_ratio": 0.6153846153846154,
+    "total_stocks": 269
+  }
+}
