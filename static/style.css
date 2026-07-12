@@ -483,10 +483,33 @@ body {
   border-color: var(--accent);
 }
 .footer-social b { color: var(--accent); font-weight: 600; }
+.footer-links {
+  display: flex; gap: 18px; flex-wrap: wrap; justify-content: flex-end;
+  margin-bottom: 8px;
+}
+.footer-links a {
+  color: var(--muted); text-decoration: none; font-size: 12px;
+}
+.footer-links a:hover { color: var(--accent); }
 .footer-copy {
   font-size: 11px;
   color: var(--muted);
 }
+
+/* Homepage "Latest research" card ─────────────────────────── */
+.research-card {
+  display: flex; justify-content: space-between; align-items: center; gap: 16px;
+  background: var(--panel); border: 1px solid var(--border); border-radius: 14px;
+  padding: 18px 20px; text-decoration: none; color: inherit;
+  transition: border-color .15s, transform .15s;
+}
+.research-card:hover { border-color: var(--accent); transform: translateY(-1px); }
+.research-card .rc-title { font-weight: 700; font-size: 16px; }
+.research-card .rc-title-ar { color: var(--muted); font-size: 13px; margin-top: 3px; }
+.research-card .rc-tag { color: var(--muted); font-size: 12px; margin-top: 6px; }
+.research-card .rc-meta { display: flex; flex-direction: column; align-items: flex-end; gap: 6px; white-space: nowrap; }
+.research-card .rc-date { font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--muted); }
+.research-card .rc-open { color: var(--accent); font-weight: 600; font-size: 13px; }
 @media (max-width: 720px) {
   .footer-inner { flex-direction: column; align-items: flex-start; }
   .footer-right { align-items: flex-start; }

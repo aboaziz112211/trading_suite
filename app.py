@@ -452,7 +452,8 @@ def _homepage_live_stats():
 
 @app.route("/")
 def index():
-    return render_template("index.html", products=PRODUCTS, live=_homepage_live_stats())
+    return render_template("index.html", products=PRODUCTS, live=_homepage_live_stats(),
+                           latest_report=(REPORTS[0] if REPORTS else None))
 
 
 @app.route("/contact")

@@ -217,6 +217,28 @@
 {% endif %}
 
 
+{# ── LATEST RESEARCH ──────────────────────────────────────────── #}
+{% if latest_report %}
+<section class="sec">
+  <div class="sec-head">
+    <h2>Latest research <span class="ar" dir="rtl" lang="ar">أحدث التقارير</span></h2>
+    <a href="{{ url_for('reports_index') }}">All reports →</a>
+  </div>
+  <a class="research-card" href="{{ url_for('report_page', slug=latest_report.slug) }}">
+    <div class="rc-main">
+      <div class="rc-title">{{ latest_report.title }}</div>
+      {% if latest_report.title_ar %}<div class="rc-title-ar" dir="rtl" lang="ar">{{ latest_report.title_ar }}</div>{% endif %}
+      {% if latest_report.tagline %}<div class="rc-tag">{{ latest_report.tagline }}</div>{% endif %}
+    </div>
+    <div class="rc-meta">
+      {% if latest_report.date %}<span class="rc-date">{{ latest_report.date }}</span>{% endif %}
+      <span class="rc-open">Read →</span>
+    </div>
+  </a>
+</section>
+{% endif %}
+
+
 {# ── TELEGRAM CTA ─────────────────────────────────────────────── #}
 <section class="sec">
   <div class="tg-cta">
