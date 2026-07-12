@@ -11,101 +11,79 @@
   <span class="en" lang="en">For the best experience with these data-heavy dashboards, browse on a laptop or desktop.</span>
 </div>
 
-{# ── HERO ──────────────────────────────────────────────────────── #}
-<section class="hero-v2">
-  <div class="hero-left">
-    <span class="hero-kicker">⚡ Live market intelligence · AI-powered</span>
-    <h1>Your edge in <span class="grad">TASI</span>, NYSE &amp; NASDAQ.</h1>
-    <div class="h1-ar" dir="rtl" lang="ar">ترصّد الاختراق قبل حدوثه — تاسي ووول ستريت</div>
-    <p class="lede">Live cross-market scanner, Minervini-grade SEPA scoring, daily closing briefs, and an X content engine — built on a real-time feed that refreshes every 30 seconds.</p>
-    <p class="lede-ar" dir="rtl" lang="ar">ماسح حي يغطّي السوق السعودي وأسواق نيويورك وناسداك، تقييم SEPA بنمط مينيرفيني، تقارير إغلاق يومية، ومحرك محتوى لتغريداتك — يُحدَّث كل 30 ثانية.</p>
-    <div class="cta-row">
-      <a href="{{ url_for('product_page', key='tradepulse_sar') }}" class="btn btn-primary">▶ Open TASI dashboard</a>
-      <a href="{{ url_for('product_page', key='tradepulse_us') }}" class="btn btn-ghost">▶ Open US dashboard</a>
+{# ── HERO — Sadu night ─────────────────────────────────────────── #}
+<section class="sd-hero" dir="rtl" lang="ar">
+  <div class="sd-hero-text">
+    <span class="sd-kicker">ذكاء السوق الحي · مدعوم بالذكاء الاصطناعي</span>
+    <h1 class="sd-h1">أفضليتك في <em>تاسي</em><br>ووول ستريت</h1>
+    <div class="sd-h-en" dir="ltr" lang="en">Your edge in TASI, NYSE &amp; NASDAQ — woven daily.</div>
+    <p class="sd-lede">ماسح حي يغطي السوق السعودي والأسواق الأمريكية، تقييم SEPA للمراحل الفنية، تقارير إغلاق يومية عند 15:30 — يُحدَّث كل 30 ثانية.</p>
+    <div class="sd-cta-row">
+      <a href="{{ url_for('product_page', key='tradepulse_sar') }}" class="sd-btn gold">افتح لوحة تاسي</a>
+      <a href="{{ url_for('product_page', key='tradepulse_us') }}" class="sd-btn ghost">لوحة السوق الأمريكي</a>
     </div>
-    <div class="hero-stats">
-      <div><span class="n">{{ scan.total if scan else 269 }}</span><span class="l">SA stocks scored</span></div>
-      <div><span class="n">{{ scan.stage2 if scan else 36 }}</span><span class="l">Stage 2 today</span></div>
-      <div><span class="n">{{ scan.score10 if scan else 16 }}</span><span class="l">Score 10/10</span></div>
-      <div><span class="n">{{ live.us_rows if live.us_rows else 556 }}</span><span class="l">US tickers live</span></div>
+    <div class="sd-hero-stats">
+      <div><span class="n">{{ scan.total if scan else 269 }}</span><span class="l">سهماً سعودياً مُقيَّماً</span></div>
+      <div><span class="n">{{ scan.stage2 if scan else 36 }}</span><span class="l">مرحلة ثانية اليوم</span></div>
+      <div><span class="n">{{ scan.score10 if scan else 16 }}</span><span class="l">تقييم 10/10</span></div>
+      <div><span class="n">{{ live.us_rows if live.us_rows else 556 }}</span><span class="l">سهماً أمريكياً حياً</span></div>
     </div>
   </div>
 
-  {# Right card — Markets at a glance (TASI + SPY + QQQ + IWM) #}
+  {# Woven-frame market card — TASI close + brief stats + US index row #}
   {% set us_idx = live.us_indices or {} %}
-  <div class="hero-viz">
-    <div class="hv-head">
-      <span class="hv-title">Markets at a glance</span>
-      <span class="hv-time" id="hv-clock"></span>
-    </div>
-
-    <div class="markets-grid">
-      {# TASI #}
-      <a class="market-cell market-cell-lg" href="{{ url_for('product_page', key='tradepulse_sar') }}">
-        <div class="mc-flag">🇸🇦 <span class="mc-sym">TASI</span></div>
-        {% if b and b.close %}
-        <div class="mc-price">{{ '{:,.2f}'.format(b.close) }}</div>
+  <div class="sd-frame-wrap">
+    <svg class="sd-frame-svg" aria-hidden="true">
+      <rect x="2" y="2" width="calc(100% - 4px)" height="calc(100% - 4px)"/>
+      <rect class="inner" x="9" y="9" width="calc(100% - 18px)" height="calc(100% - 18px)"/>
+    </svg>
+    <div class="sd-tasi-card">
+      <div class="sd-tc-head">
+        <span class="mkt">🇸🇦 تاسي · TASI</span>
+        <span class="clock" id="hv-clock" dir="ltr"></span>
+      </div>
+      {% if b and b.close %}
+      <a class="sd-close-link" href="{{ url_for('product_page', key='tradepulse_sar') }}">
+        <div class="sd-close">{{ '{:,.2f}'.format(b.close) }}</div>
         {% if b.chg_pct is not none %}
-        <div class="mc-chg {{ 'up' if b.chg_pts >= 0 else 'dn' }}">{{ '▲' if b.chg_pts >= 0 else '▼' }} {{ '{:+.2f}'.format(b.chg_pct) }}%</div>
+        <div class="sd-chg {{ 'up' if b.chg_pts >= 0 else 'dn' }}" dir="ltr">{{ '▲' if b.chg_pts >= 0 else '▼' }} {{ '{:+.2f}'.format(b.chg_pct) }}%</div>
         {% endif %}
-        <div class="mc-asof">as of {{ b.date }}</div>
-        {% else %}
-        <div class="mc-price">—</div>
-        <div class="mc-asof">awaiting first brief</div>
-        {% endif %}
+        <div class="sd-asof">إغلاق · {{ b.date }}</div>
       </a>
+      <div class="sd-tgrid">
+        <div class="cell"><span class="v up">{{ b.top_gainer_ticker or '—' }}</span><span class="k">الأعلى {% if b.top_gainer_pct %}{{ '{:+.2f}'.format(b.top_gainer_pct) }}%{% endif %}</span></div>
+        <div class="cell"><span class="v dn">{{ b.top_loser_ticker or '—' }}</span><span class="k">الأدنى {% if b.top_loser_pct %}{{ '{:+.2f}'.format(b.top_loser_pct) }}%{% endif %}</span></div>
+        <div class="cell"><span class="v {{ 'up' if (b.ad_ratio or 0) >= 1 else 'dn' }}">{% if b.ad_ratio %}{{ '{:.2f}'.format(b.ad_ratio) }}{% else %}—{% endif %}</span><span class="k">مؤشر الاتساع ▲/▼</span></div>
+      </div>
+      {% else %}
+      <div class="sd-close">—</div>
+      <div class="sd-asof">بانتظار أول ملخص إغلاق</div>
+      {% endif %}
 
-      {# SPY #}
-      {% set spy = us_idx.get('SPY') %}
-      <a class="market-cell" href="{{ url_for('product_page', key='tradepulse_us') }}">
-        <div class="mc-flag">🇺🇸 <span class="mc-sym">SPY</span></div>
-        {% if spy and spy.price %}
-        <div class="mc-price">{{ '{:,.2f}'.format(spy.price) }}</div>
-        <div class="mc-chg {{ 'up' if (spy.chg or 0) >= 0 else 'dn' }}">{{ '▲' if (spy.chg or 0) >= 0 else '▼' }} {{ '{:+.2f}'.format(spy.chg or 0) }}%</div>
-        {% if not spy.live %}<div class="mc-asof">at close{% if spy.asof %} · {{ spy.asof }}{% endif %}</div>{% endif %}
-        {% else %}
-        <div class="mc-price">—</div>
-        <div class="mc-chg">awaiting first feed</div>
-        {% endif %}
-      </a>
-
-      {# QQQ #}
-      {% set qqq = us_idx.get('QQQ') %}
-      <a class="market-cell" href="{{ url_for('product_page', key='tradepulse_us') }}">
-        <div class="mc-flag">🇺🇸 <span class="mc-sym">QQQ</span></div>
-        {% if qqq and qqq.price %}
-        <div class="mc-price">{{ '{:,.2f}'.format(qqq.price) }}</div>
-        <div class="mc-chg {{ 'up' if (qqq.chg or 0) >= 0 else 'dn' }}">{{ '▲' if (qqq.chg or 0) >= 0 else '▼' }} {{ '{:+.2f}'.format(qqq.chg or 0) }}%</div>
-        {% if not qqq.live %}<div class="mc-asof">at close{% if qqq.asof %} · {{ qqq.asof }}{% endif %}</div>{% endif %}
-        {% else %}
-        <div class="mc-price">—</div>
-        <div class="mc-chg">awaiting first feed</div>
-        {% endif %}
-      </a>
-
-      {# IWM #}
-      {% set iwm = us_idx.get('IWM') %}
-      <a class="market-cell" href="{{ url_for('product_page', key='tradepulse_us') }}">
-        <div class="mc-flag">🇺🇸 <span class="mc-sym">IWM</span></div>
-        {% if iwm and iwm.price %}
-        <div class="mc-price">{{ '{:,.2f}'.format(iwm.price) }}</div>
-        <div class="mc-chg {{ 'up' if (iwm.chg or 0) >= 0 else 'dn' }}">{{ '▲' if (iwm.chg or 0) >= 0 else '▼' }} {{ '{:+.2f}'.format(iwm.chg or 0) }}%</div>
-        {% if not iwm.live %}<div class="mc-asof">at close{% if iwm.asof %} · {{ iwm.asof }}{% endif %}</div>{% endif %}
-        {% else %}
-        <div class="mc-price">—</div>
-        <div class="mc-chg">awaiting first feed</div>
-        {% endif %}
-      </a>
-    </div>
-
-    <div class="markets-foot">
-      <span>TASI = post-close · US = updated every 30s when market open</span>
+      {# US index strip — live / last-close / awaiting states #}
+      <div class="sd-usrow" dir="ltr">
+        {% for sym in ['SPY','QQQ','IWM'] %}
+        {% set q = us_idx.get(sym) %}
+        <a class="uscell" href="{{ url_for('product_page', key='tradepulse_us') }}">
+          <span class="sym">🇺🇸 {{ sym }}</span>
+          {% if q and q.price %}
+          <span class="px">{{ '{:,.2f}'.format(q.price) }}</span>
+          <span class="ch {{ 'up' if (q.chg or 0) >= 0 else 'dn' }}">{{ '▲' if (q.chg or 0) >= 0 else '▼' }} {{ '{:+.2f}'.format(q.chg or 0) }}%</span>
+          {% if not q.live %}<span class="as">at close{% if q.asof %} · {{ q.asof }}{% endif %}</span>{% endif %}
+          {% else %}
+          <span class="px">—</span>
+          <span class="as">awaiting first feed</span>
+          {% endif %}
+        </a>
+        {% endfor %}
+      </div>
+      <div class="sd-foot">تاسي = بعد الإغلاق · الأسواق الأمريكية تُحدَّث كل 30 ثانية أثناء التداول</div>
     </div>
   </div>
 </section>
 
 <script>
-// Tiny clock in the hero viz title bar
+// Tiny clock in the woven frame header
 (function(){
   function tick(){
     var el = document.getElementById('hv-clock');
@@ -120,52 +98,60 @@
 
 
 {# ── PRODUCTS ──────────────────────────────────────────────────── #}
-<section class="sec">
-  <div class="sec-head">
-    <h2>What's inside <span class="ar" dir="rtl" lang="ar">ماذا تجد بالداخل</span></h2>
+<section class="sd-sec" dir="rtl" lang="ar">
+  <div class="sd-sec-head">
+    <h2>ماذا تجد بالداخل</h2>
+    <span class="en" dir="ltr" lang="en">What's inside</span>
   </div>
-  <div class="tiles-v2">
+  <span class="sd-dots" aria-hidden="true">◆ ◇ ◆ ◇ ◆ ◇ ◆ ◇ ◆</span>
+  <div class="sd-panels">
     {# Featured: ChartEdge #}
-    <a class="tile-v2 featured" href="{{ url_for('product_page', key='chartedge') }}">
-      <span class="tile-v2-tag">⭐ Flagship · for serious traders</span>
-      <h3 class="tile-v2-title">ChartEdge</h3>
-      <div class="tile-v2-title-ar" dir="rtl" lang="ar">شارت إدج</div>
-      <p class="tile-v2-desc">Find stage-2 breakouts <b>before</b> they happen. Minervini SEPA model scored across {{ scan.total if scan else 269 }} SA stocks, refreshed daily.</p>
-      <p class="tile-v2-desc-ar" dir="rtl" lang="ar">اكتشف أسهم المرحلة الثانية قبل اختراقها — نموذج SEPA الكامل لـ {{ scan.total if scan else 269 }} سهماً سعودياً</p>
-      <div class="tile-v2-meta">
-        <div><span class="n">{{ scan.stage2 if scan else 36 }}</span><span class="l">STAGE 2 NOW</span></div>
-        <div><span class="n">{{ scan.score10 if scan else 16 }}</span><span class="l">SCORE 10/10</span></div>
-        <div><span class="n">{{ scan.potential if scan else 21 }}</span><span class="l">POTENTIAL</span></div>
+    <a class="sd-panel flag" href="{{ url_for('product_page', key='chartedge') }}">
+      <div class="sd-weave"></div>
+      <div class="inner">
+        <span class="tag">◆ المنتج الرئيسي</span>
+        <h3>شارت إدج</h3>
+        <div class="en-name" dir="ltr" lang="en">ChartEdge — SEPA scanner</div>
+        <p>اكتشف أسهم المرحلة الثانية قبل اختراقها — نموذج SEPA الكامل يقيّم {{ scan.total if scan else 269 }} سهماً سعودياً، يتجدد يومياً.</p>
+        <div class="meta">
+          <div><span class="n">{{ scan.stage2 if scan else 36 }}</span><span class="l">مرحلة ثانية</span></div>
+          <div><span class="n">{{ scan.score10 if scan else 16 }}</span><span class="l">تقييم 10/10</span></div>
+          <div><span class="n">{{ scan.potential if scan else 21 }}</span><span class="l">واعدة</span></div>
+        </div>
+        <span class="go">امسح الأسهم ←</span>
       </div>
-      <span class="tile-v2-cta">Scan stocks →</span>
     </a>
 
     {# TradePulse TASI #}
-    <a class="tile-v2" href="{{ url_for('product_page', key='tradepulse_sar') }}">
-      <span class="tile-v2-tag">🇸🇦 Real-time</span>
-      <h3 class="tile-v2-title">TradePulse TASI</h3>
-      <div class="tile-v2-title-ar" dir="rtl" lang="ar">السوق السعودي</div>
-      <p class="tile-v2-desc">Live TASI watchlist · sector rotation alerts · breakout signals · A/D breadth.</p>
-      <p class="tile-v2-desc-ar" dir="rtl" lang="ar">قائمة مراقبة حية، إشارات اختراق، تنبيهات دوران القطاعات</p>
-      <div class="tile-v2-meta">
-        <div><span class="n">{{ scan.total if scan else 269 }}</span><span class="l">TICKERS</span></div>
-        <div><span class="n">22</span><span class="l">SECTORS</span></div>
+    <a class="sd-panel" href="{{ url_for('product_page', key='tradepulse_sar') }}">
+      <div class="sd-weave"></div>
+      <div class="inner">
+        <span class="tag">🇸🇦 مباشر</span>
+        <h3>نبض السوق السعودي</h3>
+        <div class="en-name" dir="ltr" lang="en">TradePulse TASI</div>
+        <p>قائمة مراقبة حية، إشارات اختراق، تنبيهات دوران القطاعات، مؤشر الاتساع.</p>
+        <div class="meta">
+          <div><span class="n">{{ scan.total if scan else 269 }}</span><span class="l">سهماً</span></div>
+          <div><span class="n">22</span><span class="l">قطاعاً</span></div>
+        </div>
+        <span class="go">افتح اللوحة ←</span>
       </div>
-      <span class="tile-v2-cta">Open dashboard →</span>
     </a>
 
     {# TradePulse US #}
-    <a class="tile-v2" href="{{ url_for('product_page', key='tradepulse_us') }}">
-      <span class="tile-v2-tag">🇺🇸 Polygon.io powered</span>
-      <h3 class="tile-v2-title">TradePulse US</h3>
-      <div class="tile-v2-title-ar" dir="rtl" lang="ar">السوق الأمريكي</div>
-      <p class="tile-v2-desc">Live NYSE/NASDAQ scanner with SEPA scoring, sector heatmap, and SPY/QQQ/IWM macro bar.</p>
-      <p class="tile-v2-desc-ar" dir="rtl" lang="ar">ماسح حي لأسواق نيويورك وناسداك، خريطة قطاعات، شريط مؤشرات كلي</p>
-      <div class="tile-v2-meta">
-        <div><span class="n">{{ live.us_rows if live.us_rows else 556 }}</span><span class="l">TICKERS</span></div>
-        <div><span class="n">11</span><span class="l">SECTORS</span></div>
+    <a class="sd-panel" href="{{ url_for('product_page', key='tradepulse_us') }}">
+      <div class="sd-weave"></div>
+      <div class="inner">
+        <span class="tag">🇺🇸 مباشر</span>
+        <h3>نبض السوق الأمريكي</h3>
+        <div class="en-name" dir="ltr" lang="en">TradePulse US</div>
+        <p>ماسح حي لأسواق نيويورك وناسداك مع تقييم SEPA وخريطة القطاعات الحرارية.</p>
+        <div class="meta">
+          <div><span class="n">{{ live.us_rows if live.us_rows else 556 }}</span><span class="l">سهماً</span></div>
+          <div><span class="n">11</span><span class="l">قطاعاً</span></div>
+        </div>
+        <span class="go">افتح اللوحة ←</span>
       </div>
-      <span class="tile-v2-cta">Open dashboard →</span>
     </a>
   </div>
 </section>
@@ -173,45 +159,23 @@
 
 {# ── TODAY'S MARKET ───────────────────────────────────────────── #}
 {% if b %}
-<section class="sec">
-  <div class="sec-head">
-    <h2>Today's market <span class="ar" dir="rtl" lang="ar">السوق اليوم</span></h2>
-    <a href="{{ url_for('brief_archived', date_str=b.date) }}">Read full brief →</a>
+<section class="sd-sec" dir="rtl" lang="ar">
+  <div class="sd-sec-head">
+    <h2>السوق اليوم</h2>
+    <a href="{{ url_for('brief_archived', date_str=b.date) }}">اقرأ الملخص الكامل ←</a>
   </div>
-  <div class="market-card">
-    <div class="mc-left">
-      <div class="lbl">📅 {{ b.date }} · CLOSING BRIEF</div>
-      <div class="brief-summary">What moved the Saudi tape today.</div>
-      <div class="brief-summary-ar" dir="rtl" lang="ar">أبرز ما حرّك السوق السعودي اليوم</div>
-      <div class="brief-scan">
-        <div><span class="bn">{{ b.scan_total or 269 }}</span><span class="bl">stocks scored</span></div>
-        <div><span class="bn">{{ b.stage2 or 0 }}</span><span class="bl">Stage 2</span></div>
-        <div><span class="bn">{{ b.score10 or 0 }}</span><span class="bl">Score 10/10</span></div>
-      </div>
-      <div class="when">Auto-published at 15:30 AST · Sun–Thu</div>
+  <span class="sd-dots" aria-hidden="true">◆ ◇ ◆ ◇ ◆ ◇ ◆ ◇ ◆</span>
+  <div class="sd-majlis">
+    <div class="mj brief">
+      <div class="title">ملخص الإغلاق</div>
+      <div class="date" dir="ltr">{{ b.date }} · 15:30 AST</div>
+      <div class="s">أبرز ما حرّك السوق السعودي اليوم — يُنشر تلقائياً كل يوم تداول (الأحد–الخميس).</div>
+      <a href="{{ url_for('brief_archived', date_str=b.date) }}">اقرأ الملخص ←</a>
     </div>
-    <div class="mc-right">
-      <div class="mc-stat">
-        <div class="l">TOP GAINER</div>
-        <div class="v up">{{ b.top_gainer_ticker or '—' }}</div>
-        <div class="sub">{% if b.top_gainer_pct %}{{ '{:+.2f}'.format(b.top_gainer_pct) }}%{% endif %}</div>
-      </div>
-      <div class="mc-stat">
-        <div class="l">TOP LOSER</div>
-        <div class="v dn">{{ b.top_loser_ticker or '—' }}</div>
-        <div class="sub">{% if b.top_loser_pct %}{{ '{:+.2f}'.format(b.top_loser_pct) }}%{% endif %}</div>
-      </div>
-      <div class="mc-stat">
-        <div class="l">SECTOR HOT</div>
-        <div class="v">{{ b.sector_top_name or '—' }}</div>
-        <div class="sub">{% if b.sector_top_pct is not none %}{{ '{:+.2f}'.format(b.sector_top_pct) }}% · {{ b.sector_top_adv or 0 }} ▲ / {{ b.sector_top_dec or 0 }} ▼{% endif %}</div>
-      </div>
-      <div class="mc-stat">
-        <div class="l">BREADTH A/D</div>
-        <div class="v {{ 'up' if (b.ad_ratio or 0) >= 1 else 'dn' }}">{% if b.ad_ratio %}{{ '{:.2f}'.format(b.ad_ratio) }}{% else %}—{% endif %}</div>
-        <div class="sub">{{ b.advancers or 0 }} ▲ / {{ b.decliners or 0 }} ▼</div>
-      </div>
-    </div>
+    <div class="mj"><span class="k">الأعلى ربحاً</span><span class="v up">{{ b.top_gainer_ticker or '—' }}</span><span class="s">{% if b.top_gainer_pct %}{{ '{:+.2f}'.format(b.top_gainer_pct) }}%{% endif %}</span></div>
+    <div class="mj"><span class="k">الأكثر خسارة</span><span class="v dn">{{ b.top_loser_ticker or '—' }}</span><span class="s">{% if b.top_loser_pct %}{{ '{:+.2f}'.format(b.top_loser_pct) }}%{% endif %}</span></div>
+    <div class="mj"><span class="k">القطاع الأنشط</span><span class="v sm">{{ b.sector_top_name or '—' }}</span><span class="s">{% if b.sector_top_pct is not none %}{{ '{:+.2f}'.format(b.sector_top_pct) }}% · {{ b.sector_top_adv or 0 }}▲ / {{ b.sector_top_dec or 0 }}▼{% endif %}</span></div>
+    <div class="mj"><span class="k">الاتساع ▲/▼</span><span class="v {{ 'up' if (b.ad_ratio or 0) >= 1 else 'dn' }}">{% if b.ad_ratio %}{{ '{:.2f}'.format(b.ad_ratio) }}{% else %}—{% endif %}</span><span class="s">{{ b.advancers or 0 }} ▲ / {{ b.decliners or 0 }} ▼</span></div>
   </div>
 </section>
 {% endif %}
@@ -219,35 +183,32 @@
 
 {# ── LATEST RESEARCH ──────────────────────────────────────────── #}
 {% if latest_report %}
-<section class="sec">
-  <div class="sec-head">
-    <h2>Latest research <span class="ar" dir="rtl" lang="ar">أحدث التقارير</span></h2>
-    <a href="{{ url_for('reports_index') }}">All reports →</a>
+<section class="sd-sec" dir="rtl" lang="ar">
+  <div class="sd-sec-head">
+    <h2>أحدث التقارير</h2>
+    <a href="{{ url_for('reports_index') }}">كل التقارير ←</a>
   </div>
-  <a class="research-card" href="{{ url_for('report_page', slug=latest_report.slug) }}">
-    <div class="rc-main">
-      <div class="rc-title">{{ latest_report.title }}</div>
-      {% if latest_report.title_ar %}<div class="rc-title-ar" dir="rtl" lang="ar">{{ latest_report.title_ar }}</div>{% endif %}
-      {% if latest_report.tagline %}<div class="rc-tag">{{ latest_report.tagline }}</div>{% endif %}
+  <span class="sd-dots" aria-hidden="true">◆ ◇ ◆ ◇ ◆ ◇ ◆ ◇ ◆</span>
+  <a class="sd-research" href="{{ url_for('report_page', slug=latest_report.slug) }}">
+    <div>
+      <div class="t-ar">{{ latest_report.title_ar or latest_report.title }}</div>
+      <div class="t-en" dir="ltr" lang="en">{{ latest_report.title }}</div>
+      {% if latest_report.date %}<div class="date" dir="ltr">{{ latest_report.date }}</div>{% endif %}
     </div>
-    <div class="rc-meta">
-      {% if latest_report.date %}<span class="rc-date">{{ latest_report.date }}</span>{% endif %}
-      <span class="rc-open">Read →</span>
-    </div>
+    <span class="read">اقرأ التقرير ←</span>
   </a>
 </section>
 {% endif %}
 
 
 {# ── TELEGRAM CTA ─────────────────────────────────────────────── #}
-<section class="sec">
-  <div class="tg-cta">
-    <div class="tg-cta-text">
-      <h3>Get tomorrow's brief on Telegram 📢</h3>
-      <p>Closing summary + top setups + sector rotation alert — delivered every trading day at 15:30 AST.</p>
-      <p class="ar" dir="rtl" lang="ar">ملخص الإغلاق + أعلى الترشيحات + تنبيهات دوران القطاعات — يومياً عند 15:30</p>
+<section class="sd-sec" dir="rtl" lang="ar">
+  <div class="sd-tg">
+    <div>
+      <h3>ملخص الغد على تيليجرام 📢</h3>
+      <p>ملخص الإغلاق + أبرز الترشيحات + تنبيهات دوران القطاعات — كل يوم تداول عند 15:30.</p>
     </div>
-    <a href="https://t.me/+R_m5lVLFnBJhYWJk" target="_blank" rel="noopener" class="tg-btn">📱 Join @chartedgeai →</a>
+    <a href="https://t.me/+R_m5lVLFnBJhYWJk" target="_blank" rel="noopener" class="sd-btn gold">انضم إلى @chartedgeai</a>
   </div>
 </section>
 
