@@ -62,9 +62,10 @@
         {% if spy and spy.price %}
         <div class="mc-price">{{ '{:,.2f}'.format(spy.price) }}</div>
         <div class="mc-chg {{ 'up' if (spy.chg or 0) >= 0 else 'dn' }}">{{ '▲' if (spy.chg or 0) >= 0 else '▼' }} {{ '{:+.2f}'.format(spy.chg or 0) }}%</div>
+        {% if not spy.live %}<div class="mc-asof">at close{% if spy.asof %} · {{ spy.asof }}{% endif %}</div>{% endif %}
         {% else %}
         <div class="mc-price">—</div>
-        <div class="mc-chg">market closed</div>
+        <div class="mc-chg">awaiting first feed</div>
         {% endif %}
       </a>
 
@@ -75,9 +76,10 @@
         {% if qqq and qqq.price %}
         <div class="mc-price">{{ '{:,.2f}'.format(qqq.price) }}</div>
         <div class="mc-chg {{ 'up' if (qqq.chg or 0) >= 0 else 'dn' }}">{{ '▲' if (qqq.chg or 0) >= 0 else '▼' }} {{ '{:+.2f}'.format(qqq.chg or 0) }}%</div>
+        {% if not qqq.live %}<div class="mc-asof">at close{% if qqq.asof %} · {{ qqq.asof }}{% endif %}</div>{% endif %}
         {% else %}
         <div class="mc-price">—</div>
-        <div class="mc-chg">market closed</div>
+        <div class="mc-chg">awaiting first feed</div>
         {% endif %}
       </a>
 
@@ -88,9 +90,10 @@
         {% if iwm and iwm.price %}
         <div class="mc-price">{{ '{:,.2f}'.format(iwm.price) }}</div>
         <div class="mc-chg {{ 'up' if (iwm.chg or 0) >= 0 else 'dn' }}">{{ '▲' if (iwm.chg or 0) >= 0 else '▼' }} {{ '{:+.2f}'.format(iwm.chg or 0) }}%</div>
+        {% if not iwm.live %}<div class="mc-asof">at close{% if iwm.asof %} · {{ iwm.asof }}{% endif %}</div>{% endif %}
         {% else %}
         <div class="mc-price">—</div>
-        <div class="mc-chg">market closed</div>
+        <div class="mc-chg">awaiting first feed</div>
         {% endif %}
       </a>
     </div>

@@ -158,6 +158,38 @@ SA_PUSH_TOKEN = _secret("SA_PUSH_TOKEN")
 CRON_TOKEN    = _secret("CRON_TOKEN")
 # in-memory live US feed: bytes of xlsx + last update timestamp
 _US_STATE = {"xlsx": None, "updated": None, "rows": 0}
+
+# Last-known US index prices (SPY/QQQ/IWM/DIA) so the homepage never shows
+# blank "market closed" cells during Saudi browsing hours. Disk copy is
+# refreshed on every push; the GitHub copy at most once per UTC day (Render's
+# free-tier disk is wiped on every spin-up, so disk alone won't survive).
+def _save_us_indices_cache(idx):
+    import json as _json
+    try:
+        (DATA_DIR / "us_last_indices.json").write_text(_json.dumps(
+            {"updated": datetime.now().isoformat(timespec="seconds"),
+             "indices": idx}, indent=2))
+    except Exception:
+        pass
+
+
+def _load_us_indices_cache():
+    """Disk copy first (fresh while the instance lives), then the GitHub
+    copy (survives restarts). Returns {} when neither exists yet."""
+    import json as _json
+    p = DATA_DIR / "us_last_indices.json"
+    try:
+        if p.exists():
+            return _json.loads(p.read_text())
+    except Exception:
+        pass
+    try:
+        raw = _github_file_bytes("data/us_last_indices.json")
+        if raw:
+            return _json.loads(raw.decode("utf-8"))
+    except Exception:
+        pass
+    return {}
 # in-memory live SA feed: raw xlsx bytes pushed by sar_feed.py from the user's PC
 _SA_STATE = {"xlsx": None, "updated": None, "size": 0}
 
@@ -393,7 +425,28 @@ def _homepage_live_stats():
 
     out["us_rows"] = _US_STATE.get("rows", 0) or 0
     out["sa_have_data"] = bool(_SA_STATE.get("xlsx"))
-    out["us_indices"] = _US_STATE.get("indices") or {}
+
+    # US index cells: live values when the feed pushed within ~20 min,
+    # otherwise last-known prices (disk → GitHub cache) tagged with a date so
+    # the homepage never shows blank "—" cells outside US market hours.
+    live_idx = _US_STATE.get("indices") or {}
+    upd = _US_STATE.get("updated")
+    fresh = False
+    if live_idx and upd:
+        try:
+            fresh = (datetime.now() - datetime.fromisoformat(upd)).total_seconds() < 1200
+        except Exception:
+            fresh = False
+    if live_idx and fresh:
+        out["us_indices"] = {t: dict(v, live=True) for t, v in live_idx.items()}
+    elif live_idx:
+        out["us_indices"] = {t: dict(v, live=False, asof=(upd or "")[:10] or None)
+                             for t, v in live_idx.items()}
+    else:
+        cached = _load_us_indices_cache()
+        asof = (cached.get("updated") or "")[:10] or None
+        out["us_indices"] = {t: dict(v, live=False, asof=asof)
+                             for t, v in (cached.get("indices") or {}).items()}
     return out
 
 
@@ -1727,6 +1780,23 @@ def api_us_push():
                 "vol":   r.get("vol"),
             }
     _US_STATE["indices"] = idx
+    if idx:
+        _save_us_indices_cache(idx)
+        # Refresh the GitHub fallback copy at most once per UTC day so the
+        # homepage's last-close prices survive Render restarts.
+        today_utc = datetime.utcnow().strftime("%Y-%m-%d")
+        if _US_STATE.get("idx_gh_date") != today_utc:
+            _US_STATE["idx_gh_date"] = today_utc
+            try:
+                import json as _json
+                _commit_bytes_to_github(
+                    "data/us_last_indices.json",
+                    _json.dumps({"updated": _US_STATE["updated"],
+                                 "indices": idx}, indent=2).encode("utf-8"),
+                    f"US index price cache {today_utc}",
+                )
+            except Exception:
+                pass
     return {"ok": True, "rows": len(rows), "xlsx_bytes": len(xlsx_bytes),
             "updated": _US_STATE["updated"]}
 

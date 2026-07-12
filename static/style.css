@@ -502,7 +502,7 @@ body {
 /* Bilingual two-line nav items (en on top, ar below) */
 .nav-bi { display: inline-flex; flex-direction: column; align-items: center; line-height: 1.15; }
 .nav-bi .en { font-size: 14px; }
-.nav-bi .ar { font-size: 11px; color: var(--muted); opacity: 0.85; margin-top: 2px; font-family: "Tahoma","Segoe UI Arabic",sans-serif; }
+.nav-bi .ar { font-size: 12px; color: var(--muted); opacity: 0.85; margin-top: 2px; font-family: "Tahoma","Segoe UI Arabic",sans-serif; }
 .nav-bi:hover .ar { color: var(--text); opacity: 1; }
 @media (max-width: 768px) {
   .nav-bi .ar { display: none; }  /* Mobile: hide AR sub-line to save horizontal space */
@@ -1316,7 +1316,7 @@ h1, h2, h3, .brand, .hero-v2 h1, .tile-v2-title, .sec-head h2,
 
 /* Topbar BETA chip (replaces the wide BETA banner) ─────────────── */
 .beta-chip {
-  font-size: 9px; font-weight: 700;
+  font-size: 10px; font-weight: 700;
   background: rgba(245,158,11,0.18); color: #f4d875;
   border: 1px solid rgba(245,158,11,0.4);
   padding: 1px 6px; border-radius: 4px;
@@ -1336,7 +1336,7 @@ h1, h2, h3, .brand, .hero-v2 h1, .tile-v2-title, .sec-head h2,
   padding: 4px 9px;
   border: 1px solid var(--border);
   border-radius: 999px;
-  font-size: 10px; font-weight: 700; letter-spacing: 0.6px;
+  font-size: 11px; font-weight: 700; letter-spacing: 0.6px;
   background: rgba(255,255,255,0.04);
   color: var(--muted);
   cursor: default; user-select: none;
@@ -1367,7 +1367,7 @@ h1, h2, h3, .brand, .hero-v2 h1, .tile-v2-title, .sec-head h2,
   .market-pill .dot { animation: none !important; }
 }
 @media (max-width: 720px) {
-  .market-pill { padding: 3px 7px; font-size: 9px; }
+  .market-pill { padding: 4px 8px; font-size: 10px; }
   .market-pill .flag { display: none; }
 }
 
@@ -1435,7 +1435,7 @@ h1, h2, h3, .brand, .hero-v2 h1, .tile-v2-title, .sec-head h2,
 .hero-stats { display: flex; gap: 24px; margin-top: 36px; flex-wrap: wrap; }
 .hero-stats > div { display: flex; flex-direction: column; }
 .hero-stats .n { font-weight: 800; font-size: 28px; color: var(--text); line-height: 1; }
-.hero-stats .l { font-size: 10px; color: var(--muted); margin-top: 6px; text-transform: uppercase; }
+.hero-stats .l { font-size: 11px; color: var(--muted); margin-top: 6px; text-transform: uppercase; }
 
 /* Right card — Live TASI mini ─────────────────────────── */
 .hero-viz {
@@ -1452,7 +1452,7 @@ h1, h2, h3, .brand, .hero-v2 h1, .tile-v2-title, .sec-head h2,
   pointer-events: none;
 }
 .hv-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; position: relative; }
-.hv-title { font-size: 10px; color: var(--muted); letter-spacing: 1.5px; text-transform: uppercase; }
+.hv-title { font-size: 11px; color: var(--muted); letter-spacing: 1.5px; text-transform: uppercase; }
 .hv-tasi-big {
   font-weight: 800; font-size: 44px; letter-spacing: -1px; line-height: 1;
   font-variant-numeric: tabular-nums; color: var(--text);
@@ -1466,7 +1466,7 @@ h1, h2, h3, .brand, .hero-v2 h1, .tile-v2-title, .sec-head h2,
 .hv-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-top: 8px; }
 .hv-cell { background: rgba(255,255,255,0.025); border: 1px solid var(--border);
            border-radius: 8px; padding: 10px 12px; }
-.hv-cell .lbl { font-size: 9px; color: var(--muted); letter-spacing: 1px; }
+.hv-cell .lbl { font-size: 11px; color: var(--muted); letter-spacing: 1px; }
 .hv-cell .val { font-weight: 600; font-size: 12px; color: var(--text); margin-top: 2px; }
 .hv-cell.up .val { color: #22c55e; }
 .hv-cell.dn .val { color: var(--err); }
@@ -1505,7 +1505,7 @@ h1, h2, h3, .brand, .hero-v2 h1, .tile-v2-title, .sec-head h2,
   pointer-events: none;
 }
 .tile-v2-tag {
-  font-size: 9px; letter-spacing: 1.5px; text-transform: uppercase;
+  font-size: 11px; letter-spacing: 1.5px; text-transform: uppercase;
   color: var(--muted); margin-bottom: 10px;
 }
 .tile-v2.featured .tile-v2-tag { color: #f4d875; }
@@ -1518,7 +1518,7 @@ h1, h2, h3, .brand, .hero-v2 h1, .tile-v2-title, .sec-head h2,
 .tile-v2-meta div { display: flex; flex-direction: column; }
 .tile-v2-meta .n { font-weight: 700; font-size: 18px; color: var(--text); }
 .tile-v2.featured .tile-v2-meta .n { color: #f4d875; }
-.tile-v2-meta .l { font-size: 9px; color: var(--muted); letter-spacing: 0.5px; margin-top: 2px; }
+.tile-v2-meta .l { font-size: 11px; color: var(--muted); letter-spacing: 0.5px; margin-top: 2px; }
 .tile-v2-cta { margin-top: 14px; color: var(--accent); font-weight: 600; font-size: 13px;
                display: inline-flex; align-items: center; gap: 4px; }
 .tile-v2:hover .tile-v2-cta { color: #7cc4ff; }
@@ -1537,7 +1537,7 @@ h1, h2, h3, .brand, .hero-v2 h1, .tile-v2-title, .sec-head h2,
   display: grid; grid-template-columns: 0.9fr 1.1fr; gap: 30px;
   align-items: center;
 }
-.mc-left .lbl { font-size: 10px; color: var(--muted); letter-spacing: 1.5px; text-transform: uppercase; }
+.mc-left .lbl { font-size: 11px; color: var(--muted); letter-spacing: 1.5px; text-transform: uppercase; }
 .mc-left .price {
   font-weight: 800; font-size: 56px; letter-spacing: -1.5px; line-height: 1;
   color: var(--text); font-variant-numeric: tabular-nums; margin-top: 4px;
@@ -1549,11 +1549,11 @@ h1, h2, h3, .brand, .hero-v2 h1, .tile-v2-title, .sec-head h2,
 .mc-right { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
 .mc-stat { background: rgba(255,255,255,0.025); border: 1px solid var(--border);
            border-radius: 10px; padding: 14px 16px; }
-.mc-stat .l { font-size: 10px; color: var(--muted); letter-spacing: 0.8px; }
+.mc-stat .l { font-size: 11px; color: var(--muted); letter-spacing: 0.8px; }
 .mc-stat .v { font-weight: 800; font-size: 20px; margin-top: 4px; color: var(--text); }
 .mc-stat .v.up { color: #22c55e; }
 .mc-stat .v.dn { color: var(--err); }
-.mc-stat .sub { font-size: 10px; color: var(--muted); margin-top: 2px; }
+.mc-stat .sub { font-size: 11px; color: var(--muted); margin-top: 2px; }
 @media (max-width: 880px) {
   .market-card { grid-template-columns: 1fr; padding: 22px; gap: 20px; }
 }
@@ -1647,14 +1647,14 @@ h1, h2, h3, .brand, .hero-v2 h1, .tile-v2-title, .sec-head h2,
 .mc-chg.up { color: #22c55e; }
 .mc-chg.dn { color: var(--err); }
 .mc-asof {
-  font-size: 10px;
+  font-size: 11px;
   color: var(--muted);
   margin-top: 6px;
   opacity: 0.75;
 }
 .markets-foot {
   font-family: 'JetBrains Mono', monospace;
-  font-size: 9px;
+  font-size: 11px;
   color: var(--muted);
   letter-spacing: 0.5px;
   text-align: center;
@@ -1696,7 +1696,7 @@ h1, h2, h3, .brand, .hero-v2 h1, .tile-v2-title, .sec-head h2,
 }
 .brief-scan .bl {
   font-family: 'JetBrains Mono', monospace;
-  font-size: 9px;
+  font-size: 11px;
   color: var(--muted);
   letter-spacing: 0.8px;
   margin-top: 4px;
