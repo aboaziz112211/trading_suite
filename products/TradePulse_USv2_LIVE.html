@@ -1001,6 +1001,11 @@ body.dark-mode .tp-filter-bar .tp-fb-label{color:#fff;}
   <button data-tab="scout" onclick="showTpTab('scout')">🌱 Scout · الكشّاف<span class="tcount">stage-4 phase-C · المرحلة 4-C</span></button>
 </div>
 
+<!-- RS-ESTIMATED WARNING — shown whenever the RS fallback is active (USv2, 2026-07-13) -->
+<div id="rs-est-banner" style="display:none;background:#FDE7E7;border:2px solid #C62828;border-radius:10px;padding:10px 14px;margin:0 0 12px;font-size:12px;font-weight:700;color:#8E1B1B;line-height:1.55">
+  ⚠ <u>RS values are ESTIMATED</u> — the loaded ChartEdge export had a blank/zero RS column, so RS was ranked from 12-month % return. This over-states weak stocks in a down market. Re-load a CSV that contains real RS to correct. · <span dir="rtl">قيم RS تقديرية (مرتّبة من عائد 12 شهر) — أعد تحميل ملف يحتوي RS الحقيقي.</span>
+</div>
+
 <div class="tp-tab tp-tab-on" id="tab-pulse">
 <div class="tbar" style="grid-template-columns:1.3fr 1.3fr 1.3fr 1fr 1.2fr 1fr">
   <div class="tc main"><div class="tl">🕊️ SPY · S&amp;P 500</div><div class="tv tn" id="t-spy">—</div><div class="ts" id="t-spy-sub">Polygon offline · غير متصل</div></div>
@@ -1108,13 +1113,6 @@ body.dark-mode .tp-filter-bar .tp-fb-label{color:#fff;}
 </div>
 </div><!-- /.agg-focus-row -->
 
-<!-- TOP 3 -->
-<div class="top3" id="top3" style="display:none">
-  <div id="pick0" class="pick"></div>
-  <div id="pick1" class="pick"></div>
-  <div id="pick2" class="pick"></div>
-</div>
-
 <!-- AGENT BAR -->
 </div> <!-- end tab-setups -->
 
@@ -1171,6 +1169,12 @@ body.dark-mode .tp-filter-bar .tp-fb-label{color:#fff;}
 </div>
 
 <div class="tp-tab" id="tab-watchlist">
+<!-- TOP 3 (moved above Breakout Watch, USv2) -->
+<div class="top3" id="top3" style="display:none">
+  <div id="pick0" class="pick"></div>
+  <div id="pick1" class="pick"></div>
+  <div id="pick2" class="pick"></div>
+</div>
 <div class="bw-wrap" id="bw-wrap">
   <div class="bw-hdr">
     <span class="bw-title" onclick="togBreakoutWatch()" title="Click to collapse/expand · انقر للطيّ/الإظهار">🎯 Breakout Watch · مراقبة الاختراقات <span id="bw-chevron">▲</span></span>
@@ -1282,7 +1286,7 @@ body.dark-mode .tp-filter-bar .tp-fb-label{color:#fff;}
 </div>
 
 <div class="footer">
-  <span>🇺🇸 TradePulse USv2.7 · NYSE/NASDAQ · 10-SEPA · VCP Pivot · ⚡ Aggressive + 👀 Near-Miss + ⭐ Focus List + 🌅 Fresh Today · ChartEdge + Polygon.io Live</span>
+  <span>🇺🇸 TradePulse USv2.8 · NYSE/NASDAQ · 10-SEPA · VCP Pivot · ⚡ Aggressive + 👀 Near-Miss + ⭐ Focus List + 🌅 Fresh Today · ChartEdge + Polygon.io Live</span>
   <span class="fl" id="ft">—</span>
   <span id="tp-ver" style="color:#bbb;font-size:9px"></span>
 </div>
@@ -1304,7 +1308,7 @@ body.dark-mode .tp-filter-bar .tp-fb-label{color:#fff;}
 // ══════════════════════════════════════════════
 // VERSION — used to verify which build is running
 // ══════════════════════════════════════════════
-const TP_VERSION = 'USv2.7-2026-07-01';
+const TP_VERSION = 'USv2.8-2026-07-13';
 console.log('%c[TradePulse] ' + TP_VERSION + ' loaded', 'color:#3B6D11;font-weight:bold;font-size:13px');
 
 // ══════════════════════════════════════════════
@@ -1469,6 +1473,9 @@ function playBreakoutPing() {
   try {
     if (!_breakoutAudioCtx) _breakoutAudioCtx = new (window.AudioContext || window.webkitAudioContext)();
     const ctx = _breakoutAudioCtx;
+    // Autoplay policy: a context born outside a user gesture starts suspended,
+    // so a ping fired from a data callback is silent. Resume before scheduling.
+    if (ctx.state === 'suspended') { ctx.resume(); }
     // Loud 3-note ascending fanfare: E5→A5→E6, sine+triangle mix, 0.6 gain
     const now = ctx.currentTime;
     [{f:659,t:0},{f:880,t:0.22},{f:1318,t:0.44}].forEach(note => {
@@ -1545,6 +1552,18 @@ function toggleBreakoutSound() {
   if (btn) btn.textContent = BREAKOUT_SOUND_ON ? '🔔' : '🔕';
   if (BREAKOUT_SOUND_ON) playBreakoutPing();
 }
+// Autoplay unlock: create + resume the shared AudioContext on the first real
+// user gesture so later breakout pings (fired from data callbacks) can play.
+(function brkAudioUnlock(){
+  function unlock(){
+    try {
+      if (!_breakoutAudioCtx) _breakoutAudioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      if (_breakoutAudioCtx.state === 'suspended') _breakoutAudioCtx.resume();
+    } catch(e) {}
+    ['pointerdown','keydown','touchstart'].forEach(function(ev){ window.removeEventListener(ev, unlock, true); });
+  }
+  ['pointerdown','keydown','touchstart'].forEach(function(ev){ window.addEventListener(ev, unlock, true); });
+})();
 // ── Auto-refresh state ──
 let bbgFileHandle = null;   // File System Access API handle
 let bbgRefreshId  = null;   // setInterval ID
@@ -2450,6 +2469,16 @@ function parseChartEdge(text, filename) {
     console.warn('[TradePulse] ⚠ RS column was all zeros — auto-computed RS from 12m% percentile rank');
   }
 
+  // ── Surface the RS fallback loudly (2026-07-13) — estimated RS used to masquerade as real ──
+  window.__rsEstimated = rsFallbackUsed;
+  try {
+    const _rsb = document.getElementById('rs-est-banner');
+    if (_rsb) _rsb.style.display = rsFallbackUsed ? 'block' : 'none';
+    if (rsFallbackUsed && typeof toast === 'function') {
+      toast('⚠ RS is ESTIMATED', 'ChartEdge export had no RS column — RS was ranked from 12-month %. Reload a CSV with real RS.');
+    }
+  } catch(e) {}
+
   // ── Diagnostic summary ──
   const totalRows = lines.length - 1;
   const s2All = stocks.filter(s=>s.stage==='stage2');
@@ -2466,6 +2495,7 @@ function parseChartEdge(text, filename) {
   const diagEl = document.getElementById('parse-diag');
   if (diagEl) {
     const issues = [];
+    if (rsFallbackUsed) issues.push('⚠ RS ESTIMATED from 12m% rank — ChartEdge export had a blank/zero RS column (real RS missing). Weak stocks look strong. Reload a CSV with RS values.');
     if (stocks.length < totalRows * 0.5) issues.push('⚠ Only ' + stocks.length + '/' + totalRows + ' rows parsed — check file format');
     if (skipReasons.colShift > 0) issues.push('⚠ ' + skipReasons.colShift + ' rows had wrong column count');
     if (skipReasons.error > 0) issues.push('⚠ ' + skipReasons.error + ' rows had JS errors during parse');

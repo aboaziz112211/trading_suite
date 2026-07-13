@@ -965,7 +965,7 @@ document.addEventListener('drop',      function(e){
 <!-- HEADER -->
 <div style="background:#1B4D0F;color:#fff;padding:8px 18px;border-radius:10px;margin-bottom:12px;display:flex;align-items:center;justify-content:space-between;font-size:13px;font-weight:700;letter-spacing:.3px;">
   <span>🇸🇦 &nbsp;SAUDI MARKET &nbsp;·&nbsp; TASI &nbsp;·&nbsp; SAR &nbsp;·&nbsp; Sun–Thu 10:00–15:30 AST</span>
-  <span style="font-size:11px;font-weight:400;opacity:.85">Data: Live XLSX Feed &nbsp;|&nbsp; SARv2.0 · Today</span>
+  <span style="font-size:11px;font-weight:400;opacity:.85">Data: Live XLSX Feed &nbsp;|&nbsp; SARv2.1 · Today</span>
 </div>
 <div class="hdr">
   <div>
@@ -1106,6 +1106,11 @@ document.addEventListener('drop',      function(e){
   <button data-tab="setups" onclick="showTpTab('setups')">🎯 Setups · الإعدادات<span class="tcount">agg · focus · top 3 · هجومي · مفضّل · أفضل 3</span></button>
   <button data-tab="movers" onclick="showTpTab('movers')">📈 Movers · المحرّكون<span class="tcount">agents · leaderboard · الوكلاء · المتصدّرون</span></button>
   <button data-tab="watchlist" onclick="showTpTab('watchlist')">📋 Watchlist · قائمة المراقبة<span class="tcount">scan · breakouts · الفحص · الاختراقات</span></button>
+</div>
+
+<!-- RS-ESTIMATED WARNING — shown whenever the RS fallback is active (SARv2, 2026-07-13) -->
+<div id="rs-est-banner" style="display:none;background:#FDE7E7;border:2px solid #C62828;border-radius:10px;padding:10px 14px;margin:0 0 12px;font-size:12px;font-weight:700;color:#8E1B1B;line-height:1.55">
+  ⚠ <u>RS values are ESTIMATED</u> — the loaded ChartEdge export had a blank/zero RS column, so RS was ranked from 12-month % return. This over-states weak stocks in a down market. Re-load a CSV that contains real RS to correct. · <span dir="rtl">قيم RS تقديرية (مرتّبة من عائد 12 شهر) — أعد تحميل ملف يحتوي RS الحقيقي.</span>
 </div>
 
 <!-- ═══════════════ TODAY · THE VERDICT (SARv2.0) ═══════════════ -->
@@ -1264,13 +1269,6 @@ document.addEventListener('drop',      function(e){
 </div>
 </div><!-- /.agg-focus-row -->
 
-<!-- TOP 3 -->
-<div class="top3" id="top3" style="display:none">
-  <div id="pick0" class="pick"></div>
-  <div id="pick1" class="pick"></div>
-  <div id="pick2" class="pick"></div>
-</div>
-
 <!-- AGENT BAR -->
 </div> <!-- end tab-setups -->
 
@@ -1302,6 +1300,12 @@ document.addEventListener('drop',      function(e){
 </div> <!-- end tab-movers -->
 
 <div class="tp-tab" id="tab-watchlist">
+<!-- TOP 3 (moved above Breakout Watch, SARv2) -->
+<div class="top3" id="top3" style="display:none">
+  <div id="pick0" class="pick"></div>
+  <div id="pick1" class="pick"></div>
+  <div id="pick2" class="pick"></div>
+</div>
 <div class="bw-wrap" id="bw-wrap">
   <div class="bw-hdr">
     <span class="bw-title">🎯 Breakout Watch — Momentum Stocks Near Pivot · مراقبة الاختراقات — أسهم زخم قرب الاختراق</span>
@@ -1416,7 +1420,7 @@ document.addEventListener('drop',      function(e){
 // ══════════════════════════════════════════════
 // VERSION — used to verify which build is running
 // ══════════════════════════════════════════════
-const TP_VERSION = 'SARv2.0-2026-07-01';// ── TASI Regime Gate (Scout discipline control) ──
+const TP_VERSION = 'SARv2.1-2026-07-13';// ── TASI Regime Gate (Scout discipline control) ──
 // Manually-set Wyckoff stage classification of TASI itself.
 // Stage 1 = Accumulation, Stage 2 = Markup, Stage 3 = Distribution, Stage 4 = Markdown
 // Stage 4 = Scout in observation mode only; warning banner shown, no new entries.
@@ -1617,6 +1621,9 @@ function playBreakoutSound() {
   try {
     if (!tpAudioCtx) tpAudioCtx = new (window.AudioContext || window.webkitAudioContext)();
     const ctx = tpAudioCtx;
+    // Autoplay policy: a context born outside a user gesture starts suspended,
+    // so a chime fired from a data callback is silent. Resume before scheduling.
+    if (ctx.state === 'suspended') { ctx.resume(); }
     const now = ctx.currentTime;
     // Loud 3-note ascending fanfare: E5→A5→E6, sine+triangle mix, 0.6 gain
     [{f:659,t:0},{f:880,t:0.22},{f:1318,t:0.44}].forEach(note => {
@@ -1646,6 +1653,18 @@ function toggleBreakoutSound() {
   if (b) b.textContent = tpSoundMuted ? '🔇 Sound Off' : '🔔 Sound On';
   if (!tpSoundMuted) playBreakoutSound(); // preview when unmuting
 }
+// Autoplay unlock: create + resume the shared AudioContext on the first real
+// user gesture so later breakout chimes (fired from data callbacks) can play.
+(function tpAudioUnlock(){
+  function unlock(){
+    try {
+      if (!tpAudioCtx) tpAudioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      if (tpAudioCtx.state === 'suspended') tpAudioCtx.resume();
+    } catch(e) {}
+    ['pointerdown','keydown','touchstart'].forEach(function(ev){ window.removeEventListener(ev, unlock, true); });
+  }
+  ['pointerdown','keydown','touchstart'].forEach(function(ev){ window.addEventListener(ev, unlock, true); });
+})();
 // v6.2 — % Above 200MA day-over-day delta via localStorage
 // Stores per-day snapshot under keys like "tp-saudi-pct200-2026-04-23"
 // On each compute, finds most recent prior trading-day snapshot and returns diff
@@ -2665,6 +2684,16 @@ function parseChartEdge(text, filename) {
     console.warn('[TradePulse] ⚠ RS column was all zeros — auto-computed RS from 12m% percentile rank');
   }
 
+  // ── Surface the RS fallback loudly (2026-07-13) — estimated RS used to masquerade as real ──
+  window.__rsEstimated = rsFallbackUsed;
+  try {
+    const _rsb = document.getElementById('rs-est-banner');
+    if (_rsb) _rsb.style.display = rsFallbackUsed ? 'block' : 'none';
+    if (rsFallbackUsed && typeof toast === 'function') {
+      toast('⚠ RS is ESTIMATED', 'ChartEdge export had no RS column — RS was ranked from 12-month %. Reload a CSV with real RS.');
+    }
+  } catch(e) {}
+
   // ── Diagnostic summary ──
   const totalRows = lines.length - 1;
   const s2All = stocks.filter(s=>s.stage==='stage2');
@@ -2681,6 +2710,7 @@ function parseChartEdge(text, filename) {
   const diagEl = document.getElementById('parse-diag');
   if (diagEl) {
     const issues = [];
+    if (rsFallbackUsed) issues.push('⚠ RS ESTIMATED from 12m% rank — ChartEdge export had a blank/zero RS column (real RS missing). Weak stocks look strong. Reload a CSV with RS values.');
     if (stocks.length < totalRows * 0.5) issues.push('⚠ Only ' + stocks.length + '/' + totalRows + ' rows parsed — check file format');
     if (skipReasons.colShift > 0) issues.push('⚠ ' + skipReasons.colShift + ' rows had wrong column count');
     if (skipReasons.error > 0) issues.push('⚠ ' + skipReasons.error + ' rows had JS errors during parse');
