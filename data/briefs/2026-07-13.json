@@ -1,0 +1,340 @@
+{
+  "generated_at": "2026-07-13T12:20:26",
+  "index": {
+    "today": {
+      "date": "2026-07-13",
+      "open": 10818.98,
+      "high": 10870.45,
+      "low": 10794.95,
+      "close": 10801.71,
+      "volume": 199163482.0
+    },
+    "prev": {
+      "close": 10818.98
+    },
+    "source": "bloomberg_xlsx"
+  },
+  "stage2_count": 29,
+  "potential_count": 36,
+  "score10_count": 11,
+  "scan_total": 269,
+  "top_picks": [
+    {
+      "Ticker": "4190.SR",
+      "_vol_ratio": null,
+      "Company": "\u062c\u0631\u064a\u0631",
+      "Stage": "stage2",
+      "Score": "10",
+      "RS": "96",
+      "12m%": "39.0"
+    },
+    {
+      "Ticker": "1321.SR",
+      "_vol_ratio": null,
+      "Company": "\u0623\u0646\u0627\u0628\u064a\u0628 \u0627\u0644\u0634\u0631\u0642",
+      "Stage": "stage2",
+      "Score": "10",
+      "RS": "94",
+      "12m%": "95.9"
+    },
+    {
+      "Ticker": "1831.SR",
+      "_vol_ratio": null,
+      "Company": "\u0645\u0647\u0627\u0631\u0629",
+      "Stage": "stage2",
+      "Score": "10",
+      "RS": "92",
+      "12m%": "35.3"
+    },
+    {
+      "Ticker": "2285.SR",
+      "_vol_ratio": null,
+      "Company": "\u0627\u0644\u0645\u0637\u0627\u062d\u0646 \u0627\u0644\u0639\u0631\u0628\u064a\u0629",
+      "Stage": "stage2",
+      "Score": "10",
+      "RS": "89",
+      "12m%": "5.3"
+    },
+    {
+      "Ticker": "2223.SR",
+      "_vol_ratio": null,
+      "Company": "\u0644\u0648\u0628\u0631\u064a\u0641",
+      "Stage": "stage2",
+      "Score": "10",
+      "RS": "87",
+      "12m%": "28.7"
+    },
+    {
+      "Ticker": "2382.SR",
+      "_vol_ratio": null,
+      "Company": "\u0623\u062f\u064a\u0633",
+      "Stage": "stage2",
+      "Score": "10",
+      "RS": "83",
+      "12m%": "47.6"
+    },
+    {
+      "Ticker": "2200.SR",
+      "_vol_ratio": null,
+      "Company": "\u0623\u0646\u0627\u0628\u064a\u0628",
+      "Stage": "stage2",
+      "Score": "10",
+      "RS": "83",
+      "12m%": "14.2"
+    },
+    {
+      "Ticker": "3007.SR",
+      "_vol_ratio": null,
+      "Company": "\u0627\u0644\u0648\u0627\u062d\u0629",
+      "Stage": "stage2",
+      "Score": "10",
+      "RS": "82",
+      "12m%": "9.7"
+    },
+    {
+      "Ticker": "1050.SR",
+      "_vol_ratio": null,
+      "Company": "\u0628\u064a \u0627\u0633 \u0627\u0641",
+      "Stage": "stage2",
+      "Score": "10",
+      "RS": "82",
+      "12m%": "12.5"
+    },
+    {
+      "Ticker": "1304.SR",
+      "_vol_ratio": null,
+      "Company": "\u0627\u0644\u064a\u0645\u0627\u0645\u0629 \u0644\u0644\u062d\u062f\u064a\u062f",
+      "Stage": "stage2",
+      "Score": "10",
+      "RS": "79",
+      "12m%": "21.1"
+    }
+  ],
+  "top_gainers": [
+    {
+      "Ticker": "ALETIHAD",
+      "Last Price": 7.59,
+      "%1D": 10.0,
+      "%1M": 13.964,
+      "%YTD": -4.6482,
+      "Volume": 2606340.0,
+      "Avg Vol 30D": 369732.9,
+      "_vol_ratio": 7.049250959273572
+    },
+    {
+      "Ticker": "ENTAJ",
+      "Last Price": 26.34,
+      "%1D": 9.933199882507324,
+      "%1M": 3.8644,
+      "%YTD": -15.5769,
+      "Volume": 1234147.0,
+      "Avg Vol 30D": 134412,
+      "_vol_ratio": 9.181821563550873
+    },
+    {
+      "Ticker": "TANMIAH",
+      "Last Price": 61.15,
+      "%1D": 8.42199993133545,
+      "%1M": 2.4288,
+      "%YTD": 6.9991,
+      "Volume": 526017.0,
+      "Avg Vol 30D": 48292.8,
+      "_vol_ratio": 10.892244806679257
+    },
+    {
+      "Ticker": "MBCGROUP",
+      "Last Price": 22.06,
+      "%1D": 5.348599910736084,
+      "%1M": -7.7373,
+      "%YTD": -30.1899,
+      "Volume": 665885.0,
+      "Avg Vol 30D": 201188.9,
+      "_vol_ratio": null
+    },
+    {
+      "Ticker": "PETROR",
+      "Last Price": 14.5,
+      "%1D": 4.920400142669678,
+      "%1M": 4.0172,
+      "%YTD": 111.9883,
+      "Volume": 10482709.0,
+      "Avg Vol 30D": 5954618,
+      "_vol_ratio": null
+    }
+  ],
+  "top_losers": [
+    {
+      "Ticker": "CMCER",
+      "Last Price": 5.51,
+      "%1D": -4.506100177764893,
+      "%1M": -2.4779,
+      "%YTD": -9.82,
+      "Volume": 2748186.0,
+      "Avg Vol 30D": 1292770,
+      "_vol_ratio": null
+    },
+    {
+      "Ticker": "SIECO",
+      "Last Price": 2.34,
+      "%1D": -4.489799976348877,
+      "%1M": -0.4255,
+      "%YTD": 3.5398,
+      "Volume": 7810978.0,
+      "Avg Vol 30D": 3828938,
+      "_vol_ratio": null
+    },
+    {
+      "Ticker": "RASAN",
+      "Last Price": 135.0,
+      "%1D": -3.5713999271392822,
+      "%1M": -13.3504,
+      "%YTD": 16.4797,
+      "Volume": 1352334.0,
+      "Avg Vol 30D": 490266.3,
+      "_vol_ratio": null
+    },
+    {
+      "Ticker": "SVCP",
+      "Last Price": 17.06,
+      "%1D": -3.561300039291382,
+      "%1M": 4.0244,
+      "%YTD": -17.5845,
+      "Volume": 322553.0,
+      "Avg Vol 30D": 141713.5,
+      "_vol_ratio": null
+    },
+    {
+      "Ticker": "ENAYA",
+      "Last Price": 8.81,
+      "%1D": -3.3991000652313232,
+      "%1M": -24.5719,
+      "%YTD": 26.9452,
+      "Volume": 1407947.0,
+      "Avg Vol 30D": 545928.6,
+      "_vol_ratio": null
+    }
+  ],
+  "vol_leaders": [
+    {
+      "Ticker": "TANMIAH",
+      "Last Price": 61.15,
+      "%1D": 8.42199993133545,
+      "%1M": 2.4288,
+      "%YTD": 6.9991,
+      "Volume": 526017.0,
+      "Avg Vol 30D": 48292.8,
+      "_vol_ratio": 10.892244806679257
+    },
+    {
+      "Ticker": "ENTAJ",
+      "Last Price": 26.34,
+      "%1D": 9.933199882507324,
+      "%1M": 3.8644,
+      "%YTD": -15.5769,
+      "Volume": 1234147.0,
+      "Avg Vol 30D": 134412,
+      "_vol_ratio": 9.181821563550873
+    },
+    {
+      "Ticker": "SPPC",
+      "Last Price": 7.2,
+      "%1D": -0.1386999934911728,
+      "%1M": 1.4085,
+      "%YTD": -15.1943,
+      "Volume": 2580594.0,
+      "Avg Vol 30D": 290802.5,
+      "_vol_ratio": 8.874043379957188
+    },
+    {
+      "Ticker": "ALETIHAD",
+      "Last Price": 7.59,
+      "%1D": 10.0,
+      "%1M": 13.964,
+      "%YTD": -4.6482,
+      "Volume": 2606340.0,
+      "Avg Vol 30D": 369732.9,
+      "_vol_ratio": 7.049250959273572
+    },
+    {
+      "Ticker": "LIVA",
+      "Last Price": 15.15,
+      "%1D": 3.6960999965667725,
+      "%1M": 29.5979,
+      "%YTD": 38.9908,
+      "Volume": 1977904.0,
+      "Avg Vol 30D": 330958.8,
+      "_vol_ratio": 5.9762846614140495
+    }
+  ],
+  "sectors_leading": [
+    {
+      "name": "Media & Entertainment",
+      "count": 4,
+      "avg_pct": 2.221524976193905,
+      "advancers": 4,
+      "decliners": 0,
+      "top_ticker": "MBCGROUP",
+      "top_pct": 5.348599910736084
+    },
+    {
+      "name": "Food, Beverage & Tobacco",
+      "count": 22,
+      "avg_pct": 1.2967818093232133,
+      "advancers": 15,
+      "decliners": 6,
+      "top_ticker": "ENTAJ",
+      "top_pct": 9.933199882507324
+    },
+    {
+      "name": "Commercial & Professional Services",
+      "count": 7,
+      "avg_pct": 1.2413428574800491,
+      "advancers": 4,
+      "decliners": 3,
+      "top_ticker": "MAHARAH",
+      "top_pct": 4.474699974060059
+    }
+  ],
+  "sectors_lagging": [
+    {
+      "name": "Utilities",
+      "count": 6,
+      "avg_pct": -1.201833297808965,
+      "advancers": 0,
+      "decliners": 6,
+      "top_ticker": "NGIC",
+      "top_pct": -0.49959999322891235
+    },
+    {
+      "name": "Capital Goods",
+      "count": 18,
+      "avg_pct": -0.8719388859139549,
+      "advancers": 5,
+      "decliners": 13,
+      "top_ticker": "BAWAN",
+      "top_pct": 1.1035000085830688
+    },
+    {
+      "name": "Equity Real Estate Investment Trusts (REITs)",
+      "count": 19,
+      "avg_pct": -0.3938631529086514,
+      "advancers": 4,
+      "decliners": 12,
+      "top_ticker": "ALRAJHI",
+      "top_pct": 0.3659000098705292
+    }
+  ],
+  "breadth": {
+    "above_ma200": 89,
+    "total_ma200": 264,
+    "above_ma50": 127,
+    "total_ma50": 268,
+    "new_highs": 5,
+    "new_lows": 18,
+    "advancers": 129,
+    "decliners": 127,
+    "unchanged": 13,
+    "ad_ratio": 1.015748031496063,
+    "total_stocks": 269
+  }
+}
