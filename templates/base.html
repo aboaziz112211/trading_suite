@@ -94,6 +94,10 @@
         if (lastFocusBeforeOpen && lastFocusBeforeOpen.focus) {
           try { lastFocusBeforeOpen.focus(); } catch(e){}
         }
+        // Let the assistant's first-visit welcome fire now that the legal gate
+        // is cleared. Agreeing is a real click, so the welcome chime that
+        // follows won't be blocked by the browser autoplay policy.
+        document.dispatchEvent(new Event('ts:disclaimer-agreed'));
       }
 
       cb.addEventListener('change', function(){ btn.disabled = !cb.checked; });
@@ -344,6 +348,57 @@
     // Restore the visitor's last choice on every page.
     if (read('ceChatHidden') === '1') { launcher.hidden = true; restore.hidden = false; }
     else { showHint(); }
+
+    // First-visit welcome: auto-open the assistant, greet + offer help, chime.
+    // Fires once per browser (ce_welcomed), sequenced AFTER the disclaimer gate
+    // so it never opens behind the modal. A short two-note Web-Audio chime
+    // announces it; if the browser blocks autoplay it plays on first tap.
+    (function(){
+      if (read('ceChatHidden') === '1') return;   // launcher hidden — respect it
+      if (read('ce_welcomed') === '1') return;     // returning visitor — skip
+
+      function playChime(){
+        try {
+          var Ctx = window.AudioContext || window.webkitAudioContext; if (!Ctx) return;
+          var ctx = new Ctx();
+          function ring(){
+            [[660, 0, 0.18], [880, 0.15, 0.30]].forEach(function(n){
+              var o = ctx.createOscillator(), g = ctx.createGain();
+              o.type = 'sine'; o.frequency.value = n[0];
+              o.connect(g); g.connect(ctx.destination);
+              var t = ctx.currentTime + n[1];
+              g.gain.setValueAtTime(0.0001, t);
+              g.gain.exponentialRampToValueAtTime(0.14, t + 0.02);
+              g.gain.exponentialRampToValueAtTime(0.0001, t + n[2]);
+              o.start(t); o.stop(t + n[2] + 0.02);
+            });
+          }
+          if (ctx.state === 'suspended') {
+            ctx.resume().then(ring).catch(function(){
+              document.addEventListener('pointerdown', function(){ ctx.resume().then(ring); }, {once:true});
+            });
+          } else { ring(); }
+        } catch(e){}
+      }
+
+      function welcome(){
+        if (read('ce_welcomed') === '1' || launcher.hidden || !widget.hidden) return;
+        store('ce_welcomed', '1');
+        openW();                       // unhides widget + greets (welcome + offer to help)
+        bubble("🌟 كيف أقدر أساعدك اليوم؟\nHow can I help you today?", 'bot');
+        playChime();
+      }
+
+      // Sequence behind the disclaimer if it's about to show; else welcome soon.
+      var DKEY = 'ts_disclaimer_agreed_at', DTTL = 30 * 24 * 3600 * 1000;
+      var agreedAt = parseInt(read(DKEY) || '0', 10);
+      var disclaimerPending = !(agreedAt && (Date.now() - agreedAt) < DTTL);
+      if (disclaimerPending && document.getElementById('disclaimerModal')) {
+        document.addEventListener('ts:disclaimer-agreed', function(){ setTimeout(welcome, 500); }, {once:true});
+      } else {
+        setTimeout(welcome, 900);
+      }
+    })();
 
     fab.addEventListener('click', function(){ widget.hidden ? openW() : closeW(); });
     closeB.addEventListener('click', closeW);
