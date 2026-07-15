@@ -1420,7 +1420,7 @@ document.addEventListener('drop',      function(e){
 // ══════════════════════════════════════════════
 // VERSION — used to verify which build is running
 // ══════════════════════════════════════════════
-const TP_VERSION = 'SARv2.1-2026-07-13';// ── TASI Regime Gate (Scout discipline control) ──
+const TP_VERSION = 'SARv2.2-2026-07-15';// ── TASI Regime Gate (Scout discipline control) ──
 // Manually-set Wyckoff stage classification of TASI itself.
 // Stage 1 = Accumulation, Stage 2 = Markup, Stage 3 = Distribution, Stage 4 = Markdown
 // Stage 4 = Scout in observation mode only; warning banner shown, no new entries.
@@ -2783,6 +2783,7 @@ function parseChartEdge(text, filename) {
       s.scout     = calcScout(s);        // Stage 4 VCP Scout (obs-only while TASI in Stage 4)
       s.total     = calcBoss(s);
       s.action    = reAction(s);
+      applySuspensionGuard(s);           // SARv2.2 — halted/postponed stocks out of the rankings
       const piv = s.breakout_level;
       if (piv > 0) {
         s.livePctH = +((row.price-piv)/piv*100).toFixed(1);
@@ -2968,6 +2969,7 @@ function parseBloomberg(text, filename) {
     // v4 — derive current MA200 at row level so breadth works on Bloomberg-only drops
     if (!row.ma200 && row.ma200_22d != null && row.ma200ChgPct != null) {
       row.ma200 = +(row.ma200_22d * (1 + row.ma200ChgPct/100)).toFixed(3);
+      row.ma200IsRecon = true;  // 2026-07-13 — MA200 reconstructed from 22d-ago × %chg, not a live feed value
     }
     // v4 — MA50 proxy from 30D midpoint if MA50 col missing
     if (!row.ma50 && row.hi30d != null && row.lo30d != null) {
@@ -3071,6 +3073,7 @@ function parseBloomberg(text, filename) {
     // v4 — derive current MA200 from MA200_22d_ago × (1 + MA200 22d%chg/100)
     if (row.ma200_22d != null && row.ma200ChgPct != null && !s.ma200) {
       s.ma200 = +(row.ma200_22d * (1 + row.ma200ChgPct/100)).toFixed(3);
+      s.ma200IsRecon = true;  // 2026-07-13 — reconstructed, not a live MA200
     }
     // v4 — pipe Bloomberg MA50 if present (column W: MOV_AVG_50D)
     if (row.ma50 != null && !s.ma50) s.ma50 = row.ma50;
@@ -3105,6 +3108,7 @@ function parseBloomberg(text, filename) {
     s.scout     = calcScout(s);        // Stage 4 VCP Scout (obs-only while TASI in Stage 4)
     s.total     = calcBoss(s);
     s.action    = reAction(s);
+    applySuspensionGuard(s);           // SARv2.2 — halted/postponed stocks out of the rankings
 
     const piv = s.breakout_level;
     if (piv > 0) {
@@ -3192,6 +3196,49 @@ function updateTASI(t) {
 // ══════════════════════════════════════════════
 // TOP 3 PICKS
 // ══════════════════════════════════════════════
+// 2026-07-13 — estimated-levels marker. A stock's pivot/buy-zone/stop are fabricated
+// when its base_type is a 'fallback' (raw 52W high, no real Bloomberg base); its MA50 is
+// fabricated when ma50IsProxy (30D-midpoint). estBadge surfaces this so estimated numbers
+// never masquerade as real (same principle as the RS __rsEstimated banner).
+function estLevels(s){
+  const pivEst  = !!(s && s.base_type && /fallback/i.test(s.base_type));
+  const ma50Est = !!(s && s.ma50IsProxy);
+  return { pivEst, ma50Est, any: pivEst || ma50Est };
+}
+function estBadge(s){
+  const e = estLevels(s);
+  if(!e.any) return '';
+  const why = [e.pivEst?'pivot/buy-zone/stop are estimated (no real base — raw 52W high)':'', e.ma50Est?'50MA is a 30D-midpoint proxy':''].filter(Boolean).join(' · ');
+  const lbl = e.pivEst && e.ma50Est ? '⚠ EST LEVELS' : (e.pivEst ? '⚠ EST PIVOT' : '⚠ EST 50MA');
+  return `<span class="ptg" style="background:#FDE7E7;color:#8E1B1B;border:1px solid #C62828" title="${why} — treat with caution.">${lbl}</span>`;
+}
+// SARv2.2 (2026-07-15) — Suspension guard.
+// A halted/postponed stock (e.g. CHEMANOL, no trading activity since 2026-04-26) still
+// emits a carried-forward last price with ZERO volume. That frozen price otherwise scores
+// as a perfect low-volatility VCP setup and can rank #1. A 30-day average volume of exactly
+// 0 means the name has not traded a single share in a month → it is suspended, not a setup.
+// Force it out of every ranking (BUY/top-picks/breakout) without deleting the row, so the
+// user still sees it flagged rather than silently missing.
+function applySuspensionGuard(s){
+  try {
+    // parseBloomberg turns a 0.0 volume cell into null (parseFloat(x)||null), so a halted
+    // name shows avgVol30 = null, NOT 0. Treat null/0/negative as "no trades in 30 days".
+    // Verified against the live snapshot: 534/538 names have a positive 30d average; only the
+    // 4 genuinely non-trading names are falsy — so this flags suspensions without false positives.
+    var noAvg = (s.avgVol30 == null || s.avgVol30 <= 0);   // no 30-day trading history
+    var noVol = (s.liveVol   == null || s.liveVol   <= 0); // no shares in the live session
+    if (s.isLive && noAvg && noVol) {
+      s.suspended = true;
+      s.total = 0;
+      s.action = 'AVOID';
+      if (s.notes && !/suspend/i.test(s.notes)) s.notes = 'SUSPENDED · no activity — ' + s.notes;
+      else if (!s.notes) s.notes = 'SUSPENDED · no trading activity';
+    } else {
+      s.suspended = false;
+    }
+  } catch(e){ /* never let the guard break the apply loop */ }
+  return s;
+}
 function renderTop3() {
   if (!STOCKS.length) return;
   const buys = STOCKS.filter(s=>s.action==='BUY').slice(0,3);
@@ -3229,7 +3276,7 @@ function renderTop3() {
         <span class="ptg pt-rs">RS ${s.rs}</span>
         <span class="ptg pt-sc">Score ${s.score}/8</span>
         <span class="ptg pt-bs">Boss ${s.total}</span>${vcpChipFor(s.ticker)}
-        ${bqTag}${sq}${baseTag}${nearTag}${brkTag}
+        ${bqTag}${sq}${baseTag}${nearTag}${brkTag}${estBadge(s)}
       </div>`;
   });
 }
@@ -3626,6 +3673,7 @@ function renderToday() {
         var gapTxt = gap == null ? '' : (gap <= 0 ? 'cleared pivot' : gap.toFixed(1) + '% from pivot');
         var whyParts = [];
         if (s.base_type && !/fallback/i.test(s.base_type)) whyParts.push(s.base_type + ' base');
+        if (estLevels(s).any) whyParts.push('⚠ estimated levels — entry/stop not from a real base');
         if (gapTxt) whyParts.push(gapTxt);
         if (s.rs != null) whyParts.push('RS ' + s.rs);
         var nm = (typeof dtk === 'function') ? dtk(s) : String(s.ticker || '').replace('.SR','');
@@ -3924,6 +3972,7 @@ function renderBreakoutWatch() {
         <span class="bw-m" style="background:${s.liq>=50?'#E0F7FA':'#F4F3EF'};color:${s.liq>=50?'#0077B6':'#6b6b65'}">💧 ${s.liq}</span>
         ${s.liveVol&&s.avgVol30 ? '<span class="bw-m">Vol ' + (s.liveVol/s.avgVol30).toFixed(1) + 'x</span>' : s.liveVol ? '<span class="bw-m">Vol ' + fv(s.liveVol) + '</span>' : ''}
         <span class="bw-m" style="color:#A32D2D">Stop ${s.stop_loss?.toFixed(2) || '—'}</span>
+        ${estBadge(s)}
       </div>
     </div>`;
   }).join('');
@@ -4004,7 +4053,7 @@ function renderPullbackWatch() {
         ${s.liveChg != null ? '<span class="pb-chg" style="color:' + (s.liveChg >= 0 ? '#3B6D11' : '#A32D2D') + '">' + (s.liveChg >= 0 ? '+' : '') + s.liveChg.toFixed(2) + '%</span>' : ''}
       </div>
       <div class="pb-ma" style="color:${isReclaim?'#3B6D11':isAt?'#BA7517':'#A32D2D'}">
-        50MA ${ma50v} · ${distPct>=0?'+':''}${distPct.toFixed(1)}%
+        50MA${s.ma50IsProxy?`<span style="color:#C62828" title="MA50 is a 30D-midpoint proxy — the real 50MA column was missing, so this pullback level is estimated"> (est)</span>`:''} ${ma50v} · ${distPct>=0?'+':''}${distPct.toFixed(1)}%
       </div>
       <div class="pb-levels">
         <div class="pb-lv"><div class="pb-lv-lbl">Entry</div><div class="pb-lv-val" style="color:#185FA5">${entry}</div></div>
@@ -4167,6 +4216,7 @@ function render() {
   applyVcpToStocks();
   const q=el('srch').value.trim().toLowerCase();
   let rows=STOCKS.filter(s=>{
+    if(s.suspended) return false;   // SARv2.2 — halted/postponed names hidden from the table entirely
     if(tab!=='all'&&s.action!==tab) return false;
     if(filters.has('stage2')&&s.stage!=='stage2') return false;
     if(filters.has('potential')&&s.stage!=='potential') return false;
@@ -4218,7 +4268,9 @@ function render() {
     const bc=s.total>=60?'#3B6D11':s.total>=40?'#BA7517':'#A32D2D';
     const gicsSub = s.gics_ig ? `<div class="gics-row">🏭 ${s.gics_ig}</div>` : '';
     const sepaBadge = s.sepa_pass === true
-        ? '<span class="sepa-badge sepa-ok" title="All 10 SEPA criteria pass">SEPA ✓</span>'
+        ? (s.sepa_c4_soft
+            ? '<span class="sepa-badge sepa-soft" title="9/10 hard criteria pass; MA200-rising (c4) is UNVERIFIED — no 200-day trend data, counted as a soft pass">SEPA ✓*</span>'
+            : '<span class="sepa-badge sepa-ok" title="All 10 SEPA criteria pass">SEPA ✓</span>')
         : (s.sepa_pass === false && s.sepa_passed >= 8)
           ? `<span class="sepa-badge sepa-soft" title="${s.sepa_passed}/10 SEPA criteria pass">SEPA ${s.sepa_passed}/10</span>`
           : '';
@@ -4240,7 +4292,7 @@ function render() {
         <span class="boss" style="color:${bc}">${s.total}</span>
       </div></td>
       <td>${vcpCell(s.vcp)}</td>
-      <td><span class="piv">${s.breakout_level?.toFixed(2)||'—'}</span></td>
+      <td><span class="piv">${s.breakout_level?.toFixed(2)||'—'}${estLevels(s).pivEst?`<span style="color:#C62828" title="Estimated pivot — raw 52W high, no real base"> ⚠</span>`:''}</span></td>
       <td><span class="bz"><b>${s.buy_zone_low?.toFixed(2)||'—'}</b>–<b>${s.buy_zone_high?.toFixed(2)||'—'}</b></span></td>
       <td><span class="stp">${s.stop_loss?.toFixed(2)||'—'}</span></td>
       <td><span class="${gapCls}">${gapTxt}</span></td>
@@ -4288,7 +4340,7 @@ function render() {
               <span>${s.sepa_flags.c9?'✅':'❌'} c9: ≥30% over 52wL</span>
               <span>${s.sepa_flags.c10?'✅':'❌'} c10: RS ≥ 70</span>
             </div>
-            ${s.ma200ChgPct!=null?`<div style="margin-top:4px;color:#6b6b65">MA200 22d change: <b>${s.ma200ChgPct>=0?'+':''}${s.ma200ChgPct.toFixed(2)}%</b> · MA200 22d ago: <b>${s.ma200_22d?.toFixed(2)||'—'}</b> · 30D Hi/Lo: <b>${s.hi30d?.toFixed(2)||'—'} / ${s.lo30d?.toFixed(2)||'—'}</b></div>`:''}
+            ${s.ma200ChgPct!=null?`<div style="margin-top:4px;color:#6b6b65">MA200 22d change: <b>${s.ma200ChgPct>=0?'+':''}${s.ma200ChgPct.toFixed(2)}%</b> · MA200 22d ago: <b>${s.ma200_22d?.toFixed(2)||'—'}</b> · 30D Hi/Lo: <b>${s.hi30d?.toFixed(2)||'—'} / ${s.lo30d?.toFixed(2)||'—'}</b>${s.ma200IsRecon?` · <span style="color:#C62828" title="Current MA200 is reconstructed from the 22-day-ago value × %change, not a direct feed value">MA200 reconstructed</span>`:''}</div>`:''}
           </div>` : ''}
           ${s.isLive?`<div class="bbg-row">
             <div class="be"><div class="be-lbl">Open</div><div class="be-val">${s.dayOpen?.toFixed(2)||'—'}</div></div>
@@ -4566,7 +4618,7 @@ function playVolSpikeSound(){
     o.frequency.linearRampToValueAtTime(440,ctx.currentTime+0.3);
     g.gain.setValueAtTime(0.25,ctx.currentTime); g.gain.linearRampToValueAtTime(0,ctx.currentTime+0.5);
     o.start(ctx.currentTime); o.stop(ctx.currentTime+0.5);
-  }catch(e){}
+  }catch(e){ console.warn('[TradePulse] vol-spike sound failed:', e); }
 }
 
 // ══════════════════════════════════════════════════════
@@ -4935,7 +4987,7 @@ function openCardModal(ticker){
       '<span class="tp-cm-price">' + fmt(price) + ' SAR</span>' +
       (chg != null ? '<span class="tp-cm-chg ' + (chg>=0?'up':'dn') + '">' + (chg>=0?'+':'') + chg.toFixed(2) + '%</span>' : '') +
     '</div>' +
-    '<div class="tp-cm-status">' + actionTag + aggTag + nmTag + '</div>' +
+    '<div class="tp-cm-status">' + actionTag + aggTag + nmTag + estBadge(s) + '</div>' +
     '<div class="tp-cm-section">' +
       '<div class="tp-cm-section-title">Setup Levels</div>' +
       '<div class="tp-cm-grid">' +
