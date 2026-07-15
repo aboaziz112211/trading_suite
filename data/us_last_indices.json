@@ -1,20 +1,20 @@
 {
-  "updated": "2026-07-15T13:37:15",
+  "updated": "2026-07-15T13:39:42",
   "indices": {
     "IWM": {
-      "price": 295.44,
-      "chg": 0.3158,
-      "vol": 9596.0
+      "price": 295.5,
+      "chg": 0.3362,
+      "vol": 9705.0
     },
     "QQQ": {
-      "price": null,
-      "chg": null,
-      "vol": null
+      "price": 723.72,
+      "chg": 0.56,
+      "vol": 23957.0
     },
     "SPY": {
-      "price": null,
-      "chg": null,
-      "vol": null
+      "price": 753.96,
+      "chg": 0.2833,
+      "vol": 17065.0
     }
   }
 }
