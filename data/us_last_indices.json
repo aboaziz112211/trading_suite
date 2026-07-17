@@ -1,10 +1,10 @@
 {
-  "updated": "2026-07-17T14:13:11",
+  "updated": "2026-07-17T14:15:05",
   "indices": {
     "IWM": {
-      "price": null,
-      "chg": null,
-      "vol": null
+      "price": 294.81,
+      "chg": -0.2639,
+      "vol": 122365.0
     },
     "QQQ": {
       "price": null,
