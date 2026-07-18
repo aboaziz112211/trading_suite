@@ -18,6 +18,14 @@
     <div class="modal-content">
       <h2 class="modal-title" id="disclaimerModalTitle">⚠️ إخلاء مسؤولية &nbsp;·&nbsp; Disclaimer</h2>
       <div class="modal-body">
+        {# Plain-language summary first — the full legal text is one tap away.
+           Keeps the legal gate but stops it being the visitor's first wall. #}
+        <div class="modal-summary">
+          <p dir="rtl" lang="ar">هذه المنصة لأغراض تعليمية وإعلامية فقط — ما تراه هنا ليس توصيات مالية ولا نصيحة استثمارية. التداول ينطوي على مخاطر خسارة، فاستشر مستشاراً مالياً مرخصاً قبل أي قرار.</p>
+          <p lang="en">This platform is for educational and informational purposes only — nothing here is financial advice or a recommendation. Trading involves risk of loss; consult a licensed financial advisor before any decision.</p>
+        </div>
+        <details class="modal-full">
+        <summary>اقرأ النص الكامل · Read full disclaimer</summary>
         <div class="modal-en" lang="en">
           <h3>IMPORTANT INFORMATION AND DISCLAIMER</h3>
           <p>STOCKS RUNNING UP FAST AWAY FROM THE SUGGESTED BUY PRICE, PIVOT POINT OR QUOTE WHEN POSTED SHOULD BE AVOIDED. STOP LOSSES SHOWN ARE MAXIMUM SUGGESTED SELL STOPS BASED ON SWING TRADE EXPECTATIONS. RISK/REWARD SHOULD ALWAYS BE ASSESSED BASED ON YOUR OWN TRADING PLAN AND RISK TOLERANCE. IF YOU ARE SHORT-TERM TRADING OR DAY TRADING, THE MAXIMUM SUGGESTED STOP LEVELS MAY NOT BE APPROPRIATE FOR YOUR STRATEGY.</p>
@@ -46,6 +54,7 @@
           <p>قد يكون لدى المشغلين أو الشركات التابعة أو مساهميهم أو مديريهم أو موظفيهم مراكز شراء أو بيع في الأوراق المالية المعروضة هنا، وقد يقومون بشرائها أو بيعها دون إشعار.</p>
           <p>يُحظر إعادة التوزيع دون إذن خطّي مسبق. © 2026 — جميع الحقوق محفوظة.</p>
         </div>
+        </details>
       </div>
       <div class="modal-footer">
         <label class="modal-check">
@@ -385,7 +394,28 @@
         if (read('ce_welcomed') === '1' || launcher.hidden || !widget.hidden) return;
         store('ce_welcomed', '1');
         openW();                       // unhides widget + greets (welcome + offer to help)
-        bubble("🌟 كيف أقدر أساعدك اليوم؟\nHow can I help you today?", 'bot');
+        bubble("🌟 جديد هنا؟ اختر من أين تبدأ:\nNew here? Pick a place to start:", 'bot');
+        // Orientation quick-starts — tappable chips so a first-time visitor
+        // doesn't have to figure out what to type or where to click.
+        var chips = document.createElement('div');
+        chips.className = 'ce-chips'; chips.dir = 'rtl';
+        function chip(label, fn){
+          var b = document.createElement('button');
+          b.type = 'button'; b.className = 'ce-chip'; b.textContent = label;
+          b.addEventListener('click', fn); chips.appendChild(b);
+        }
+        chip('🚀 كيف أستخدم الموقع؟', function(){
+          input.value = 'أنا زائر جديد — اشرح لي بخطوات بسيطة كيف أستخدم الموقع وماذا أفتح أولاً';
+          form.dispatchEvent(new Event('submit', {cancelable: true}));
+        });
+        chip('📈 افتح لوحة السوق السعودي', function(){
+          window.location.href = "{{ url_for('product_page', key='tradepulse_sar') }}";
+        });
+        chip('❓ ما معنى سهم في المرحلة الثانية؟', function(){
+          input.value = 'ما معنى سهم في المرحلة الثانية؟ اشرح ببساطة';
+          form.dispatchEvent(new Event('submit', {cancelable: true}));
+        });
+        msgs.appendChild(chips); msgs.scrollTop = msgs.scrollHeight;
         playChime();
       }
 
