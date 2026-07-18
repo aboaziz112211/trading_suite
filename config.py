@@ -13,7 +13,7 @@ PRODUCTS = {
         "tagline": "SEPA / VCP scanner & analyzer",
         "tagline_ar": "ماسح SEPA · VCP وأداة التحليل",
         "dir": PRODUCTS_DIR,
-        "file": "ChartEdge_v9.2.html",
+        "file": "ChartEdge_v10.html",
     },
     "tradepulse_us": {
         "title": "TradePulse US",
