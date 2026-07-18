@@ -2,7 +2,22 @@
 {% block title %}RS Rating · TASI · ChartEdge{% endblock %}
 {% block body %}
 
-{% if not data %}
+{# Latest RS report as a PDF (featured at the top of the tab). #}
+{% if latest_rs_pdf %}
+<section class="rs-pdf-hero">
+  <div class="rs-pdf-head">
+    <div>
+      <span class="hero-kicker">🔥 أحدث تقييم للقوة النسبية · Latest RS Rating</span>
+      <h1 class="rs-pdf-title">القوة النسبية — {{ latest_rs_pdf.date }}</h1>
+      <div class="rs-pdf-sub" dir="rtl" lang="ar">تقرير القوة النسبية الكامل للسوق السعودي (PDF)<span dir="ltr"> · Full TASI RS report</span></div>
+    </div>
+    <a class="rs-pdf-btn" href="{{ url_for('static', filename='rs/' ~ latest_rs_pdf.file) }}" target="_blank" rel="noopener">📄 فتح / تحميل · Open PDF</a>
+  </div>
+  <iframe class="rs-pdf-frame" src="{{ url_for('static', filename='rs/' ~ latest_rs_pdf.file) }}" title="RS Rating {{ latest_rs_pdf.date }}" loading="lazy"></iframe>
+</section>
+{% endif %}
+
+{% if not data and not latest_rs_pdf %}
 <section class="hero-v2">
   <div class="hero-left">
     <span class="hero-kicker">🔥 Minervini RPR System · Daily</span>
@@ -12,7 +27,9 @@
     <p class="lede-ar" dir="rtl" lang="ar">لم يُرفع أيّ تقرير لتقييم القوة النسبية بعد. سيظهر هنا بمجرد رفع أحدث تقرير عبر صفحة الإدارة.</p>
   </div>
 </section>
-{% else %}
+{% endif %}
+
+{% if data %}
 
 <section class="rs-hero">
   <div>

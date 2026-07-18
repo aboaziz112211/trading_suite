@@ -5,7 +5,7 @@ import os
 import base64
 from datetime import datetime
 from pathlib import Path
-from config import PRODUCTS, LIVE_XLSX_PATH, LIVE_XLSX_SHEET, REFRESH_SECONDS, DATA_DIR, REPORTS, REPORTS_DIR
+from config import PRODUCTS, LIVE_XLSX_PATH, LIVE_XLSX_SHEET, REFRESH_SECONDS, DATA_DIR, REPORTS, REPORTS_DIR, RS_PDFS
 
 app = Flask(__name__)
 
@@ -25,7 +25,12 @@ def _inject_admin_state():
         except Exception:
             return "#"
 
-    return {"is_admin": is_admin, "admin_p": pw if is_admin else "", "admin_url": admin_url}
+    # Latest RS Rating PDF (newest entry in config.RS_PDFS) — exposed to every
+    # template so the /rs-rating tab can feature it without a route change.
+    latest_rs_pdf = RS_PDFS[0] if RS_PDFS else None
+
+    return {"is_admin": is_admin, "admin_p": pw if is_admin else "", "admin_url": admin_url,
+            "latest_rs_pdf": latest_rs_pdf}
 
 
 def _secret(name: str, default: str = None) -> str:

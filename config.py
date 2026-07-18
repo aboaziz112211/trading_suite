@@ -52,6 +52,14 @@ REPORTS = [
     },
 ]
 
+# ── RS Rating PDF reports (shown on the /rs-rating tab) ───────────────────────
+# Newest first — index 0 is the "latest" the page features. Served from
+# static/rs/. To publish a weekly RS PDF: drop the file in static/rs/ and add
+# one entry here (date + filename), then commit + deploy. No app.py change.
+RS_PDFS = [
+    {"date": "2026-07-18", "file": "ChartEdge_RS_Rating_2026-07-18.pdf"},
+]
+
 LIVE_XLSX_PATH = DATA_DIR / "all.xlsx"
 LIVE_XLSX_SHEET = "Sheet 1"
 REFRESH_SECONDS = int(os.getenv("REFRESH_SECONDS", "30"))
