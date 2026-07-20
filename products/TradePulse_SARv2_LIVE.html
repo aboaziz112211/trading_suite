@@ -1420,7 +1420,7 @@ document.addEventListener('drop',      function(e){
 // ══════════════════════════════════════════════
 // VERSION — used to verify which build is running
 // ══════════════════════════════════════════════
-const TP_VERSION = 'SARv2.2-2026-07-15';// ── TASI Regime Gate (Scout discipline control) ──
+const TP_VERSION = 'SARv2.3-2026-07-20';// ── TASI Regime Gate (Scout discipline control) ──
 // Manually-set Wyckoff stage classification of TASI itself.
 // Stage 1 = Accumulation, Stage 2 = Markup, Stage 3 = Distribution, Stage 4 = Markdown
 // Stage 4 = Scout in observation mode only; warning banner shown, no new entries.
@@ -6206,6 +6206,240 @@ function vbkSetup(){
 }
 vbkSetup();
 setTimeout(vbkSetup, 1500);
+})();
+</script>
+
+<!-- ═══ SARv2.3 — Bilingual contextual HELP bar (AR/EN) ═══════════════════
+     Explains each tab (what it is + how to use it) in Arabic and English,
+     updating automatically as the user switches tabs. Self-contained: no
+     edits to existing markup — hooks showTpTab and injects its own DOM/CSS. -->
+<style>
+#tp-help-toggle{position:fixed;bottom:16px;left:16px;z-index:9998;background:#3B6D11;color:#fff;border:none;border-radius:22px;padding:9px 16px;font-size:13px;font-weight:700;cursor:pointer;box-shadow:0 3px 10px rgba(0,0,0,.22);font-family:inherit}
+#tp-help-toggle:hover{background:#2f5a0d}
+#tp-help-bar{margin:8px 12px;border:1px solid #cfe0bd;background:#f6faf0;border-radius:12px;padding:12px 15px;font-size:13px;line-height:1.65;color:#243024;box-shadow:0 1px 3px rgba(0,0,0,.05)}
+#tp-help-bar.hidden{display:none}
+#tp-help-bar .hb-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:9px;gap:10px}
+#tp-help-bar .hb-title{font-weight:800;font-size:14.5px;color:#2f5a0d}
+#tp-help-bar .hb-x{cursor:pointer;color:#8a8a8a;font-size:20px;border:none;background:none;line-height:1;padding:0 4px}
+#tp-help-bar .hb-x:hover{color:#333}
+#tp-help-bar .hb-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+@media(max-width:760px){#tp-help-bar .hb-grid{grid-template-columns:1fr}}
+#tp-help-bar .hb-en{direction:ltr;text-align:left}
+#tp-help-bar .hb-ar{direction:rtl;text-align:right;border-right:3px solid #cfe0bd;padding-right:11px}
+@media(max-width:760px){#tp-help-bar .hb-ar{border-right:none;border-top:1px solid #cfe0bd;padding-right:0;padding-top:9px}}
+#tp-help-bar .hb-lbl{font-weight:800;color:#3B6D11;font-size:10.5px;text-transform:uppercase;letter-spacing:.04em;opacity:.85}
+#tp-help-bar .hb-ar .hb-lbl{text-transform:none;font-size:12px}
+#tp-help-bar .hb-what{margin:1px 0 8px}
+</style>
+<script>
+(function(){
+  var HELP = {
+    today: {
+      title: '⚡ Today · النبض — the verdict · الموجز',
+      en: { what:'The morning verdict. One glance: is the market favorable today, what stage is TASI in, and the best actionable picks right now.',
+            how:'Start here every day. If the verdict is cautious, trade smaller or wait. Tap any pick to open its full card.' },
+      ar: { what:'الموجز الصباحي. نظرة واحدة: هل السوق مواتٍ اليوم، وما مرحلة مؤشر تاسي، وأفضل الفرص القابلة للتنفيذ الآن.',
+            how:'ابدأ يومك من هنا. إذا كان الموجز حذِرًا فتداول بحجم أصغر أو انتظر. اضغط على أي فرصة لعرض بطاقتها الكاملة.' }
+    },
+    pulse: {
+      title: '📊 Pulse · التفاصيل — market overview · نظرة عامة',
+      en: { what:'The full market overview behind the verdict — breadth (advancers vs decliners), the TASI trend and its moving averages.',
+            how:'Use it to confirm the Today verdict with the underlying numbers before you commit to a trade.' },
+      ar: { what:'نظرة عامة كاملة على السوق خلف الموجز — اتساع السوق (الصاعدة مقابل الهابطة)، واتجاه تاسي ومتوسطاته المتحركة.',
+            how:'استخدمها لتأكيد موجز اليوم بالأرقام الأساسية قبل الدخول في أي صفقة.' }
+    },
+    sectors: {
+      title: '🏭 Sectors · القطاعات — rotation grid · شبكة الدوران',
+      en: { what:'The sector rotation grid — which sectors are leading and which are lagging today.',
+            how:'Focus your picks on the leading sectors and be cautious with names in lagging ones. Click a sector to filter the watchlist to it.' },
+      ar: { what:'شبكة دوران القطاعات — أي القطاعات تقود اليوم وأيها يتراجع.',
+            how:'ركّز اختياراتك على القطاعات القائدة واحذر الأسهم في القطاعات المتراجعة. اضغط على أي قطاع لتصفية قائمة المراقبة عليه.' }
+    },
+    setups: {
+      title: '🎯 Setups · الإعدادات — best breakout candidates · أفضل مرشحي الاختراق',
+      en: { what:'Your best TRADE SETUPS (not app settings): the aggressive list, the focus list, and the Top-3 picks ranked by the Boss score — VCP breakout candidates.',
+            how:'This is where you decide what to buy. A higher Boss score means a tighter, stronger setup. Check the pivot, buy-zone and stop on each card before entering.' },
+      ar: { what:'أفضل إعدادات التداول لديك (وليست إعدادات التطبيق): القائمة الهجومية، والقائمة المفضّلة، وأفضل 3 أسهم مرتّبة حسب درجة Boss — مرشحو اختراق نموذج VCP.',
+            how:'من هنا تقرر ماذا تشتري. كلما ارتفعت درجة Boss كان الإعداد أقوى وأضيق. راجع نقطة الارتكاز ومنطقة الشراء ووقف الخسارة في كل بطاقة قبل الدخول.' }
+    },
+    movers: {
+      title: '📈 Movers · المحرّكون — agents · leaderboard · الوكلاء والمتصدّرون',
+      en: { what:'The biggest movers today, plus the 5-agent score breakdown and a leaderboard.',
+            how:'See what is active right now and why each stock scores the way it does (momentum, breakout, liquidity and more).' },
+      ar: { what:'أكبر المحرّكين اليوم، مع تفصيل درجات الوكلاء الخمسة ولوحة المتصدّرين.',
+            how:'اعرف ما هو نشط الآن ولماذا يحصل كل سهم على درجته (الزخم، الاختراق، السيولة وغيرها).' }
+    },
+    watchlist: {
+      title: '📋 Watchlist · قائمة المراقبة — scan · breakouts · الفحص والاختراقات',
+      en: { what:'The full scannable table of every stock, with filters: All / Buy / On Radar / Watch / Avoid, plus breakout tracking.',
+            how:'Filter and sort the whole universe. Use Buy or On Radar to narrow to the actionable names, then click any row for the full card.' },
+      ar: { what:'الجدول الكامل القابل للفحص لكل الأسهم، مع فلاتر: الكل / شراء / على الرادار / مراقبة / تجنّب، بالإضافة إلى تتبّع الاختراقات.',
+            how:'صفِّ ورتّب الكون كاملاً. استخدم شراء أو على الرادار لتضييق النتائج على الأسهم القابلة للتنفيذ، ثم اضغط على أي صف لعرض البطاقة الكاملة.' }
+    },
+    journal: {
+      title: '📒 Journal · السجل — log · track · السجل والتتبّع',
+      en: { what:'Your trade journal — log entries, exits and notes so you can track your decisions over time.',
+            how:'Record every trade and the reason for it. Reviewing the journal is how you find your mistakes and improve.' },
+      ar: { what:'سجل تداولك — دوّن عمليات الدخول والخروج والملاحظات لتتبّع قراراتك مع مرور الوقت.',
+            how:'سجّل كل صفقة وسببها. مراجعة السجل هي طريقك لاكتشاف أخطائك والتحسّن.' }
+    },
+    radar: {
+      title: '🎯 Radar · الرادار — breakouts in motion · اختراقات حية',
+      en: { what:'Live breakouts in motion — stocks crossing their pivot right now, updated in real time. Includes an optional Stage-4 VCP Scout.',
+            how:'Watch it during market hours for names crossing their buy trigger, so you can act on a breakout as it happens.' },
+      ar: { what:'اختراقات حية قيد الحدوث — أسهم تتجاوز نقطة ارتكازها الآن، محدّثة لحظيًا. تتضمّن كشّاف VCP للمرحلة الرابعة اختياريًا.',
+            how:'تابعها خلال ساعات التداول للأسهم التي تعبر محفّز الشراء، لتتحرّك على الاختراق لحظة حدوثه.' }
+    },
+    vcpbrk: {
+      title: '💥 Breakouts+ · الاختراقات — all VCP incl. stage 4 · بدون فلتر',
+      en: { what:'All VCP breakout candidates with no filter — including the Stage-4 names the main lists hide.',
+            how:'A wider, unfiltered view for advanced users who want to see every VCP, including the riskier late-stage ones.' },
+      ar: { what:'كل مرشحي اختراق VCP بدون فلتر — بما في ذلك أسهم المرحلة الرابعة التي تخفيها القوائم الرئيسية.',
+            how:'عرض أوسع وغير مُصفّى للمستخدمين المتقدّمين الذين يريدون رؤية كل نماذج VCP، بما فيها الأكثر خطورة في المراحل المتأخرة.' }
+    },
+    _default: {
+      title: 'ℹ️ Help · شرح',
+      en: { what:'This section is part of the TradePulse SAR dashboard.', how:'Switch tabs to see what each section does.' },
+      ar: { what:'هذا القسم جزء من لوحة تداول بلس للسوق السعودي.', how:'تنقّل بين التبويبات لمعرفة وظيفة كل قسم.' }
+    }
+  };
+
+  function elt(tag, cls, txt){ var e=document.createElement(tag); if(cls) e.className=cls; if(txt!=null) e.textContent=txt; return e; }
+  function fillBlock(container, whatLbl, whatTxt, howLbl, howTxt){
+    container.textContent='';
+    container.appendChild(elt('div','hb-lbl',whatLbl));
+    container.appendChild(elt('div','hb-what',whatTxt));
+    container.appendChild(elt('div','hb-lbl',howLbl));
+    container.appendChild(elt('div',null,howTxt));
+  }
+  function renderTpHelp(name){
+    var bar = document.getElementById('tp-help-bar'); if(!bar) return;
+    var c = HELP[name] || HELP._default;
+    bar.querySelector('.hb-title').textContent = c.title;
+    fillBlock(bar.querySelector('.hb-en'), 'What is this', c.en.what, 'How to use it', c.en.how);
+    fillBlock(bar.querySelector('.hb-ar'), 'ما هذا القسم', c.ar.what, 'كيف تستخدمه', c.ar.how);
+  }
+  window.renderTpHelp = renderTpHelp;
+
+  function setOpen(open){
+    var bar=document.getElementById('tp-help-bar'), tg=document.getElementById('tp-help-toggle');
+    if(bar) bar.classList.toggle('hidden', !open);
+    if(tg) tg.textContent = open ? '؟ إخفاء الشرح · Hide help' : '؟ شرح هذا القسم · Help';
+    try{ localStorage.setItem('tp_help_open', open?'1':'0'); }catch(e){}
+  }
+
+  function init(){
+    var tabbar=document.getElementById('tp-tabbar');
+    if(!tabbar || document.getElementById('tp-help-bar')) return;
+    var bar=elt('div',null); bar.id='tp-help-bar';
+    var top=elt('div','hb-top');
+    top.appendChild(elt('span','hb-title'));
+    var x=elt('button','hb-x','×'); x.title='إخفاء · Hide';
+    top.appendChild(x);
+    var grid=elt('div','hb-grid');
+    grid.appendChild(elt('div','hb-en'));
+    var ar=elt('div','hb-ar'); ar.setAttribute('dir','rtl');
+    grid.appendChild(ar);
+    bar.appendChild(top); bar.appendChild(grid);
+    tabbar.insertAdjacentElement('afterend', bar);
+
+    var tg=elt('button',null); tg.id='tp-help-toggle'; document.body.appendChild(tg);
+    x.onclick=function(){ setOpen(false); };
+    tg.onclick=function(){ setOpen(document.getElementById('tp-help-bar').classList.contains('hidden')); };
+
+    var saved; try{ saved=localStorage.getItem('tp_help_open'); }catch(e){}
+    setOpen(saved===null||saved===undefined ? true : saved==='1');
+
+    var orig=window.showTpTab;
+    window.showTpTab=function(name){ if(orig) orig.apply(this,arguments); try{ renderTpHelp(name); }catch(e){} };
+
+    var active='today'; try{ active=localStorage.getItem('tp_active_tab_v2')||'today'; }catch(e){}
+    renderTpHelp(active);
+  }
+  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',init); else init();
+})();
+</script>
+
+<!-- ═══ SARv2.3 — Glossary add-on (AR/EN terms & scores) ═══════════════════
+     Adds a "📖 Glossary" button to the help bar that expands definitions of
+     Boss, VCP, RS, Pivot, Buy Zone, Stop, SEPA, etc. Self-contained: finds
+     the existing #tp-help-bar and appends to it. No edits to prior code. -->
+<script>
+(function(){
+  var GLOSSARY = [
+    {t:'Boss score · درجة Boss',
+     en:'Overall 0-100 setup score combining 5 agents: momentum, breakout, reversion, sector, liquidity. Higher means stronger and more actionable.',
+     ar:'الدرجة الإجمالية 0-100 للإعداد، تجمع 5 وكلاء: الزخم، الاختراق، الارتداد، القطاع، السيولة. كلما ارتفعت كان الإعداد أقوى وأجدر بالتنفيذ.'},
+    {t:'VCP',
+     en:'Volatility Contraction Pattern: a series of tightening pullbacks before a breakout; a classic low-risk entry setup.',
+     ar:'نموذج انكماش التذبذب: سلسلة تصحيحات متضيّقة قبل الاختراق؛ إعداد دخول كلاسيكي منخفض المخاطر.'},
+    {t:'RS · القوة النسبية',
+     en:'Relative Strength (1-99): how the stock performs versus the market. 70 and above marks a leader.',
+     ar:'القوة النسبية (1-99): أداء السهم مقارنة بالسوق. 70 فأكثر يدل على سهم قائد.'},
+    {t:'Stage 1-4 · المرحلة',
+     en:'The price-cycle stage: 1 basing, 2 advancing (the buy zone), 3 topping, 4 declining (avoid).',
+     ar:'مرحلة دورة السعر: 1 التجميع، 2 الصعود (منطقة الشراء)، 3 التوزيع، 4 الهبوط (تجنّب).'},
+    {t:'Pivot · نقطة الارتكاز',
+     en:'The breakout trigger price at the top of the base. A move above it on volume is the buy signal.',
+     ar:'سعر محفّز الاختراق عند قمة القاعدة. تجاوزه بحجم تداول هو إشارة الشراء.'},
+    {t:'Buy Zone · منطقة الشراء',
+     en:'The ideal entry band just above the pivot, typically pivot to plus 5 percent. Buying higher raises risk.',
+     ar:'نطاق الدخول المثالي فوق نقطة الارتكاز مباشرة، عادة من الارتكاز إلى +5%. الشراء أعلى يزيد المخاطرة.'},
+    {t:'Stop · وقف الخسارة',
+     en:'The exit price if the trade fails, placed below the base to cap the loss.',
+     ar:'سعر الخروج إذا فشلت الصفقة، يوضع أسفل القاعدة للحد من الخسارة.'},
+    {t:'SEPA',
+     en:'Specific Entry Point Analysis: the 8-criteria trend template a stock must pass to qualify as a Stage-2 leader.',
+     ar:'تحليل نقطة الدخول المحددة: قالب اتجاه من 8 معايير يجب أن يجتازها السهم ليكون قائدًا في المرحلة 2.'},
+    {t:'SQ · جودة الإعداد',
+     en:'Setup Quality: a 0-100 rating of how clean the chart pattern is, separate from the Boss score.',
+     ar:'جودة الإعداد: تقييم 0-100 لمدى نظافة نموذج الشارت، منفصل عن درجة Boss.'},
+    {t:'Actions · الإجراءات',
+     en:'Buy = act now. On Radar = strong, watch closely. Watch = forming. Avoid = weak or wrong stage.',
+     ar:'شراء = نفّذ الآن. على الرادار = قوي وراقبه عن قرب. مراقبة = قيد التكوين. تجنّب = ضعيف أو مرحلة خاطئة.'},
+    {t:'MA50 / MA200 · المتوسطات المتحركة',
+     en:'50- and 200-day moving averages: trend reference lines. Price above a rising MA200 signals a healthy uptrend.',
+     ar:'المتوسطان المتحركان 50 و200 يوم: خطوط مرجعية للاتجاه. السعر فوق متوسط 200 صاعد يشير إلى اتجاه صعودي صحي.'},
+    {t:'Avg Vol 30D · متوسط حجم 30 يوم',
+     en:'30-day average volume, a liquidity gauge. Very low or zero values flag illiquid or halted names.',
+     ar:'متوسط حجم التداول لـ30 يومًا، مقياس للسيولة. القيم المنخفضة جدًا أو الصفرية تشير إلى أسهم ضعيفة السيولة أو موقوفة.'},
+    {t:'Scout · الكشّاف',
+     en:'An observation-only scan for VCP setups even while the market is in Stage 4. These are heads-ups, not buy signals.',
+     ar:'فحص للمراقبة فقط لإعدادات VCP حتى عندما يكون السوق في المرحلة 4. مجرد تنبيهات وليست إشارات شراء.'}
+  ];
+  var CSS = '#tp-help-bar .hb-gloss-btn{margin-inline-start:auto;font-size:11px;font-weight:700;color:#3B6D11;background:#eaf3df;border:1px solid #cfe0bd;border-radius:8px;padding:3px 10px;cursor:pointer;white-space:nowrap}'+
+            '#tp-help-bar .hb-gloss-btn:hover{background:#deeccf}'+
+            '#tp-help-gloss{display:none;margin-top:11px;border-top:1px dashed #cfe0bd;padding-top:9px}'+
+            '#tp-help-gloss.on{display:block}'+
+            '#tp-help-gloss .gl-item{padding:7px 0;border-bottom:1px solid #eef3e6}'+
+            '#tp-help-gloss .gl-item:last-child{border-bottom:none}'+
+            '#tp-help-gloss .gl-term{font-weight:800;color:#2f5a0d;font-size:12.5px;margin-bottom:2px}'+
+            '#tp-help-gloss .gl-en{font-size:12px;color:#2b382b;line-height:1.5}'+
+            '#tp-help-gloss .gl-ar{font-size:12.5px;color:#2b382b;direction:rtl;text-align:right;line-height:1.6;margin-top:2px}';
+  function elt(tag, cls, txt){ var e=document.createElement(tag); if(cls) e.className=cls; if(txt!=null) e.textContent=txt; return e; }
+  function inject(){
+    var bar=document.getElementById('tp-help-bar');
+    if(!bar){ return setTimeout(inject, 300); }
+    if(document.getElementById('tp-help-gloss')) return;
+    var st=document.createElement('style'); st.textContent=CSS; document.head.appendChild(st);
+    var top=bar.querySelector('.hb-top');
+    var btn=elt('button','hb-gloss-btn','📖 المصطلحات · Glossary');
+    var x=top.querySelector('.hb-x'); if(x) top.insertBefore(btn, x); else top.appendChild(btn);
+    var panel=elt('div',null); panel.id='tp-help-gloss';
+    GLOSSARY.forEach(function(g){
+      var item=elt('div','gl-item');
+      item.appendChild(elt('div','gl-term',g.t));
+      item.appendChild(elt('div','gl-en',g.en));
+      var ar=elt('div','gl-ar',g.ar); ar.setAttribute('dir','rtl');
+      item.appendChild(ar);
+      panel.appendChild(item);
+    });
+    bar.appendChild(panel);
+    var open=false; try{ open=(localStorage.getItem('tp_gloss_open')==='1'); }catch(e){}
+    panel.classList.toggle('on', open);
+    btn.onclick=function(){ open=!open; panel.classList.toggle('on', open); try{ localStorage.setItem('tp_gloss_open', open?'1':'0'); }catch(e){} };
+  }
+  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',inject); else inject();
 })();
 </script>
 

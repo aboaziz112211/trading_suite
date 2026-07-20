@@ -1308,7 +1308,7 @@ body.dark-mode .tp-filter-bar .tp-fb-label{color:#fff;}
 // ══════════════════════════════════════════════
 // VERSION — used to verify which build is running
 // ══════════════════════════════════════════════
-const TP_VERSION = 'USv2.8-2026-07-13';
+const TP_VERSION = 'USv2.9-2026-07-20';
 console.log('%c[TradePulse] ' + TP_VERSION + ' loaded', 'color:#3B6D11;font-weight:bold;font-size:13px');
 
 // ══════════════════════════════════════════════
@@ -2775,6 +2775,7 @@ function parseBloomberg(text, filename) {
     // v4 — derive current MA200 at row level so breadth works on Bloomberg-only drops
     if (!row.ma200 && row.ma200_22d != null && row.ma200ChgPct != null) {
       row.ma200 = +(row.ma200_22d * (1 + row.ma200ChgPct/100)).toFixed(3);
+      row.ma200IsRecon = true;  // 2026-07-13 — MA200 reconstructed from 22d-ago × %chg, not a live feed value
     }
     // v4 — MA50 proxy from 30D midpoint if MA50 col missing
     if (!row.ma50 && row.hi30d != null && row.lo30d != null) {
@@ -2877,6 +2878,7 @@ function parseBloomberg(text, filename) {
     // v4 — derive current MA200 from MA200_22d_ago × (1 + MA200 22d%chg/100)
     if (row.ma200_22d != null && row.ma200ChgPct != null && !s.ma200) {
       s.ma200 = +(row.ma200_22d * (1 + row.ma200ChgPct/100)).toFixed(3);
+      s.ma200IsRecon = true;  // 2026-07-13 — reconstructed, not a live MA200
     }
     // v4 — pipe Bloomberg MA50 if present (column W: MOV_AVG_50D)
     if (row.ma50 != null && !s.ma50) s.ma50 = row.ma50;
@@ -3007,6 +3009,22 @@ function updateAdvDec(adv, dec) {
 // ══════════════════════════════════════════════
 // TOP 3 PICKS
 // ══════════════════════════════════════════════
+// 2026-07-13 — estimated-levels marker. A stock's pivot/buy-zone/stop are fabricated
+// when its base_type is a 'fallback' (raw 52W high, no real base); its MA50 is fabricated
+// when ma50IsProxy (30D-midpoint). estBadge surfaces this so estimated numbers never
+// masquerade as real (same principle as the RS __rsEstimated banner).
+function estLevels(s){
+  const pivEst  = !!(s && s.base_type && /fallback/i.test(s.base_type));
+  const ma50Est = !!(s && s.ma50IsProxy);
+  return { pivEst, ma50Est, any: pivEst || ma50Est };
+}
+function estBadge(s){
+  const e = estLevels(s);
+  if(!e.any) return '';
+  const why = [e.pivEst?'pivot/buy-zone/stop are estimated (no real base — raw 52W high)':'', e.ma50Est?'50MA is a 30D-midpoint proxy':''].filter(Boolean).join(' · ');
+  const lbl = e.pivEst && e.ma50Est ? '⚠ EST LEVELS' : (e.pivEst ? '⚠ EST PIVOT' : '⚠ EST 50MA');
+  return `<span class="ptg" style="background:#FDE7E7;color:#8E1B1B;border:1px solid #C62828" title="${why} — treat with caution.">${lbl}</span>`;
+}
 function renderTop3() {
   if (!STOCKS.length) return;
   const _allBuys = STOCKS.filter(s=>s.action==='BUY');
@@ -3045,7 +3063,7 @@ function renderTop3() {
         <span class="ptg pt-rs">RS ${s.rs}</span>
         <span class="ptg pt-sc">Score ${s.score}/8</span>
         <span class="ptg pt-bs">Boss ${s.total}</span>
-        ${sq}${baseTag}${nearTag}${brkTag}
+        ${sq}${baseTag}${nearTag}${brkTag}${estBadge(s)}
       </div>`;
   });
 }
@@ -3568,6 +3586,7 @@ function renderBreakoutWatch() {
         <span class="bw-m" style="background:${s.liq>=75?'#E0F7FA':'#F4F3EF'};color:${s.liq>=75?'#0077B6':'#6b6b65'}">💧 ${s.liq}</span>
         ${s.liveVol&&s.avgVol30 ? '<span class="bw-m">Vol ' + (s.liveVol/s.avgVol30).toFixed(1) + 'x</span>' : s.liveVol ? '<span class="bw-m">Vol ' + fv(s.liveVol) + '</span>' : ''}
         <span class="bw-m" style="color:#A32D2D">Stop ${s.stop_loss?.toFixed(2) || '—'}</span>
+        ${estBadge(s)}
       </div>
     </div>`;
   }).join('');
@@ -3638,7 +3657,9 @@ function render() {
     const subTitle  = [s.gics_ig, s.industry].filter(Boolean).join(' → ');
     const gicsSub   = (gicsLabel || indLabel) ? `<div class="gics-row" title="${subTitle}">${gicsLabel}${indLabel}</div>` : '';
     const sepaBadge = s.sepa_pass === true
-        ? '<span class="sepa-badge sepa-ok" title="All 10 SEPA criteria pass">SEPA ✓</span>'
+        ? (s.sepa_c4_soft
+            ? '<span class="sepa-badge sepa-soft" title="9/10 hard criteria pass; MA200-rising (c4) is UNVERIFIED — no 200-day trend data, counted as a soft pass">SEPA ✓*</span>'
+            : '<span class="sepa-badge sepa-ok" title="All 10 SEPA criteria pass">SEPA ✓</span>')
         : (s.sepa_pass === false && s.sepa_passed >= 8)
           ? `<span class="sepa-badge sepa-soft" title="${s.sepa_passed}/10 SEPA criteria pass">SEPA ${s.sepa_passed}/10</span>`
           : '';
@@ -3659,7 +3680,7 @@ function render() {
         </div>
         <span class="boss" style="color:${bc}">${s.total}</span>
       </div></td>
-      <td><span class="piv">${s.breakout_level?.toFixed(2)||'—'}</span></td>
+      <td><span class="piv">${s.breakout_level?.toFixed(2)||'—'}${estLevels(s).pivEst?`<span style="color:#C62828" title="Estimated pivot — raw 52W high, no real base"> ⚠</span>`:''}</span></td>
       <td><span class="bz"><b>${s.buy_zone_low?.toFixed(2)||'—'}</b>–<b>${s.buy_zone_high?.toFixed(2)||'—'}</b></span></td>
       <td><span class="stp">${s.stop_loss?.toFixed(2)||'—'}</span></td>
       <td><span class="${gapCls}">${gapTxt}</span></td>
@@ -3700,7 +3721,7 @@ function render() {
               <span>${s.sepa_flags.c9?'✅':'❌'} c9: ≥30% over 52wL</span>
               <span>${s.sepa_flags.c10?'✅':'❌'} c10: RS ≥ 70</span>
             </div>
-            ${s.ma200ChgPct!=null?`<div style="margin-top:4px;color:#6b6b65">MA200 22d change: <b>${s.ma200ChgPct>=0?'+':''}${s.ma200ChgPct.toFixed(2)}%</b> · MA200 22d ago: <b>${s.ma200_22d?.toFixed(2)||'—'}</b> · 30D Hi/Lo: <b>${s.hi30d?.toFixed(2)||'—'} / ${s.lo30d?.toFixed(2)||'—'}</b></div>`:''}
+            ${s.ma200ChgPct!=null?`<div style="margin-top:4px;color:#6b6b65">MA200 22d change: <b>${s.ma200ChgPct>=0?'+':''}${s.ma200ChgPct.toFixed(2)}%</b> · MA200 22d ago: <b>${s.ma200_22d?.toFixed(2)||'—'}</b> · 30D Hi/Lo: <b>${s.hi30d?.toFixed(2)||'—'} / ${s.lo30d?.toFixed(2)||'—'}</b>${s.ma200IsRecon?` · <span style="color:#C62828" title="Current MA200 is reconstructed from the 22-day-ago value × %change, not a direct feed value">MA200 reconstructed</span>`:''}</div>`:''}
           </div>` : ''}
           ${s.isLive?`<div class="bbg-row">
             <div class="be"><div class="be-lbl">Open</div><div class="be-val">${s.dayOpen?.toFixed(2)||'—'}</div></div>
@@ -3880,6 +3901,7 @@ function applyIbkrRows(rows) {
     }
     // Derive MA200 current = MA200_22d × (1 + ma200ChgPct/100)
     if (!row.ma200 && row.ma200_22d != null && row.ma200ChgPct != null) {
+      row.ma200IsRecon = true;  // 2026-07-13 — reconstructed, not a live MA200
       row.ma200 = +(row.ma200_22d * (1 + row.ma200ChgPct/100)).toFixed(3);
     }
     // MA50 proxy from 30D midpoint if missing
@@ -4396,7 +4418,7 @@ function playVolSpikeSound() {
     g.gain.setValueAtTime(0.25, ctx.currentTime);
     g.gain.linearRampToValueAtTime(0, ctx.currentTime + 0.5);
     o.start(ctx.currentTime); o.stop(ctx.currentTime + 0.5);
-  } catch(e) {}
+  } catch(e) { console.warn('[TradePulse] vol-spike sound failed:', e); }
 }
 
 // ══════════════════════════════════════════════
@@ -4944,7 +4966,7 @@ function openCardModal(ticker){
       '<span class="tp-cm-price">$' + fmt(price) + '</span>' +
       (chg != null ? '<span class="tp-cm-chg ' + (chg>=0?'up':'dn') + '">' + (chg>=0?'+':'') + chg.toFixed(2) + '%</span>' : '') +
     '</div>' +
-    '<div class="tp-cm-status">' + actionTag + aggTag + nmTag + '</div>' +
+    '<div class="tp-cm-status">' + actionTag + aggTag + nmTag + estBadge(s) + '</div>' +
     '<div class="tp-cm-section">' +
       '<div class="tp-cm-section-title">Setup Levels</div>' +
       '<div class="tp-cm-grid">' +
@@ -5648,6 +5670,204 @@ function openMorningBrief() {
 <!-- MORNING BRIEF PRINT VIEW (USv2.4) -->
 <div id="print-brief"></div>
 <div id="tp-brk-popup-container"></div>
+
+<!-- ═══ USv2.9 — Bilingual contextual HELP bar (AR/EN) + Glossary ══════════
+     Explains each tab (what it is + how to use it) in Arabic and English,
+     updating as the user switches tabs, plus a Glossary of terms/scores.
+     Self-contained: no edits to existing markup — hooks showTpTab. -->
+<style>
+#tp-help-toggle{position:fixed;bottom:16px;left:16px;z-index:9998;background:#1e5b8f;color:#fff;border:none;border-radius:22px;padding:9px 16px;font-size:13px;font-weight:700;cursor:pointer;box-shadow:0 3px 10px rgba(0,0,0,.22);font-family:inherit}
+#tp-help-toggle:hover{background:#17456c}
+#tp-help-bar{margin:8px 12px;border:1px solid #c5dbec;background:#f2f8fc;border-radius:12px;padding:12px 15px;font-size:13px;line-height:1.65;color:#20303c;box-shadow:0 1px 3px rgba(0,0,0,.05)}
+#tp-help-bar.hidden{display:none}
+#tp-help-bar .hb-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:9px;gap:10px}
+#tp-help-bar .hb-title{font-weight:800;font-size:14.5px;color:#17456c}
+#tp-help-bar .hb-x{cursor:pointer;color:#8a8a8a;font-size:20px;border:none;background:none;line-height:1;padding:0 4px}
+#tp-help-bar .hb-x:hover{color:#333}
+#tp-help-bar .hb-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+@media(max-width:760px){#tp-help-bar .hb-grid{grid-template-columns:1fr}}
+#tp-help-bar .hb-en{direction:ltr;text-align:left}
+#tp-help-bar .hb-ar{direction:rtl;text-align:right;border-right:3px solid #c5dbec;padding-right:11px}
+@media(max-width:760px){#tp-help-bar .hb-ar{border-right:none;border-top:1px solid #c5dbec;padding-right:0;padding-top:9px}}
+#tp-help-bar .hb-lbl{font-weight:800;color:#1e5b8f;font-size:10.5px;text-transform:uppercase;letter-spacing:.04em;opacity:.85}
+#tp-help-bar .hb-ar .hb-lbl{text-transform:none;font-size:12px}
+#tp-help-bar .hb-what{margin:1px 0 8px}
+#tp-help-bar .hb-gloss-btn{font-size:11px;font-weight:700;color:#1e5b8f;background:#e2eef7;border:1px solid #c5dbec;border-radius:8px;padding:3px 10px;cursor:pointer;white-space:nowrap}
+#tp-help-bar .hb-gloss-btn:hover{background:#d2e5f2}
+#tp-help-gloss{display:none;margin-top:11px;border-top:1px dashed #c5dbec;padding-top:9px}
+#tp-help-gloss.on{display:block}
+#tp-help-gloss .gl-item{padding:7px 0;border-bottom:1px solid #e7f0f7}
+#tp-help-gloss .gl-item:last-child{border-bottom:none}
+#tp-help-gloss .gl-term{font-weight:800;color:#17456c;font-size:12.5px;margin-bottom:2px}
+#tp-help-gloss .gl-en{font-size:12px;color:#26333d;line-height:1.5}
+#tp-help-gloss .gl-ar{font-size:12.5px;color:#26333d;direction:rtl;text-align:right;line-height:1.6;margin-top:2px}
+</style>
+<script>
+(function(){
+  var TABKEY='tp_active_tab_v1', DEFTAB='pulse';
+  var HELP = {
+    pulse: {
+      title: '📊 Pulse · النبض — market overview · نظرة عامة',
+      en: { what:'Your landing view and the market overview — breadth (advancers vs decliners), the overall US market trend and its moving averages.',
+            how:'Start here each session to gauge whether the broad market is healthy before you take individual trades.' },
+      ar: { what:'شاشة البداية ونظرة عامة على السوق — اتساع السوق (الصاعدة مقابل الهابطة)، واتجاه السوق الأمريكي العام ومتوسطاته المتحركة.',
+            how:'ابدأ كل جلسة من هنا لتقدير ما إذا كان السوق العام سليمًا قبل الدخول في صفقات فردية.' }
+    },
+    sectors: {
+      title: '🏭 Sectors · القطاعات — rotation grid · شبكة الدوران',
+      en: { what:'The sector rotation grid — which sectors are leading and which are lagging today.',
+            how:'Focus your picks on the leading sectors and be cautious with names in lagging ones. Click a sector to filter the watchlist to it.' },
+      ar: { what:'شبكة دوران القطاعات — أي القطاعات تقود اليوم وأيها يتراجع.',
+            how:'ركّز اختياراتك على القطاعات القائدة واحذر الأسهم في القطاعات المتراجعة. اضغط على أي قطاع لتصفية قائمة المراقبة عليه.' }
+    },
+    setups: {
+      title: '🎯 Setups · الإعدادات — best breakout candidates · أفضل مرشحي الاختراق',
+      en: { what:'Your best TRADE SETUPS (not app settings): the aggressive list, the focus list, and the Top-3 picks ranked by the Boss score — VCP breakout candidates.',
+            how:'This is where you decide what to buy. A higher Boss score means a tighter, stronger setup. Check the pivot, buy-zone and stop on each card before entering.' },
+      ar: { what:'أفضل إعدادات التداول لديك (وليست إعدادات التطبيق): القائمة الهجومية، والقائمة المفضّلة، وأفضل 3 أسهم مرتّبة حسب درجة Boss — مرشحو اختراق نموذج VCP.',
+            how:'من هنا تقرر ماذا تشتري. كلما ارتفعت درجة Boss كان الإعداد أقوى وأضيق. راجع نقطة الارتكاز ومنطقة الشراء ووقف الخسارة في كل بطاقة قبل الدخول.' }
+    },
+    movers: {
+      title: '📈 Movers · المحرّكون — agents · leaderboard · الوكلاء والمتصدّرون',
+      en: { what:'The biggest movers today, plus the 5-agent score breakdown and a leaderboard.',
+            how:'See what is active right now and why each stock scores the way it does (momentum, breakout, liquidity and more).' },
+      ar: { what:'أكبر المحرّكين اليوم، مع تفصيل درجات الوكلاء الخمسة ولوحة المتصدّرين.',
+            how:'اعرف ما هو نشط الآن ولماذا يحصل كل سهم على درجته (الزخم، الاختراق، السيولة وغيرها).' }
+    },
+    watchlist: {
+      title: '📋 Watchlist · قائمة المراقبة — scan · breakouts · الفحص والاختراقات',
+      en: { what:'The full scannable table of every stock, with filters: All / Buy / On Radar / Watch / Avoid, plus breakout tracking.',
+            how:'Filter and sort the whole universe. Use Buy or On Radar to narrow to the actionable names, then click any row for the full card.' },
+      ar: { what:'الجدول الكامل القابل للفحص لكل الأسهم، مع فلاتر: الكل / شراء / على الرادار / مراقبة / تجنّب، بالإضافة إلى تتبّع الاختراقات.',
+            how:'صفِّ ورتّب الكون كاملاً. استخدم شراء أو على الرادار لتضييق النتائج على الأسهم القابلة للتنفيذ، ثم اضغط على أي صف لعرض البطاقة الكاملة.' }
+    },
+    scout: {
+      title: '🌱 Scout · الكشّاف — stage-4 phase-C · المرحلة 4-C',
+      en: { what:'An observation-only Stage-4 / Phase-C scan — it surfaces VCP setups forming even while the broad market is in a downtrend.',
+            how:'Use it to spot early leaders before the market turns. Treat these as heads-ups, not confirmed buy signals.' },
+      ar: { what:'فحص للمراقبة فقط للمرحلة 4 / الطور C — يُظهر إعدادات VCP التي تتكوّن حتى عندما يكون السوق العام في اتجاه هابط.',
+            how:'استخدمه لرصد القادة مبكرًا قبل أن ينعكس السوق. تعامل معها كتنبيهات وليست إشارات شراء مؤكدة.' }
+    },
+    _default: {
+      title: 'ℹ️ Help · شرح',
+      en: { what:'This section is part of the TradePulse US dashboard.', how:'Switch tabs to see what each section does.' },
+      ar: { what:'هذا القسم جزء من لوحة تداول بلس للسوق الأمريكي.', how:'تنقّل بين التبويبات لمعرفة وظيفة كل قسم.' }
+    }
+  };
+  var GLOSSARY = [
+    {t:'Boss score · درجة Boss',
+     en:'Overall 0-100 setup score combining 5 agents: momentum, breakout, reversion, sector, liquidity. Higher means stronger and more actionable.',
+     ar:'الدرجة الإجمالية 0-100 للإعداد، تجمع 5 وكلاء: الزخم، الاختراق، الارتداد، القطاع، السيولة. كلما ارتفعت كان الإعداد أقوى وأجدر بالتنفيذ.'},
+    {t:'VCP',
+     en:'Volatility Contraction Pattern: a series of tightening pullbacks before a breakout; a classic low-risk entry setup.',
+     ar:'نموذج انكماش التذبذب: سلسلة تصحيحات متضيّقة قبل الاختراق؛ إعداد دخول كلاسيكي منخفض المخاطر.'},
+    {t:'RS · القوة النسبية',
+     en:'Relative Strength (1-99): how the stock performs versus the market. 70 and above marks a leader.',
+     ar:'القوة النسبية (1-99): أداء السهم مقارنة بالسوق. 70 فأكثر يدل على سهم قائد.'},
+    {t:'Stage 1-4 · المرحلة',
+     en:'The price-cycle stage: 1 basing, 2 advancing (the buy zone), 3 topping, 4 declining (avoid).',
+     ar:'مرحلة دورة السعر: 1 التجميع، 2 الصعود (منطقة الشراء)، 3 التوزيع، 4 الهبوط (تجنّب).'},
+    {t:'Pivot · نقطة الارتكاز',
+     en:'The breakout trigger price at the top of the base. A move above it on volume is the buy signal.',
+     ar:'سعر محفّز الاختراق عند قمة القاعدة. تجاوزه بحجم تداول هو إشارة الشراء.'},
+    {t:'Buy Zone · منطقة الشراء',
+     en:'The ideal entry band just above the pivot, typically pivot to plus 5 percent. Buying higher raises risk.',
+     ar:'نطاق الدخول المثالي فوق نقطة الارتكاز مباشرة، عادة من الارتكاز إلى +5%. الشراء أعلى يزيد المخاطرة.'},
+    {t:'Stop · وقف الخسارة',
+     en:'The exit price if the trade fails, placed below the base to cap the loss.',
+     ar:'سعر الخروج إذا فشلت الصفقة، يوضع أسفل القاعدة للحد من الخسارة.'},
+    {t:'SEPA',
+     en:'Specific Entry Point Analysis: the 8-criteria trend template a stock must pass to qualify as a Stage-2 leader.',
+     ar:'تحليل نقطة الدخول المحددة: قالب اتجاه من 8 معايير يجب أن يجتازها السهم ليكون قائدًا في المرحلة 2.'},
+    {t:'SQ · جودة الإعداد',
+     en:'Setup Quality: a 0-100 rating of how clean the chart pattern is, separate from the Boss score.',
+     ar:'جودة الإعداد: تقييم 0-100 لمدى نظافة نموذج الشارت، منفصل عن درجة Boss.'},
+    {t:'Actions · الإجراءات',
+     en:'Buy = act now. On Radar = strong, watch closely. Watch = forming. Avoid = weak or wrong stage.',
+     ar:'شراء = نفّذ الآن. على الرادار = قوي وراقبه عن قرب. مراقبة = قيد التكوين. تجنّب = ضعيف أو مرحلة خاطئة.'},
+    {t:'MA50 / MA200 · المتوسطات المتحركة',
+     en:'50- and 200-day moving averages: trend reference lines. Price above a rising MA200 signals a healthy uptrend.',
+     ar:'المتوسطان المتحركان 50 و200 يوم: خطوط مرجعية للاتجاه. السعر فوق متوسط 200 صاعد يشير إلى اتجاه صعودي صحي.'},
+    {t:'Avg Vol 30D · متوسط حجم 30 يوم',
+     en:'30-day average volume, a liquidity gauge. Very low or zero values flag illiquid or halted names.',
+     ar:'متوسط حجم التداول لـ30 يومًا، مقياس للسيولة. القيم المنخفضة جدًا أو الصفرية تشير إلى أسهم ضعيفة السيولة أو موقوفة.'},
+    {t:'Scout · الكشّاف',
+     en:'An observation-only scan for VCP setups even while the market is in Stage 4. These are heads-ups, not buy signals.',
+     ar:'فحص للمراقبة فقط لإعدادات VCP حتى عندما يكون السوق في المرحلة 4. مجرد تنبيهات وليست إشارات شراء.'}
+  ];
+
+  function elt(tag, cls, txt){ var e=document.createElement(tag); if(cls) e.className=cls; if(txt!=null) e.textContent=txt; return e; }
+  function fillBlock(container, whatLbl, whatTxt, howLbl, howTxt){
+    container.textContent='';
+    container.appendChild(elt('div','hb-lbl',whatLbl));
+    container.appendChild(elt('div','hb-what',whatTxt));
+    container.appendChild(elt('div','hb-lbl',howLbl));
+    container.appendChild(elt('div',null,howTxt));
+  }
+  function renderTpHelp(name){
+    var bar=document.getElementById('tp-help-bar'); if(!bar) return;
+    var c=HELP[name] || HELP._default;
+    bar.querySelector('.hb-title').textContent = c.title;
+    fillBlock(bar.querySelector('.hb-en'), 'What is this', c.en.what, 'How to use it', c.en.how);
+    fillBlock(bar.querySelector('.hb-ar'), 'ما هذا القسم', c.ar.what, 'كيف تستخدمه', c.ar.how);
+  }
+  window.renderTpHelp = renderTpHelp;
+
+  function setOpen(open){
+    var bar=document.getElementById('tp-help-bar'), tg=document.getElementById('tp-help-toggle');
+    if(bar) bar.classList.toggle('hidden', !open);
+    if(tg) tg.textContent = open ? '؟ إخفاء الشرح · Hide help' : '؟ شرح هذا القسم · Help';
+    try{ localStorage.setItem('tp_help_open', open?'1':'0'); }catch(e){}
+  }
+
+  function init(){
+    var tabbar=document.getElementById('tp-tabbar');
+    if(!tabbar || document.getElementById('tp-help-bar')) return;
+    var bar=elt('div',null); bar.id='tp-help-bar';
+    var top=elt('div','hb-top');
+    top.appendChild(elt('span','hb-title'));
+    var btn=elt('button','hb-gloss-btn','📖 المصطلحات · Glossary');
+    top.appendChild(btn);
+    var x=elt('button','hb-x','×'); x.title='إخفاء · Hide';
+    top.appendChild(x);
+    var grid=elt('div','hb-grid');
+    grid.appendChild(elt('div','hb-en'));
+    var ar=elt('div','hb-ar'); ar.setAttribute('dir','rtl');
+    grid.appendChild(ar);
+    bar.appendChild(top); bar.appendChild(grid);
+
+    var panel=elt('div',null); panel.id='tp-help-gloss';
+    GLOSSARY.forEach(function(g){
+      var item=elt('div','gl-item');
+      item.appendChild(elt('div','gl-term',g.t));
+      item.appendChild(elt('div','gl-en',g.en));
+      var gar=elt('div','gl-ar',g.ar); gar.setAttribute('dir','rtl');
+      item.appendChild(gar);
+      panel.appendChild(item);
+    });
+    bar.appendChild(panel);
+    tabbar.insertAdjacentElement('afterend', bar);
+
+    var tg=elt('button',null); tg.id='tp-help-toggle'; document.body.appendChild(tg);
+    x.onclick=function(){ setOpen(false); };
+    tg.onclick=function(){ setOpen(document.getElementById('tp-help-bar').classList.contains('hidden')); };
+
+    var glOpen=false; try{ glOpen=(localStorage.getItem('tp_gloss_open')==='1'); }catch(e){}
+    panel.classList.toggle('on', glOpen);
+    btn.onclick=function(){ glOpen=!glOpen; panel.classList.toggle('on', glOpen); try{ localStorage.setItem('tp_gloss_open', glOpen?'1':'0'); }catch(e){} };
+
+    var saved; try{ saved=localStorage.getItem('tp_help_open'); }catch(e){}
+    setOpen(saved===null||saved===undefined ? true : saved==='1');
+
+    var orig=window.showTpTab;
+    window.showTpTab=function(name){ if(orig) orig.apply(this,arguments); try{ renderTpHelp(name); }catch(e){} };
+
+    var active=DEFTAB; try{ active=localStorage.getItem(TABKEY)||DEFTAB; }catch(e){}
+    renderTpHelp(active);
+  }
+  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',init); else init();
+})();
+</script>
 
 </body>
 </html>
