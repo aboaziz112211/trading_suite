@@ -1,0 +1,340 @@
+{
+  "generated_at": "2026-07-21T12:20:16",
+  "index": {
+    "today": {
+      "date": "2026-07-21",
+      "open": 10741.99,
+      "high": 10748.82,
+      "low": 10675.63,
+      "close": 10698.81,
+      "volume": 188065976.0
+    },
+    "prev": {
+      "close": 10741.99
+    },
+    "source": "bloomberg_xlsx"
+  },
+  "stage2_count": 40,
+  "potential_count": 41,
+  "score10_count": 18,
+  "scan_total": 269,
+  "top_picks": [
+    {
+      "Ticker": "7200.SR",
+      "_vol_ratio": null,
+      "Company": "\u0627\u0645 \u0622\u064a \u0627\u0633",
+      "Stage": "stage2",
+      "Score": "10",
+      "RS": "97",
+      "12m%": "79.5"
+    },
+    {
+      "Ticker": "2001.SR",
+      "_vol_ratio": null,
+      "Company": "\u0643\u064a\u0645\u0627\u0646\u0648\u0644",
+      "Stage": "stage2",
+      "Score": "10",
+      "RS": "96",
+      "12m%": "201.0"
+    },
+    {
+      "Ticker": "4190.SR",
+      "_vol_ratio": null,
+      "Company": "\u062c\u0631\u064a\u0631",
+      "Stage": "stage2",
+      "Score": "10",
+      "RS": "95",
+      "12m%": "39.1"
+    },
+    {
+      "Ticker": "8250.SR",
+      "_vol_ratio": null,
+      "Company": "\u062c\u064a \u0622\u064a \u062c\u064a",
+      "Stage": "stage2",
+      "Score": "10",
+      "RS": "94",
+      "12m%": "19.9"
+    },
+    {
+      "Ticker": "2380.SR",
+      "_vol_ratio": null,
+      "Company": "\u0628\u062a\u0631\u0648 \u0631\u0627\u0628\u063a",
+      "Stage": "stage2",
+      "Score": "10",
+      "RS": "92",
+      "12m%": "101.4"
+    },
+    {
+      "Ticker": "1831.SR",
+      "_vol_ratio": null,
+      "Company": "\u0645\u0647\u0627\u0631\u0629",
+      "Stage": "stage2",
+      "Score": "10",
+      "RS": "91",
+      "12m%": "46.0"
+    },
+    {
+      "Ticker": "1321.SR",
+      "_vol_ratio": null,
+      "Company": "\u0623\u0646\u0627\u0628\u064a\u0628 \u0627\u0644\u0634\u0631\u0642",
+      "Stage": "stage2",
+      "Score": "10",
+      "RS": "89",
+      "12m%": "96.6"
+    },
+    {
+      "Ticker": "5110.SR",
+      "_vol_ratio": null,
+      "Company": "\u0627\u0644\u0633\u0639\u0648\u062f\u064a\u0629 \u0644\u0644\u0637\u0627\u0642\u0629",
+      "Stage": "stage2",
+      "Score": "10",
+      "RS": "88",
+      "12m%": "18.0"
+    },
+    {
+      "Ticker": "2223.SR",
+      "_vol_ratio": null,
+      "Company": "\u0644\u0648\u0628\u0631\u064a\u0641",
+      "Stage": "stage2",
+      "Score": "10",
+      "RS": "87",
+      "12m%": "32.0"
+    },
+    {
+      "Ticker": "2285.SR",
+      "_vol_ratio": null,
+      "Company": "\u0627\u0644\u0645\u0637\u0627\u062d\u0646 \u0627\u0644\u0639\u0631\u0628\u064a\u0629",
+      "Stage": "stage2",
+      "Score": "10",
+      "RS": "86",
+      "12m%": "5.4"
+    }
+  ],
+  "top_gainers": [
+    {
+      "Ticker": "ALDREES",
+      "Last Price": 114.1,
+      "%1D": 6.337399959564209,
+      "%1M": -2.728,
+      "%YTD": -10.7897,
+      "Volume": 1128209.0,
+      "Avg Vol 30D": 235262.6,
+      "_vol_ratio": 4.795530611325387
+    },
+    {
+      "Ticker": "ALISADRF",
+      "Last Price": 7.5,
+      "%1D": 6.2322998046875,
+      "%1M": 6.383,
+      "%YTD": 6.99,
+      "Volume": 612335.0,
+      "Avg Vol 30D": 89046.07,
+      "_vol_ratio": 6.8766089283895395
+    },
+    {
+      "Ticker": "GIG",
+      "Last Price": 34.0,
+      "%1D": 5.919000148773193,
+      "%1M": 6.25,
+      "%YTD": 59.0271,
+      "Volume": 586838.0,
+      "Avg Vol 30D": 179377.1,
+      "_vol_ratio": null
+    },
+    {
+      "Ticker": "KEC",
+      "Last Price": 14.6,
+      "%1D": 5.491300106048584,
+      "%1M": 24.8931,
+      "%YTD": 27.8459,
+      "Volume": 1794437.0,
+      "Avg Vol 30D": 277860.2,
+      "_vol_ratio": 6.458056965337245
+    },
+    {
+      "Ticker": "RESEARCH",
+      "Last Price": 64.75,
+      "%1D": 5.455999851226807,
+      "%1M": -16.3437,
+      "%YTD": -47.992,
+      "Volume": 841287.0,
+      "Avg Vol 30D": 184160.8,
+      "_vol_ratio": 4.5682197297144675
+    }
+  ],
+  "top_losers": [
+    {
+      "Ticker": "ABOMOATI",
+      "Last Price": 41.02,
+      "%1D": -6.687900066375732,
+      "%1M": -10.6707,
+      "%YTD": -10.8261,
+      "Volume": 1398066.0,
+      "Avg Vol 30D": 357884.3,
+      "_vol_ratio": null
+    },
+    {
+      "Ticker": "ENAYA",
+      "Last Price": 8.96,
+      "%1D": -5.584799766540527,
+      "%1M": -20.0,
+      "%YTD": 29.1066,
+      "Volume": 1041744.0,
+      "Avg Vol 30D": 560133.6,
+      "_vol_ratio": null
+    },
+    {
+      "Ticker": "TAKWEEN",
+      "Last Price": 4.29,
+      "%1D": -4.877999782562256,
+      "%1M": -18.2857,
+      "%YTD": -29.5567,
+      "Volume": 589268.0,
+      "Avg Vol 30D": 392274.5,
+      "_vol_ratio": null
+    },
+    {
+      "Ticker": "YAMAMAH",
+      "Last Price": 38.2,
+      "%1D": -4.5,
+      "%1M": -7.2816,
+      "%YTD": 19.0773,
+      "Volume": 430674.0,
+      "Avg Vol 30D": 404978.3,
+      "_vol_ratio": null
+    },
+    {
+      "Ticker": "ALINMA",
+      "Last Price": 23.51,
+      "%1D": -4.4309000968933105,
+      "%1M": -6.4837,
+      "%YTD": 15.7159,
+      "Volume": 14102845.0,
+      "Avg Vol 30D": 4066372,
+      "_vol_ratio": null
+    }
+  ],
+  "vol_leaders": [
+    {
+      "Ticker": "ALISADRF",
+      "Last Price": 7.5,
+      "%1D": 6.2322998046875,
+      "%1M": 6.383,
+      "%YTD": 6.99,
+      "Volume": 612335.0,
+      "Avg Vol 30D": 89046.07,
+      "_vol_ratio": 6.8766089283895395
+    },
+    {
+      "Ticker": "KEC",
+      "Last Price": 14.6,
+      "%1D": 5.491300106048584,
+      "%1M": 24.8931,
+      "%YTD": 27.8459,
+      "Volume": 1794437.0,
+      "Avg Vol 30D": 277860.2,
+      "_vol_ratio": 6.458056965337245
+    },
+    {
+      "Ticker": "ALDREES",
+      "Last Price": 114.1,
+      "%1D": 6.337399959564209,
+      "%1M": -2.728,
+      "%YTD": -10.7897,
+      "Volume": 1128209.0,
+      "Avg Vol 30D": 235262.6,
+      "_vol_ratio": 4.795530611325387
+    },
+    {
+      "Ticker": "LIVA",
+      "Last Price": 15.17,
+      "%1D": 3.6201999187469482,
+      "%1M": 21.36,
+      "%YTD": 39.1743,
+      "Volume": 2234452.0,
+      "Avg Vol 30D": 486079.1,
+      "_vol_ratio": 4.596889683181194
+    },
+    {
+      "Ticker": "RESEARCH",
+      "Last Price": 64.75,
+      "%1D": 5.455999851226807,
+      "%1M": -16.3437,
+      "%YTD": -47.992,
+      "Volume": 841287.0,
+      "Avg Vol 30D": 184160.8,
+      "_vol_ratio": 4.5682197297144675
+    }
+  ],
+  "sectors_leading": [
+    {
+      "name": "Media & Entertainment",
+      "count": 4,
+      "avg_pct": 1.8125999681651592,
+      "advancers": 4,
+      "decliners": 0,
+      "top_ticker": "RESEARCH",
+      "top_pct": 5.455999851226807
+    },
+    {
+      "name": "Software & Services",
+      "count": 6,
+      "avg_pct": 0.5300166656573614,
+      "advancers": 4,
+      "decliners": 2,
+      "top_ticker": "ELM",
+      "top_pct": 2.635699987411499
+    },
+    {
+      "name": "Utilities",
+      "count": 6,
+      "avg_pct": 0.48961666226387024,
+      "advancers": 4,
+      "decliners": 2,
+      "top_ticker": "AWPT",
+      "top_pct": 2.6364998817443848
+    }
+  ],
+  "sectors_lagging": [
+    {
+      "name": "Consumer Durables & Apparel",
+      "count": 6,
+      "avg_pct": -1.3337833682696025,
+      "advancers": 0,
+      "decliners": 6,
+      "top_ticker": "ALASEEL",
+      "top_pct": -0.2770000100135803
+    },
+    {
+      "name": "Financial Services",
+      "count": 10,
+      "avg_pct": -1.2010800011456013,
+      "advancers": 3,
+      "decliners": 7,
+      "top_ticker": "KINGDOM",
+      "top_pct": 0.3564999997615814
+    },
+    {
+      "name": "Capital Goods",
+      "count": 18,
+      "avg_pct": -0.9719166656335195,
+      "advancers": 4,
+      "decliners": 13,
+      "top_ticker": "ASTRA",
+      "top_pct": 1.3280999660491943
+    }
+  ],
+  "breadth": {
+    "above_ma200": 78,
+    "total_ma200": 264,
+    "above_ma50": 125,
+    "total_ma50": 268,
+    "new_highs": 3,
+    "new_lows": 38,
+    "advancers": 95,
+    "decliners": 162,
+    "unchanged": 12,
+    "ad_ratio": 0.5864197530864198,
+    "total_stocks": 269
+  }
+}
